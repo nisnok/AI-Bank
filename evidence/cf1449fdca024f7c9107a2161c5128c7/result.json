@@ -1,0 +1,12 @@
+{
+  "run_id": "cf1449fdca024f7c9107a2161c5128c7",
+  "status": "BUSINESS_OUTCOME",
+  "outputs": {},
+  "business_code": "MEMBER_NOT_FOUND",
+  "failure": null,
+  "evidence_refs": [
+    "evidence/cf1449fdca024f7c9107a2161c5128c7/metadata.json",
+    "evidence/cf1449fdca024f7c9107a2161c5128c7/events.jsonl",
+    "evidence/cf1449fdca024f7c9107a2161c5128c7/result.json"
+  ]
+}

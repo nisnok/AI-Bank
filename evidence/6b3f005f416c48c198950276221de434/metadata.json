@@ -1,0 +1,10 @@
+{
+  "run_id": "6b3f005f416c48c198950276221de434",
+  "capability_id": "get_member_balance",
+  "capability_version": "2.0.0",
+  "schema_version": "1.0",
+  "execution_mode": "deterministic_replay",
+  "actor": "replay_engine",
+  "started_at": "2026-09-12T04:37:55.284298+00:00",
+  "redaction": "all runtime values omitted; screenshots fully masked"
+}

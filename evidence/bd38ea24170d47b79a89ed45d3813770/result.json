@@ -1,0 +1,25 @@
+{
+  "run_id": "bd38ea24170d47b79a89ed45d3813770",
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "bd38ea24170d47b79a89ed45d3813770",
+    "step_id": "search_member",
+    "code": "AMBIGUOUS_TARGET",
+    "expected_condition": null,
+    "observed_condition": "ambiguous",
+    "retryable": false,
+    "safe_next_action": "Request operator review; do not continue automatically",
+    "evidence_refs": [
+      "evidence/bd38ea24170d47b79a89ed45d3813770/metadata.json",
+      "evidence/bd38ea24170d47b79a89ed45d3813770/events.jsonl",
+      "evidence/bd38ea24170d47b79a89ed45d3813770/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/bd38ea24170d47b79a89ed45d3813770/metadata.json",
+    "evidence/bd38ea24170d47b79a89ed45d3813770/events.jsonl",
+    "evidence/bd38ea24170d47b79a89ed45d3813770/result.json"
+  ]
+}

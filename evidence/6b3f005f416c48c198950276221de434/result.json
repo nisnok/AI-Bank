@@ -1,0 +1,12 @@
+{
+  "run_id": "6b3f005f416c48c198950276221de434",
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/6b3f005f416c48c198950276221de434/metadata.json",
+    "evidence/6b3f005f416c48c198950276221de434/events.jsonl",
+    "evidence/6b3f005f416c48c198950276221de434/result.json"
+  ]
+}
