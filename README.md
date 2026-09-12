@@ -1,8 +1,18 @@
 # Deterministic UI capabilities
 
-A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. This milestone includes no discovery, compiler, takeover/resume, tenant infrastructure, or reliability service.
+A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Compiler, takeover/resume, tenant infrastructure, and reliability services remain out of scope.
 
 Milestone 2 adds a local legacy back-office simulator and real-browser replay workflows. See [the simulator guide](docs/simulator.md) for startup, replay commands, fault modes, identity verification, safety tests, and remaining limits. The original Milestone 1 demo below remains available.
+
+Milestone 3 adds [real LLM-driven discovery](docs/discovery.md), normalized observations, policy-gated structured actions, and verified trajectories. To run against a fresh live simulator using the key in your local `.env`:
+
+```sh
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
+.venv/bin/python examples/run_discovery.py --model gemini-3.5-flash \
+  --goal "Find member 48321 and retrieve their savings balance."
+```
+
+The command starts the simulator automatically, calls Gemini, and writes privacy-projected evidence under `evidence/discovery/`. It does not load a hand-authored capability or call ReplayEngine. No additional Python dependencies are needed.
 
 ## Setup and run
 
@@ -80,9 +90,9 @@ Failures contain run/step IDs, a code, expected condition ID, a redacted observe
 
 ## Boundary verification
 
-`tests/test_boundaries.py` recursively follows local imports from replay and checks an explicit standard-library/Pydantic allowlist. It also verifies that artifact models depend only on the standard library and Pydantic, and that only `playwright_surface.py` imports Playwright. There are no model SDKs or LLM calls in the package or its declared dependencies.
+`tests/test_boundaries.py` recursively follows local imports from replay and checks an explicit standard-library/Pydantic allowlist. It also verifies that artifact models depend only on the standard library and Pydantic, and that only `playwright_surface.py` imports Playwright. The `deterministic_ui` package has no model SDKs or LLM calls. Gemini calls live exclusively in the separate discovery provider implementation; discovery tests also enforce this separation.
 
-## Deliberate limits and review before discovery
+## Deterministic replay limits and next-milestone review
 
 - This is an in-process executor for trusted artifacts and an already authorized UI session. Artifact signing, approval workflows, authentication, navigation/origin restrictions, and real legacy application qualification are not implemented. Application/version metadata is descriptive; Surface contract version and required features are enforced.
 - The adapter covers the current page and uniquely scoped descendants. Multi-window workflows, special iframe bindings, and desktop support are not implemented. Exact matching and plain decimal extraction are conservative.
@@ -90,4 +100,4 @@ Failures contain run/step IDs, a code, expected condition ID, a redacted observe
 - JSONL writes are synchronous, append-only within a run, and permission-restricted; no crash recovery or durable transaction is promised. Process termination/cancellation can leave incomplete evidence. Failed operations may already have affected the UI.
 - Repeated condition checks can create many locator events/handles until the step ends. For long-running sessions, review handle lifecycle and polling volume. Full run output payloads are intentionally not persisted.
 - Artifacts must describe the expected initial UI state and use preconditions where required. Stale business markers or a stale details panel can misclassify a run unless the workflow clears them or checks member identity. The local demo clears results on input. Review record-identity checkpoints carefully before using a real financial application.
-- Before adding discovery, review compiler/schema validation, trusted approval and risk assignment, retry idempotency, record-identity checks, UI mutation races, cancellation semantics, privacy, and how a discovered session hands off opaque Surface ownership. Discovery should produce the same reviewed artifact contract; replay must keep its current dependency boundary. Future health signals should inform monitoring/risk decisions without turning successful fallbacks into automatic failures.
+- Before compiling discovered trajectories, review schema validation, trusted approval and risk assignment, retry idempotency, record-identity checks, UI mutation races, cancellation semantics, privacy, and Surface ownership. A future compiler should produce the same reviewed artifact contract; replay must keep its current dependency boundary. Future health signals should inform monitoring/risk decisions without turning successful fallbacks into automatic failures.

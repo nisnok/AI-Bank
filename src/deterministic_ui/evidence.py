@@ -1,6 +1,7 @@
 """Allowlisted evidence: no raw inputs, outputs, UI text, or exception strings."""
 from datetime import datetime, timezone
 from pathlib import Path
+import json
 
 from pydantic import Field
 
@@ -15,7 +16,7 @@ class Event(Model):
     actor: str = "replay_engine"
     kind: str
     step_id: str | None = None
-    action: Action | None = None
+    action: str | None = None
     strategy: str | None = None
     strategy_index: int | None = None
     matches: int | None = None
@@ -25,10 +26,23 @@ class Event(Model):
     attempt: int | None = None
     condition_id: str | None = None
     evidence_ref: str | None = None
+    model_calls: int | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+
+
+class EvidenceContext(Model):
+    execution_mode: str = "deterministic_replay"
+    actor: str = "replay_engine"
+    provider: str | None = None
+    model: str | None = None
+    goal: str | None = None
 
 
 class EvidenceWriter:
-    def __init__(self, root: Path, run_id: str, artifact: CapabilityArtifact):
+    def __init__(self, root: Path, run_id: str, artifact: CapabilityArtifact | None = None,
+                 *, context: EvidenceContext | None = None):
+        self.context = context or EvidenceContext()
         self.run_id = run_id
         self.directory = root / run_id
         self.directory.mkdir(parents=True, exist_ok=False, mode=0o700)
@@ -36,12 +50,12 @@ class EvidenceWriter:
         self.events_path = self.directory / "events.jsonl"
         self.events_path.touch(mode=0o600)
         # Persist only artifact identity. Templates, descriptions, and selectors can contain secrets.
-        import json
         self._write("metadata.json", json.dumps({
-            "run_id": run_id, "capability_id": artifact.capability_id,
-            "capability_version": artifact.capability_version,
-            "schema_version": artifact.schema_version,
-            "execution_mode": "deterministic_replay", "actor": "replay_engine",
+            "run_id": run_id, "capability_id": artifact.capability_id if artifact else None,
+            "capability_version": artifact.capability_version if artifact else None,
+            "schema_version": artifact.schema_version if artifact else None,
+            **self.context.model_dump(exclude_none=True),
+            "model_calls_at_start": 0,
             "started_at": datetime.now(timezone.utc).isoformat(),
             "redaction": "all runtime values omitted; screenshots fully masked",
         }, indent=2))
@@ -52,9 +66,15 @@ class EvidenceWriter:
             stream.write(contents)
 
     def emit(self, kind: str, **fields) -> None:
-        event = Event(run_id=self.run_id, kind=kind, **fields)
+        event = Event(run_id=self.run_id, kind=kind, execution_mode=self.context.execution_mode,
+                      actor=self.context.actor, **fields)
         with self.events_path.open("a", encoding="utf-8") as stream:
             stream.write(event.model_dump_json(exclude_none=True) + "\n")
+
+    def write_json(self, name: str, value: dict) -> None:
+        if Path(name).name != name:
+            raise ValueError("Evidence filenames must be local")
+        self._write(name, json.dumps(value, indent=2))
 
     def resolution(self, result: ResolutionResult, step_id: str | None,
                    condition_id: str | None = None) -> None:

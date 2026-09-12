@@ -32,6 +32,19 @@ class PolicyEngine:
             return PolicyResult(decision=Decision.REQUIRE_HUMAN, code="ARTIFACT_NOT_APPROVED")
         if RISK_ORDER[step.risk] > RISK_ORDER[artifact.safety.max_risk]:
             return PolicyResult(decision=Decision.BLOCK, code="RISK_EXCEEDS_ARTIFACT_LIMIT")
-        decision = self.config.decisions.get(step.risk, Decision.BLOCK)
+        return self.evaluate_operation(step.risk, resolution)
+
+    def evaluate_operation(self, risk: Risk, resolution: ResolutionResult, *,
+                           unreviewed: bool = False) -> PolicyResult:
+        """Shared policy gate; discovery has no approved artifact to authorize risky writes."""
+        if not resolution.succeeded:
+            return PolicyResult(decision=Decision.BLOCK, code="UNRESOLVED_TARGET")
+        return self.evaluate_risk(risk, unreviewed=unreviewed)
+
+    def evaluate_risk(self, risk: Risk, *, unreviewed: bool = False) -> PolicyResult:
+        """Also gates target-free read operations such as semantic waiting."""
+        if unreviewed and risk in {Risk.SENSITIVE, Risk.IRREVERSIBLE}:
+            return PolicyResult(decision=Decision.REQUIRE_HUMAN, code="UNREVIEWED_RISK")
+        decision = self.config.decisions.get(risk, Decision.BLOCK)
         # A unique fallback remains eligible. Historical health is not a kill switch.
         return PolicyResult(decision=decision, code=f"RISK_{decision.value}")

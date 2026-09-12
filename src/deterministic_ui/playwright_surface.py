@@ -4,10 +4,11 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from time import monotonic
 from uuid import uuid4
+from urllib.parse import urlsplit
 
 from playwright.async_api import ElementHandle, Error, Locator, Page, TimeoutError as BrowserTimeout, async_playwright
 
-from .models import Anchor, Expectation, MatchSet, Observation, Strategy, TargetRef
+from .models import Anchor, Expectation, FrameInfo, MatchSet, Observation, ObservedElement, SemanticTarget, Strategy, TargetRef
 from .surface import Surface, SurfaceError, SurfaceTimeout
 
 
@@ -22,7 +23,7 @@ async def _translate_errors():
 
 
 class PlaywrightSurface(Surface):
-    features = frozenset({"accessibility", "label", "text", "relative", "css"})
+    features = frozenset({"accessibility", "label", "text", "relative", "css", "select"})
 
     def __init__(self, page: Page):
         # Internal use only; public callers use open(), which yields a Surface.
@@ -107,9 +108,69 @@ class PlaywrightSurface(Surface):
     async def observe(self, target: TargetRef | None = None) -> Observation:
         async with _translate_errors():
             if target is None:
-                return Observation(visible=True, text=await self._page.locator("body").inner_text())
+                return await self._normalized_observation()
             handle = self._handle(target)
             return Observation(visible=await handle.is_visible(), text=await handle.inner_text())
+
+    async def _normalized_observation(self) -> Observation:
+        candidates = await self._page.locator(
+            'input:not([type="hidden"]):not([type="password"]), button, select, textarea, a[href], [role="status"], [role="alert"]'
+        ).element_handles()
+        elements = []
+        for handle in candidates[:80]:
+            try:
+                if not await handle.is_visible():
+                    continue
+                data = await handle.evaluate('''el => {
+                    const kind = el.tagName.toLowerCase();
+                    const label = [...(el.labels || [])].map(x => x.innerText).join(' ').trim();
+                    const labelled = (el.getAttribute('aria-labelledby') || '').split(' ').map(id => document.getElementById(id)?.textContent || '').join(' ').trim();
+                    const text = (el.innerText || '').trim().slice(0, 200);
+                    const role = el.getAttribute('role') || ({button:'button', input:'textbox', textarea:'textbox', select:'combobox', a:'link'}[kind] || 'generic');
+                    const name = (el.getAttribute('aria-label') || labelled || label || (kind === 'input' ? '' : text)).slice(0, 200);
+                    return {kind, label, text, role, name, enabled: !el.disabled && el.getAttribute('aria-disabled') !== 'true',
+                            value: ['input','textarea','select'].includes(kind) ? el.value.slice(0, 200) : null,
+                            htmlId: el.id, fieldName: el.getAttribute('name')};
+                }''')
+                strategies = []
+                if data['name']:
+                    strategies.append({'type': 'accessibility', 'role': data['role'], 'name': data['name']})
+                if data['label']:
+                    strategies.append({'type': 'label', 'value': data['label']})
+                if data['text'] and data['kind'] not in {'input', 'select', 'textarea'}:
+                    strategies.append({'type': 'text', 'value': data['text']})
+                # CSS fallback uses only an escaped DOM identifier, never an nth-element shortcut.
+                if data['htmlId']:
+                    escaped = await handle.evaluate('el => CSS.escape(el.id)')
+                    strategies.append({'type': 'css', 'value': f'#{escaped}'})
+                if not strategies:
+                    continue
+                index = len(elements)
+                target = SemanticTarget.model_validate({'concept': f'observed_{index}', 'strategies': strategies})
+                elements.append(ObservedElement(id=f'e{index}', role=data['role'], name=data['name'],
+                    label=data['label'], text=data['text'], kind=data['kind'], enabled=data['enabled'],
+                    value=data['value'], target=target))
+            finally:
+                await handle.dispose()
+        for handle in candidates[80:]:
+            await handle.dispose()
+        dialogs = await self._page.locator('dialog[open], [role="dialog"]:visible').all_inner_texts()
+        frames = []
+        for frame in await self._page.locator('iframe').element_handles():
+            try:
+                if len(frames) < 5:
+                    frames.append(FrameInfo(title=(await frame.get_attribute('title')) or '',
+                                            path=urlsplit((await frame.get_attribute('src')) or '').path))
+            finally:
+                await frame.dispose()
+        body = await self._page.locator('body').inner_text()
+        return Observation(visible=True, url=urlsplit(self._page.url).path,
+                           title=(await self._page.title())[:200], text=body[:4000],
+                           elements=elements, dialogs=[text[:300] for text in dialogs[:5]], frames=frames[:5])
+
+    async def select(self, target: TargetRef, value: str, timeout_ms: int) -> None:
+        async with _translate_errors():
+            await self._handle(target).select_option(value=value, timeout=timeout_ms)
 
     async def click(self, target: TargetRef, timeout_ms: int) -> None:
         async with _translate_errors():

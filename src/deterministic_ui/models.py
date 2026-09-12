@@ -238,6 +238,11 @@ class MatchSet(Model):
 
 
 class Observation(Model):
+    url: str = ""
+    title: str = ""
+    elements: list["ObservedElement"] = Field(default_factory=list)
+    dialogs: list[str] = Field(default_factory=list)
+    frames: list["FrameInfo"] = Field(default_factory=list)
     visible: bool
     text: str = ""  # Transient only: must never be sent to evidence.
 
@@ -272,8 +277,30 @@ class Failure(Model):
 
 class RunResult(Model):
     run_id: str
+    model_calls: Literal[0] = 0
     status: Status
     outputs: dict[str, Scalar] = Field(default_factory=dict)
     business_code: str | None = None
     failure: Failure | None = None
     evidence_refs: list[str] = Field(default_factory=list)
+
+
+class ObservedElement(Model):
+    id: str
+    role: str
+    name: str
+    label: str = ""
+    text: str = ""
+    kind: str
+    enabled: bool = True
+    visible: bool = True
+    value: str | None = None
+    target: SemanticTarget
+
+
+class FrameInfo(Model):
+    title: str
+    path: str
+
+
+Observation.model_rebuild()

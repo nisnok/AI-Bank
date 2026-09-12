@@ -41,3 +41,6 @@ class Surface(ABC):
 
     async def release_targets(self) -> None:
         """Release run-scoped handles. Engine serializes runs on its surface."""
+
+    async def select(self, target: TargetRef, value: str, timeout_ms: int) -> None:
+        raise SurfaceError("Selection is unsupported by this surface")
