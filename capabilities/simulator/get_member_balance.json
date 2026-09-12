@@ -1,0 +1,248 @@
+{
+  "schema_version": "1.0",
+  "capability_version": "2.0.0",
+  "description": "Reviewed workflow for the fictional local banking simulator.",
+  "inputs": {
+    "member_id": {
+      "type": "string",
+      "sensitive": true
+    }
+  },
+  "outputs": {
+    "savings_balance": {
+      "type": "decimal",
+      "sensitive": true
+    }
+  },
+  "business_outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "No fictional member exists for this identifier.",
+      "condition": {
+        "id": "member_not_found",
+        "target": {
+          "concept": "member_not_found",
+          "strategies": [
+            {
+              "type": "text",
+              "value": "Member not found"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    }
+  ],
+  "compatibility": {
+    "application": "legacy-bank-simulator",
+    "application_version": "1",
+    "surface_contract": "1",
+    "required_features": [
+      "accessibility",
+      "label",
+      "text",
+      "relative",
+      "css"
+    ]
+  },
+  "safety": {
+    "approved_for_replay": true,
+    "max_risk": "REVERSIBLE_WRITE",
+    "notes": "Local fictional simulator only. Search is read-only; only semantic waiting is retried."
+  },
+  "capability_id": "get_member_balance",
+  "name": "Get verified member balance",
+  "steps": [
+    {
+      "id": "enter_member_id",
+      "action": "fill",
+      "target": {
+        "concept": "member_identifier",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Member ID"
+          },
+          {
+            "type": "label",
+            "value": "Member Number"
+          },
+          {
+            "type": "css",
+            "value": "input[name=\"member_id\"]"
+          }
+        ]
+      },
+      "risk": "REVERSIBLE_WRITE",
+      "timeout_ms": 3000,
+      "input": "{{ inputs.member_id }}"
+    },
+    {
+      "id": "search_member",
+      "action": "click",
+      "target": {
+        "concept": "search_member",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Search"
+          },
+          {
+            "type": "text",
+            "value": "Search"
+          },
+          {
+            "type": "css",
+            "value": "form[action=\"/search\"] button"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 3000
+    },
+    {
+      "id": "verify_member",
+      "action": "wait",
+      "target": {
+        "concept": "member_workspace",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "main",
+            "name": "Member workspace"
+          },
+          {
+            "type": "css",
+            "value": "main"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 750,
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "retry": {
+        "max_attempts": 2,
+        "safe_to_repeat": true,
+        "delay_ms": 50
+      }
+    },
+    {
+      "id": "read_savings_balance",
+      "action": "extract",
+      "target": {
+        "concept": "savings_balance",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "status",
+            "name": "Savings balance"
+          },
+          {
+            "type": "relative",
+            "anchor": {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Member details"
+            },
+            "role": "status",
+            "name": "Savings balance"
+          },
+          {
+            "type": "css",
+            "value": "span[aria-label=\"Savings balance\"]"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 3000,
+      "precondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "output": "savings_balance"
+    }
+  ],
+  "success": {
+    "id": "correct_member_loaded",
+    "target": {
+      "concept": "loaded_member_identifier",
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "status",
+          "name": "Loaded member identifier"
+        },
+        {
+          "type": "css",
+          "value": "span[aria-label=\"Loaded member identifier\"]"
+        }
+      ]
+    },
+    "expected": {
+      "kind": "text_equals",
+      "value": "{{ inputs.member_id }}"
+    }
+  }
+}

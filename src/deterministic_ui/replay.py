@@ -11,7 +11,7 @@ from .models import Action, CapabilityArtifact, Condition, Decision, Failure, Ru
 from .policy import PolicyEngine
 from .resolver import LocatorResolver
 from .surface import Surface, SurfaceError, SurfaceTimeout
-from .templates import ValueValidationError, render, validate_inputs, validate_value
+from .templates import ValueValidationError, bind_conditions, render, validate_inputs, validate_value
 
 
 class ReplayEngine:
@@ -43,6 +43,7 @@ class ReplayEngine:
             evidence.emit("run_started", status="RUNNING")
             try:
                 typed_inputs = validate_inputs(artifact.inputs, inputs)
+                artifact = bind_conditions(artifact, typed_inputs)
             except ValueValidationError:
                 result = self._failure(run_id, None, Status.HARD_FAILURE, "INVALID_INPUTS")
             if result is None and (

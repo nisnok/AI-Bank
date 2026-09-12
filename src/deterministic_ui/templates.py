@@ -3,7 +3,7 @@ import re
 from decimal import Decimal, InvalidOperation
 from collections.abc import Mapping
 
-from .models import FieldSpec, Scalar
+from .models import CapabilityArtifact, Condition, FieldSpec, Scalar
 
 
 REFERENCE = re.compile(r"{{\s*inputs\.([a-z][a-z0-9_]*)\s*}}")
@@ -53,3 +53,17 @@ def render(template: str, inputs: Mapping[str, Scalar]) -> str:
         return str(value).lower() if type(value) is bool else str(value)
 
     return REFERENCE.sub(substitute, template)
+
+
+def bind_conditions(artifact: CapabilityArtifact, inputs: Mapping[str, Scalar]) -> CapabilityArtifact:
+    """Bind expected values in memory; leave reviewed artifacts and evidence value-free."""
+    def bind(condition: Condition | None) -> Condition | None:
+        if condition is None or condition.expected.value is None:
+            return condition
+        expected = condition.expected.model_copy(update={"value": render(condition.expected.value, inputs)})
+        return condition.model_copy(update={"expected": expected})
+
+    steps = [step.model_copy(update={"precondition": bind(step.precondition),
+                                    "postcondition": bind(step.postcondition)}) for step in artifact.steps]
+    outcomes = [outcome.model_copy(update={"condition": bind(outcome.condition)}) for outcome in artifact.business_outcomes]
+    return artifact.model_copy(update={"steps": steps, "business_outcomes": outcomes, "success": bind(artifact.success)})

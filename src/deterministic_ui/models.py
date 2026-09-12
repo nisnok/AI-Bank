@@ -211,12 +211,16 @@ class CapabilityArtifact(Model):
         for key in [*self.inputs, *self.outputs]:
             if not re.fullmatch(r"[a-z][a-z0-9_]*", key):
                 raise ValueError("Invalid field name")
+        conditions = [self.success, *(outcome.condition for outcome in self.business_outcomes)]
+        templates = [step.input for step in self.steps if step.input is not None]
         for step in self.steps:
-            if step.input is not None:
-                remainder = re.sub(r"{{\s*inputs\.([a-z][a-z0-9_]*)\s*}}", "", step.input)
-                refs = re.findall(r"{{\s*inputs\.([a-z][a-z0-9_]*)\s*}}", step.input)
-                if "{{" in remainder or "}}" in remainder or any(ref not in self.inputs for ref in refs):
-                    raise ValueError("Invalid or undeclared input template")
+            conditions.extend(condition for condition in (step.precondition, step.postcondition) if condition is not None)
+        templates.extend(condition.expected.value for condition in conditions if condition.expected.value is not None)
+        for template in templates:
+            remainder = re.sub(r"{{\s*inputs\.([a-z][a-z0-9_]*)\s*}}", "", template)
+            refs = re.findall(r"{{\s*inputs\.([a-z][a-z0-9_]*)\s*}}", template)
+            if "{{" in remainder or "}}" in remainder or any(ref not in self.inputs for ref in refs):
+                raise ValueError("Invalid or undeclared input template")
         return self
 
 

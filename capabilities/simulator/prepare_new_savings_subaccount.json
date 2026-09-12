@@ -1,0 +1,432 @@
+{
+  "schema_version": "1.0",
+  "capability_version": "2.0.0",
+  "description": "Reviewed workflow for the fictional local banking simulator.",
+  "inputs": {
+    "member_id": {
+      "type": "string",
+      "sensitive": true
+    },
+    "initial_deposit": {
+      "type": "decimal",
+      "sensitive": true
+    }
+  },
+  "outputs": {},
+  "business_outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "No fictional member exists for this identifier.",
+      "condition": {
+        "id": "member_not_found",
+        "target": {
+          "concept": "member_not_found",
+          "strategies": [
+            {
+              "type": "text",
+              "value": "Member not found"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    },
+    {
+      "code": "MEMBER_INELIGIBLE",
+      "description": "Member is not eligible to open this product.",
+      "condition": {
+        "id": "member_ineligible",
+        "target": {
+          "concept": "member_ineligible",
+          "strategies": [
+            {
+              "type": "text",
+              "value": "Member is not eligible for a new savings sub-account"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    }
+  ],
+  "compatibility": {
+    "application": "legacy-bank-simulator",
+    "application_version": "1",
+    "surface_contract": "1",
+    "required_features": [
+      "accessibility",
+      "label",
+      "text",
+      "relative",
+      "css"
+    ]
+  },
+  "safety": {
+    "approved_for_replay": true,
+    "max_risk": "IRREVERSIBLE",
+    "notes": "Local simulator only. Runner requires human approval for the final action; default policy blocks it."
+  },
+  "capability_id": "prepare_new_savings_subaccount",
+  "name": "Prepare a new savings sub-account",
+  "steps": [
+    {
+      "id": "enter_member_id",
+      "action": "fill",
+      "target": {
+        "concept": "member_identifier",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Member ID"
+          },
+          {
+            "type": "label",
+            "value": "Member Number"
+          },
+          {
+            "type": "css",
+            "value": "input[name=\"member_id\"]"
+          }
+        ]
+      },
+      "risk": "REVERSIBLE_WRITE",
+      "timeout_ms": 3000,
+      "input": "{{ inputs.member_id }}"
+    },
+    {
+      "id": "search_member",
+      "action": "click",
+      "target": {
+        "concept": "search_member",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Search"
+          },
+          {
+            "type": "text",
+            "value": "Search"
+          },
+          {
+            "type": "css",
+            "value": "form[action=\"/search\"] button"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 3000
+    },
+    {
+      "id": "verify_member",
+      "action": "wait",
+      "target": {
+        "concept": "member_workspace",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "main",
+            "name": "Member workspace"
+          },
+          {
+            "type": "css",
+            "value": "main"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 750,
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "retry": {
+        "max_attempts": 2,
+        "safe_to_repeat": true,
+        "delay_ms": 50
+      }
+    },
+    {
+      "id": "begin_opening",
+      "action": "click",
+      "target": {
+        "concept": "open_savings",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Open New Savings Sub-account"
+          },
+          {
+            "type": "text",
+            "value": "Open New Savings Sub-account"
+          }
+        ]
+      },
+      "risk": "REVERSIBLE_WRITE",
+      "timeout_ms": 3000,
+      "precondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "postcondition": {
+        "id": "opening_form_visible",
+        "target": {
+          "concept": "opening_form",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "New savings sub-account"
+            },
+            {
+              "type": "css",
+              "value": "form[action=\"/review\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    },
+    {
+      "id": "enter_initial_deposit",
+      "action": "fill",
+      "target": {
+        "concept": "initial_deposit",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Initial deposit"
+          },
+          {
+            "type": "label",
+            "value": "Initial deposit"
+          },
+          {
+            "type": "css",
+            "value": "input[name=\"initial_deposit\"]"
+          }
+        ]
+      },
+      "risk": "REVERSIBLE_WRITE",
+      "timeout_ms": 3000,
+      "input": "{{ inputs.initial_deposit }}",
+      "precondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      }
+    },
+    {
+      "id": "review_account",
+      "action": "click",
+      "target": {
+        "concept": "review_account",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Review"
+          },
+          {
+            "type": "text",
+            "value": "Review"
+          }
+        ]
+      },
+      "risk": "REVERSIBLE_WRITE",
+      "timeout_ms": 3000,
+      "postcondition": {
+        "id": "review_visible",
+        "target": {
+          "concept": "account_review",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Account opening review"
+            },
+            {
+              "type": "css",
+              "value": "form[action=\"/confirm\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    },
+    {
+      "id": "verify_review_member",
+      "action": "wait",
+      "target": {
+        "concept": "member_workspace",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "main",
+            "name": "Member workspace"
+          },
+          {
+            "type": "css",
+            "value": "main"
+          }
+        ]
+      },
+      "risk": "READ",
+      "timeout_ms": 3000,
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "loaded_member_identifier",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            },
+            {
+              "type": "css",
+              "value": "span[aria-label=\"Loaded member identifier\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      }
+    },
+    {
+      "id": "confirm_open_account",
+      "action": "click",
+      "target": {
+        "concept": "confirm_open_account",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Confirm / Open Account"
+          },
+          {
+            "type": "text",
+            "value": "Confirm / Open Account"
+          }
+        ]
+      },
+      "risk": "IRREVERSIBLE",
+      "timeout_ms": 3000,
+      "precondition": {
+        "id": "review_visible",
+        "target": {
+          "concept": "account_review",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Account opening review"
+            },
+            {
+              "type": "css",
+              "value": "form[action=\"/confirm\"]"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      },
+      "postcondition": {
+        "id": "account_opened",
+        "target": {
+          "concept": "account_opened",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Account opened"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    }
+  ],
+  "success": {
+    "id": "account_opened",
+    "target": {
+      "concept": "account_opened",
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "region",
+          "name": "Account opened"
+        }
+      ]
+    },
+    "expected": {
+      "kind": "visible"
+    }
+  }
+}
