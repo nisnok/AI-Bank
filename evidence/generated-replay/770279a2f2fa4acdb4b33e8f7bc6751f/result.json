@@ -1,0 +1,13 @@
+{
+  "run_id": "770279a2f2fa4acdb4b33e8f7bc6751f",
+  "model_calls": 0,
+  "status": "BUSINESS_OUTCOME",
+  "outputs": {},
+  "business_code": "MEMBER_NOT_FOUND",
+  "failure": null,
+  "evidence_refs": [
+    "evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/metadata.json",
+    "evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/events.jsonl",
+    "evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/result.json"
+  ]
+}

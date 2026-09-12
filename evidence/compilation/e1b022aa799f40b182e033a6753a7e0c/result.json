@@ -1,0 +1,11 @@
+{
+  "status": "VALIDATED",
+  "artifact": "capabilities/generated/get_member_balance/1.0.0/validated.json",
+  "discovery_run_id": "6234bdefa80947b8856fbc677939560c",
+  "validation_run_id": "c0a8057c3d2b40bb95d380807c51c33a",
+  "replay_model_calls": 0,
+  "business_run_id": "770279a2f2fa4acdb4b33e8f7bc6751f",
+  "business_status": "BUSINESS_OUTCOME",
+  "business_code": "MEMBER_NOT_FOUND",
+  "business_model_calls": 0
+}

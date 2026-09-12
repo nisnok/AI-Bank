@@ -1,6 +1,6 @@
 from pydantic import Field
 
-from .models import CapabilityArtifact, Decision, Model, ResolutionResult, Risk, Step
+from .models import CapabilityArtifact, CapabilityLifecycle, Decision, Model, ResolutionResult, Risk, Step
 
 
 RISK_ORDER = {risk: index for index, risk in enumerate(Risk)}
@@ -28,7 +28,13 @@ class PolicyEngine:
                  resolution: ResolutionResult) -> PolicyResult:
         if not resolution.succeeded:
             return PolicyResult(decision=Decision.BLOCK, code="UNRESOLVED_TARGET")
-        if not artifact.safety.approved_for_replay:
+        if artifact.lifecycle == CapabilityLifecycle.DRAFT:
+            return PolicyResult(decision=Decision.REQUIRE_HUMAN, code="DRAFT_REQUIRES_VALIDATION")
+        validated_low_risk = (artifact.lifecycle == CapabilityLifecycle.VALIDATED
+                              and artifact.provenance is not None
+                              and artifact.provenance.validation_run_id is not None
+                              and RISK_ORDER[artifact.safety.max_risk] <= RISK_ORDER[Risk.REVERSIBLE_WRITE])
+        if not artifact.safety.approved_for_replay and not validated_low_risk:
             return PolicyResult(decision=Decision.REQUIRE_HUMAN, code="ARTIFACT_NOT_APPROVED")
         if RISK_ORDER[step.risk] > RISK_ORDER[artifact.safety.max_risk]:
             return PolicyResult(decision=Decision.BLOCK, code="RISK_EXCEEDS_ARTIFACT_LIMIT")

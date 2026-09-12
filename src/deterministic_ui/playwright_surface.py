@@ -110,63 +110,57 @@ class PlaywrightSurface(Surface):
             if target is None:
                 return await self._normalized_observation()
             handle = self._handle(target)
-            return Observation(visible=await handle.is_visible(), text=await handle.inner_text())
+            value = await handle.evaluate("el => ['INPUT','SELECT','TEXTAREA'].includes(el.tagName) ? el.value : null")
+            return Observation(visible=await handle.is_visible(), text=await handle.inner_text(), value=value)
 
     async def _normalized_observation(self) -> Observation:
-        candidates = await self._page.locator(
-            'input:not([type="hidden"]):not([type="password"]), button, select, textarea, a[href], [role="status"], [role="alert"]'
-        ).element_handles()
+        # One synchronous DOM evaluation prevents mixed snapshots when a response
+        # replaces the page between element collection and visible-text collection.
+        snapshot = await self._page.evaluate("""() => {
+            const visible = el => {
+                const style = getComputedStyle(el);
+                return style.visibility !== 'hidden' && style.visibility !== 'collapse'
+                    && !!(el.getBoundingClientRect().width && el.getBoundingClientRect().height);
+            };
+            const elements = [...document.querySelectorAll(
+                'input:not([type="hidden"]):not([type="password"]), button, select, textarea, a[href], [role="status"], [role="alert"]'
+            )].slice(0, 80).filter(visible).map(el => {
+                const kind = el.tagName.toLowerCase();
+                const label = [...(el.labels || [])].map(x => x.innerText).join(' ').trim();
+                const labelled = (el.getAttribute('aria-labelledby') || '').split(' ').map(id => document.getElementById(id)?.textContent || '').join(' ').trim();
+                const text = (el.innerText || '').trim().slice(0, 200);
+                const role = el.getAttribute('role') || ({button:'button', input:'textbox', textarea:'textbox', select:'combobox', a:'link'}[kind] || 'generic');
+                const name = (el.getAttribute('aria-label') || labelled || label || (kind === 'input' ? '' : text)).slice(0, 200);
+                return {kind, label, text, role, name, enabled: !el.disabled && el.getAttribute('aria-disabled') !== 'true',
+                        value: ['input','textarea','select'].includes(kind) ? el.value.slice(0, 200) : null,
+                        css: el.id ? '#' + CSS.escape(el.id) : null};
+            });
+            return {elements, title: document.title.slice(0, 200), path: location.pathname,
+                    text: (document.body?.innerText || '').slice(0, 4000),
+                    dialogs: [...document.querySelectorAll('dialog[open], [role="dialog"]')].filter(visible).slice(0, 5).map(el => el.innerText.slice(0, 300)),
+                    frames: [...document.querySelectorAll('iframe')].slice(0, 5).map(el => ({title: el.title, path: new URL(el.src || '/', location.href).pathname}))};
+        }""")
         elements = []
-        for handle in candidates[:80]:
-            try:
-                if not await handle.is_visible():
-                    continue
-                data = await handle.evaluate('''el => {
-                    const kind = el.tagName.toLowerCase();
-                    const label = [...(el.labels || [])].map(x => x.innerText).join(' ').trim();
-                    const labelled = (el.getAttribute('aria-labelledby') || '').split(' ').map(id => document.getElementById(id)?.textContent || '').join(' ').trim();
-                    const text = (el.innerText || '').trim().slice(0, 200);
-                    const role = el.getAttribute('role') || ({button:'button', input:'textbox', textarea:'textbox', select:'combobox', a:'link'}[kind] || 'generic');
-                    const name = (el.getAttribute('aria-label') || labelled || label || (kind === 'input' ? '' : text)).slice(0, 200);
-                    return {kind, label, text, role, name, enabled: !el.disabled && el.getAttribute('aria-disabled') !== 'true',
-                            value: ['input','textarea','select'].includes(kind) ? el.value.slice(0, 200) : null,
-                            htmlId: el.id, fieldName: el.getAttribute('name')};
-                }''')
-                strategies = []
-                if data['name']:
-                    strategies.append({'type': 'accessibility', 'role': data['role'], 'name': data['name']})
-                if data['label']:
-                    strategies.append({'type': 'label', 'value': data['label']})
-                if data['text'] and data['kind'] not in {'input', 'select', 'textarea'}:
-                    strategies.append({'type': 'text', 'value': data['text']})
-                # CSS fallback uses only an escaped DOM identifier, never an nth-element shortcut.
-                if data['htmlId']:
-                    escaped = await handle.evaluate('el => CSS.escape(el.id)')
-                    strategies.append({'type': 'css', 'value': f'#{escaped}'})
-                if not strategies:
-                    continue
-                index = len(elements)
-                target = SemanticTarget.model_validate({'concept': f'observed_{index}', 'strategies': strategies})
-                elements.append(ObservedElement(id=f'e{index}', role=data['role'], name=data['name'],
-                    label=data['label'], text=data['text'], kind=data['kind'], enabled=data['enabled'],
-                    value=data['value'], target=target))
-            finally:
-                await handle.dispose()
-        for handle in candidates[80:]:
-            await handle.dispose()
-        dialogs = await self._page.locator('dialog[open], [role="dialog"]:visible').all_inner_texts()
-        frames = []
-        for frame in await self._page.locator('iframe').element_handles():
-            try:
-                if len(frames) < 5:
-                    frames.append(FrameInfo(title=(await frame.get_attribute('title')) or '',
-                                            path=urlsplit((await frame.get_attribute('src')) or '').path))
-            finally:
-                await frame.dispose()
-        body = await self._page.locator('body').inner_text()
-        return Observation(visible=True, url=urlsplit(self._page.url).path,
-                           title=(await self._page.title())[:200], text=body[:4000],
-                           elements=elements, dialogs=[text[:300] for text in dialogs[:5]], frames=frames[:5])
+        for data in snapshot['elements']:
+            strategies = []
+            if data['name']:
+                strategies.append({'type':'accessibility', 'role':data['role'], 'name':data['name']})
+            if data['label']:
+                strategies.append({'type':'label', 'value':data['label']})
+            if data['text'] and data['kind'] not in {'input','select','textarea'}:
+                strategies.append({'type':'text', 'value':data['text']})
+            if data['css']:
+                strategies.append({'type':'css', 'value':data['css']})
+            if not strategies:
+                continue
+            index = len(elements)
+            target = SemanticTarget.model_validate({'concept':f'observed_{index}', 'strategies':strategies})
+            elements.append(ObservedElement(id=f'e{index}', role=data['role'], name=data['name'],
+                label=data['label'], text=data['text'], kind=data['kind'], enabled=data['enabled'],
+                value=data['value'], target=target))
+        return Observation(visible=True, url=snapshot['path'], title=snapshot['title'], text=snapshot['text'],
+                           elements=elements, dialogs=snapshot['dialogs'],
+                           frames=[FrameInfo.model_validate(frame) for frame in snapshot['frames']])
 
     async def select(self, target: TargetRef, value: str, timeout_ms: int) -> None:
         async with _translate_errors():
@@ -195,7 +189,8 @@ class PlaywrightSurface(Surface):
             if expected.kind == "absent" and not observation.visible:
                 return True
             if expected.kind != "absent" and observation.visible:
-                if expected.kind == "visible" or observation.text == expected.value:
+                actual = observation.value if expected.kind == "value_equals" else observation.text
+                if expected.kind == "visible" or actual == expected.value:
                     return True
             remaining = deadline - monotonic()
             if remaining <= 0:

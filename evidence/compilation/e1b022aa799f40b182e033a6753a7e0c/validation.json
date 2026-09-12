@@ -1,0 +1,12 @@
+{
+  "artifact": "capabilities/generated/get_member_balance/1.0.0/validated.json",
+  "output_types": {
+    "savings_balance": "Decimal"
+  },
+  "model_import_guard": "enabled",
+  "loaded_model_modules": [],
+  "model_credentials_present": false,
+  "run_id": "c0a8057c3d2b40bb95d380807c51c33a",
+  "status": "SUCCESS",
+  "different_inputs": true
+}

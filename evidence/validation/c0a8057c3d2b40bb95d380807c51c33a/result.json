@@ -1,0 +1,13 @@
+{
+  "run_id": "c0a8057c3d2b40bb95d380807c51c33a",
+  "model_calls": 0,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/metadata.json",
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/events.jsonl",
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/result.json"
+  ]
+}

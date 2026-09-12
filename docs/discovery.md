@@ -99,9 +99,9 @@ Trajectory entries contain the decision, semantic target, actual resolution stra
 - `verified`: the observed postcondition passed.
 - `compilation_eligible`: the action was executed and verified; terminal decisions and rejected/uncertain actions are ineligible.
 
-Only successful whole-run trajectories should be considered by a future compiler. An individual eligible step is not blanket approval for compilation. This milestone implements no compiler.
+Only successful whole-run trajectories are accepted by the [Milestone 4 compiler](compiler.md). An individual eligible step is not blanket approval for compilation.
 
-Full typed observations, decisions, semantic targets, trajectory, goal, and outputs remain in the returned in-memory result. Disk records omit runtime values and raw visible text, redact unknown labels, omit free-form model reasoning, and record a short generic operational reason. Screenshots remain fully masked. Provider responses and thought parts are never persisted. The logged goal substitutes the member identifier; output records show their type and a redaction marker. Consequently, disk evidence is auditable but is not a lossless compiler input; the next milestone must design privacy-preserving bindings or consume the in-memory trajectory.
+Full typed observations, decisions, semantic targets, trajectory, goal, and outputs remain in the returned in-memory result. Disk records omit runtime values and raw visible text, redact unknown labels, omit free-form model reasoning, and record a short generic operational reason. Screenshots remain fully masked. Provider responses and thought parts are never persisted. The logged goal substitutes the member identifier; output records show their type and a redaction marker. Consequently, disk evidence is auditable but is not a lossless compiler input; Milestone 4 consumes the in-memory trajectory and excluded-from-serialization invocation bindings.
 
 Final results include provider, configured model name, total model-call attempts, token usage from successful structured replies, and total latency. HTTP errors do not expose token usage. Deterministic `RunResult` now explicitly has `model_calls=0`; ReplayEngine still imports no model component.
 
@@ -117,8 +117,8 @@ RUN_BROWSER_TESTS=1 .venv/bin/python -m pytest -q
 
 Regular tests use MockModelClient and do not need a key. Browser tests use MockModelClient with the real simulator, Chromium, Surface, resolver, policy, and orchestrator. The real CLI command above is the opt-in provider integration path.
 
-Added `src/discovery/{models,model_client,gemini_client,mock_client,safety,evidence,orchestrator}.py`, `examples/run_discovery.py`, and discovery unit/browser tests. Extended portable observations, Surface selection, the browser observation adapter, shared policy/evidence entry points, and replay's zero-call result metadata. No deterministic capability was changed or generated.
+Added `src/discovery/{models,model_client,gemini_client,mock_client,safety,evidence,orchestrator}.py`, `examples/run_discovery.py`, and discovery unit/browser tests. Extended portable observations, Surface selection, the browser observation adapter, shared policy/evidence entry points, and replay's zero-call result metadata. Milestone 3 itself generated no deterministic capability; Milestone 4 adds that bridge separately.
 
 Remaining fragile areas: accessible-name normalization is a bounded approximation rather than a full accessibility-tree implementation; frame interactions are unsupported; the read-only safety/success contract is intentionally simulator-specific; semantic text checkpoints are weaker than transaction-bound assertions; projected evidence cannot reconstruct sensitive values; provider output and availability remain nondeterministic. Observation races are checked conservatively but browser operations are not atomic transactions.
 
-Compiler, human takeover/UI, tenant bindings, health aggregation, drift dashboards, automatic healing, and persistent/distributed infrastructure remain unimplemented.
+Beyond the Milestone 4 compiler, human takeover/UI, tenant bindings, health aggregation, drift dashboards, automatic healing, and persistent/distributed infrastructure remain unimplemented.

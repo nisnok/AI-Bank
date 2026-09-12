@@ -113,3 +113,4 @@ class DiscoveryResult(Model):
     outputs: dict[str, Scalar] = Field(default_factory=dict)
     trajectory: list[TrajectoryStep] = Field(default_factory=list)
     evidence_directory: str
+    invocation_inputs: dict[str, Scalar] = Field(default_factory=dict, exclude=True)

@@ -1,6 +1,6 @@
 # Deterministic UI capabilities
 
-A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Compiler, takeover/resume, tenant infrastructure, and reliability services remain out of scope.
+A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Takeover/resume, tenant infrastructure, and reliability services remain out of scope.
 
 Milestone 2 adds a local legacy back-office simulator and real-browser replay workflows. See [the simulator guide](docs/simulator.md) for startup, replay commands, fault modes, identity verification, safety tests, and remaining limits. The original Milestone 1 demo below remains available.
 
@@ -13,6 +13,18 @@ export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
 ```
 
 The command starts the simulator automatically, calls Gemini, and writes privacy-projected evidence under `evidence/discovery/`. It does not load a hand-authored capability or call ReplayEngine. No additional Python dependencies are needed.
+
+## Discovery → compilation → replay
+
+[Milestone 4 guide](docs/compiler.md) documents the compiler, lifecycle, generated artifacts, and real execution evidence. With `GEMINI_API_KEY` in your ignored `.env`, run:
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/discover_and_compile.py \
+  --goal "Find member 48321 and retrieve their savings balance." \
+  --member-id 48321 --validate-member-id 83921 --version 1.0.1
+```
+
+The command calls real Gemini, compiles its successful in-memory trajectory, saves a DRAFT, validates the generated workflow through ReplayEngine using a different member, and checks MEMBER_NOT_FOUND. Replay runs in fresh processes with model imports blocked and model credentials removed. Use an unused version on each run; existing versions are never overwritten. [Artifact organization](capabilities/README.md) distinguishes manual examples from generated versions.
 
 ## Setup and run
 
@@ -66,7 +78,7 @@ Domain models import only Python's standard library and Pydantic.
 
 `LocatorResolver` tries strategies in order. Zero matches permit fallback. Multiple visible matches or an ambiguous relative container immediately return `AMBIGUOUS_TARGET`; no later fallback can override that ambiguity. Quality tiers (`semantic`, `structural`, `css_fallback`) describe resolution methods, not probabilities. Every attempt and successful strategy index are recorded, so future monitoring can measure fallback use without blocking a safe resolution.
 
-`PolicyEngine` checks artifact approval, the artifact risk ceiling, and configurable risk decisions. Defaults allow reads and reversible writes, require human review for sensitive actions, and block irreversible actions. Missing configuration blocks. Risk labels and the approval flag are assertions of a trusted, reviewed artifact; this prototype does not authenticate an approver or prove that a UI button is actually read-only.
+`PolicyEngine` checks manual artifact approval or generated validation provenance, the artifact risk ceiling, and configurable risk decisions. Defaults allow reads and reversible writes, require human review for sensitive actions, and block irreversible actions. Missing configuration blocks. DRAFT artifacts require an explicit, scoped validation policy; ordinary replay rejects them. VALIDATED generated artifacts permit reads/reversible writes under the existing risk gate. Risk labels, lifecycle provenance, and the approval flag are assertions of a trusted, reviewed artifact; this prototype does not authenticate an approver or prove that a UI button is actually read-only.
 
 `ReplayEngine.execute(artifact, inputs)` validates inputs once before any action, then processes precondition, resolution, policy, action, postcondition, output validation, and evidence. Success also requires the final checkpoint. The engine serializes its own runs; do not share a Surface between independent engines. Each attempt has a wall-clock timeout. Only recoverable failures are retried, within the artifact's bounds and only with an explicit `safe_to_repeat` declaration. A timeout can occur after an action took effect; the example never retries the Search click.
 
@@ -100,4 +112,4 @@ Failures contain run/step IDs, a code, expected condition ID, a redacted observe
 - JSONL writes are synchronous, append-only within a run, and permission-restricted; no crash recovery or durable transaction is promised. Process termination/cancellation can leave incomplete evidence. Failed operations may already have affected the UI.
 - Repeated condition checks can create many locator events/handles until the step ends. For long-running sessions, review handle lifecycle and polling volume. Full run output payloads are intentionally not persisted.
 - Artifacts must describe the expected initial UI state and use preconditions where required. Stale business markers or a stale details panel can misclassify a run unless the workflow clears them or checks member identity. The local demo clears results on input. Review record-identity checkpoints carefully before using a real financial application.
-- Before compiling discovered trajectories, review schema validation, trusted approval and risk assignment, retry idempotency, record-identity checks, UI mutation races, cancellation semantics, privacy, and Surface ownership. A future compiler should produce the same reviewed artifact contract; replay must keep its current dependency boundary. Future health signals should inform monitoring/risk decisions without turning successful fallbacks into automatic failures.
+- The compiler supports a narrow verified member-balance workflow. Broader compilation still requires review of risk assignment, retry idempotency, identity checks, UI mutation races, cancellation, privacy, and Surface ownership. See the compiler guide for current limits. Future health signals should not turn successful fallbacks into automatic failures.

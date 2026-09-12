@@ -29,8 +29,9 @@ class ConditionEvaluator:
             return ConditionResult(satisfied=condition.expected.kind == "absent", observed="absent")
         observation = await surface.observe(resolution.target)
         expected = condition.expected
+        actual = observation.value if expected.kind == "value_equals" else observation.text
         satisfied = (not observation.visible if expected.kind == "absent" else
-                     observation.visible and (expected.kind == "visible" or observation.text == expected.value))
+                     observation.visible and (expected.kind == "visible" or actual == expected.value))
         return ConditionResult(satisfied=satisfied, observed="satisfied" if satisfied else "not_satisfied")
 
     async def wait(self, condition: Condition, outcomes: list[BusinessOutcome], surface: Surface,

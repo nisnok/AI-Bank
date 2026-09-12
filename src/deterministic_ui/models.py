@@ -104,13 +104,13 @@ class SemanticTarget(Model):
 
 
 class Expectation(Model):
-    kind: Literal["visible", "absent", "text_equals"] = "visible"
+    kind: Literal["visible", "absent", "text_equals", "value_equals"] = "visible"
     value: str | None = None
 
     @model_validator(mode="after")
     def valid_value(self):
-        if (self.kind == "text_equals") != (self.value is not None):
-            raise ValueError("Only text_equals requires a value")
+        if (self.kind in {"text_equals", "value_equals"}) != (self.value is not None):
+            raise ValueError("Text/value equality requires a value; visibility conditions do not")
         return self
 
 
@@ -134,6 +134,7 @@ class RetryPolicy(Model):
 
 class FieldSpec(Model):
     type: Literal["string", "decimal", "integer", "boolean"]
+    required: Literal[True] = True
     description: str = ""
     sensitive: bool = True
 
@@ -182,6 +183,23 @@ class SafetyMetadata(Model):
     notes: str = ""
 
 
+class CapabilityLifecycle(StrEnum):
+    DRAFT = "DRAFT"
+    VALIDATED = "VALIDATED"
+
+
+class ArtifactProvenance(Model):
+    generated_from: Literal['discovery'] = 'discovery'
+    discovery_run_id: str
+    discovery_timestamp: str
+    provider: str
+    model: str
+    compiler_version: str
+    source_application: str
+    source_sequences: list[int]
+    validation_run_id: str | None = None
+
+
 class CapabilityArtifact(Model):
     schema_version: Literal["1.0"]
     capability_id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
@@ -195,10 +213,17 @@ class CapabilityArtifact(Model):
     business_outcomes: list[BusinessOutcome] = Field(default_factory=list)
     compatibility: Compatibility
     safety: SafetyMetadata
+    lifecycle: CapabilityLifecycle | None = None  # Legacy hand-authored artifacts stay compatible.
+    provenance: ArtifactProvenance | None = None
 
     @model_validator(mode="after")
     def coherent(self):
         import re
+        if (self.lifecycle is None) != (self.provenance is None):
+            raise ValueError('Generated lifecycle and provenance must be declared together')
+        if self.provenance is not None:
+            if (self.lifecycle == CapabilityLifecycle.VALIDATED) != (self.provenance.validation_run_id is not None):
+                raise ValueError('Only validated artifacts require a validation run reference')
         ids = [step.id for step in self.steps]
         if len(ids) != len(set(ids)):
             raise ValueError("Duplicate step IDs")
@@ -244,6 +269,7 @@ class Observation(Model):
     dialogs: list[str] = Field(default_factory=list)
     frames: list["FrameInfo"] = Field(default_factory=list)
     visible: bool
+    value: str | None = None
     text: str = ""  # Transient only: must never be sent to evidence.
 
 

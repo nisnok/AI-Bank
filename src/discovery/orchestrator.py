@@ -168,7 +168,8 @@ class DiscoveryOrchestrator:
                                  provider=self.model.provider, model=self.model.model, model_calls=calls,
                                  usage=usage, latency_ms=round((monotonic() - started)*1000, 3),
                                  outputs=outputs if status == S.SUCCESS else {}, trajectory=trajectory,
-                                 evidence_directory=str(self.evidence_root / run_id))
+                                 evidence_directory=str(self.evidence_root / run_id),
+                                 invocation_inputs={'member_id':request.member_id})
         if writer and evidence:
             try:
                 writer.emit('run_finished', status=status, model_calls=calls, duration_ms=result.latency_ms)

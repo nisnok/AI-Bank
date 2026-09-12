@@ -1,0 +1,15 @@
+{
+  "discovery_run_id": "6234bdefa80947b8856fbc677939560c",
+  "discovery_evidence": "evidence/discovery/6234bdefa80947b8856fbc677939560c",
+  "compiler_version": "1.0.0",
+  "artifact": "capabilities/generated/get_member_balance/1.0.0/draft.json",
+  "artifact_digest": "27784b9ca4bdde1260de9a943f0757abb66134a354639a53e8e9b7d8dbb678e4",
+  "source_sequences": [
+    1,
+    2,
+    3
+  ],
+  "parameterization": "verified input_binding -> inputs.member_id; no text replacement",
+  "business_outcome_source": "explicit simulator application contract",
+  "model_calls": 0
+}

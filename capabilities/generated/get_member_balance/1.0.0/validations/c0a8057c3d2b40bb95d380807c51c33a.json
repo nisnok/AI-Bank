@@ -1,0 +1,13 @@
+{
+  "code": "VALIDATED",
+  "different_inputs": true,
+  "draft_digest": "27784b9ca4bdde1260de9a943f0757abb66134a354639a53e8e9b7d8dbb678e4",
+  "replay_run_id": "c0a8057c3d2b40bb95d380807c51c33a",
+  "replay_status": "SUCCESS",
+  "model_calls": 0,
+  "evidence_refs": [
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/metadata.json",
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/events.jsonl",
+    "evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/result.json"
+  ]
+}
