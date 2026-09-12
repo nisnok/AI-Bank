@@ -1,0 +1,16 @@
+{
+  "run_id": "cea50aab61f3487b8a50cd4898193617",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/tenants/cea50aab61f3487b8a50cd4898193617/metadata.json",
+    "evidence/tenants/cea50aab61f3487b8a50cd4898193617/events.jsonl",
+    "evidence/tenants/cea50aab61f3487b8a50cd4898193617/result.json"
+  ]
+}

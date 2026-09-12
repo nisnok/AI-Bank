@@ -1,0 +1,30 @@
+{
+  "run_id": "f50be57402da4ee59662cb533fbc4081",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "HARD_FAILURE",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "f50be57402da4ee59662cb533fbc4081",
+    "step_id": null,
+    "code": "INCOMPATIBLE_APPLICATION_VERSION",
+    "expected_condition": null,
+    "observed_condition": null,
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Review tenant binding and application compatibility before execution",
+    "evidence_refs": [
+      "evidence/tenants/f50be57402da4ee59662cb533fbc4081/metadata.json",
+      "evidence/tenants/f50be57402da4ee59662cb533fbc4081/events.jsonl",
+      "evidence/tenants/f50be57402da4ee59662cb533fbc4081/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/tenants/f50be57402da4ee59662cb533fbc4081/metadata.json",
+    "evidence/tenants/f50be57402da4ee59662cb533fbc4081/events.jsonl",
+    "evidence/tenants/f50be57402da4ee59662cb533fbc4081/result.json"
+  ]
+}

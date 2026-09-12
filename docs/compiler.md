@@ -110,4 +110,4 @@ Current limits:
 - Replay import guards and static boundaries are dependency checks, not an operating-system network sandbox.
 - Masked screenshots and redacted disk trajectories limit retrospective debugging. No raw reasoning or credentials are persisted.
 
-Human handoff, tenant overlays, health aggregation, automatic healing, governance services, and distributed persistence remain out of scope.
+[Milestone 5](handoff.md) now implements same-session operator handoff separately. [Milestone 6](tenants.md) adds locator-only tenant bindings. Health aggregation, automatic healing, governance services, and distributed persistence remain out of scope.

@@ -1,6 +1,6 @@
 # Deterministic UI capabilities
 
-A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Takeover/resume, tenant infrastructure, and reliability services remain out of scope.
+A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Milestone 5 adds same-session operator takeover and verified resume. Milestone 6 adds cross-tenant reuse through strict locator bindings and controlled UI-drift telemetry. Production tenant infrastructure and aggregate reliability services remain out of scope.
 
 Milestone 2 adds a local legacy back-office simulator and real-browser replay workflows. See [the simulator guide](docs/simulator.md) for startup, replay commands, fault modes, identity verification, safety tests, and remaining limits. The original Milestone 1 demo below remains available.
 
@@ -25,6 +25,28 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/discover_a
 ```
 
 The command calls real Gemini, compiles its successful in-memory trajectory, saves a DRAFT, validates the generated workflow through ReplayEngine using a different member, and checks MEMBER_NOT_FOUND. Replay runs in fresh processes with model imports blocked and model credentials removed. Use an unused version on each run; existing versions are never overwritten. [Artifact organization](capabilities/README.md) distinguishes manual examples from generated versions.
+
+## Same-session operator handoff
+
+[Milestone 5 guide](docs/handoff.md) covers ownership, action auditing, safe handback, mutation safety, and real-browser acceptance evidence.
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_handoff.py
+```
+
+Open the printed operator-panel URL. Take control to acknowledge the supervisor notice, hand back, then take control again for final account confirmation. The panel acts on one retained application page; replay verifies member identity, posted deposit, and account-opened state before continuing. It never repeats the human's confirmation. The application page is headless and the panel shows live normalized state, so all supported operator actions pass through the ownership/audit controller.
+
+Add `--scripted` for explicitly labeled automated acceptance. No model or API key is used. Existing generated artifacts are unchanged.
+
+## Cross-tenant reuse and controlled UI drift
+
+[Milestone 6 guide](docs/tenants.md) demonstrates the same Bank A-discovered `get_member_balance@1.0.0` on Bank B through a locator-only binding.
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/replay_tenant.py --all
+```
+
+The command runs Bank A/Bank B baselines, label drift, structural drift, ambiguity, a missing member, and an incompatible version. Unique fallback continues with telemetry; ambiguous controls stop before clicking. No Gemini key, rediscovery, copied capability, or health scoring is involved. The command prints a generated reviewer evidence index.
 
 ## Setup and run
 
@@ -80,7 +102,7 @@ Domain models import only Python's standard library and Pydantic.
 
 `PolicyEngine` checks manual artifact approval or generated validation provenance, the artifact risk ceiling, and configurable risk decisions. Defaults allow reads and reversible writes, require human review for sensitive actions, and block irreversible actions. Missing configuration blocks. DRAFT artifacts require an explicit, scoped validation policy; ordinary replay rejects them. VALIDATED generated artifacts permit reads/reversible writes under the existing risk gate. Risk labels, lifecycle provenance, and the approval flag are assertions of a trusted, reviewed artifact; this prototype does not authenticate an approver or prove that a UI button is actually read-only.
 
-`ReplayEngine.execute(artifact, inputs)` validates inputs once before any action, then processes precondition, resolution, policy, action, postcondition, output validation, and evidence. Success also requires the final checkpoint. The engine serializes its own runs; do not share a Surface between independent engines. Each attempt has a wall-clock timeout. Only recoverable failures are retried, within the artifact's bounds and only with an explicit `safe_to_repeat` declaration. A timeout can occur after an action took effect; the example never retries the Search click.
+`ReplayEngine.execute(artifact, inputs)` validates inputs once before any action, then processes precondition, resolution, policy, action, postcondition, output validation, and evidence. Success also requires the final checkpoint. The engine serializes its own runs; do not share a Surface between independent engines. Each attempt has a wall-clock timeout. Only recoverable failures are retried, within the artifact's bounds and only with an explicit `safe_to_repeat` declaration. A timeout can occur after an action took effect; the example never retries the Search click. Uncertain irreversible operations are verified before continuation and never blindly retried, even if marked repeatable.
 
 `ConditionEvaluator` polls semantic conditions and known business outcomes under the same deadline. Outcomes take precedence over generic success markers. Ambiguous conditions require a human. A wait step uses this evaluator so it can recognize business outcomes while waiting; Surface also offers a direct wait operation for provider clients.
 

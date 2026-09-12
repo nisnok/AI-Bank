@@ -297,13 +297,25 @@ class Failure(Model):
     expected_condition: str | None = None
     observed_condition: str | None = None
     retryable: bool = False
+    action_attempted: bool = False
     safe_next_action: str
     evidence_refs: list[str] = Field(default_factory=list)
+
+
+class ResumeInfo(Model):
+    blocked_step_id: str
+    reason_code: str
+    expected_state: str = "Operator must satisfy the declared resume checks"
+    checkpoint_ids: list[str] = Field(default_factory=list)
+    evidence_ref: str | None = None
 
 
 class RunResult(Model):
     run_id: str
     model_calls: Literal[0] = 0
+    handoff_occurred: bool = False
+    human_action_count: int = 0
+    resume: ResumeInfo | None = None
     status: Status
     outputs: dict[str, Scalar] = Field(default_factory=dict)
     business_code: str | None = None

@@ -1,7 +1,7 @@
 """Small server-rendered HTML views. No automation-only element attributes."""
 from html import escape
 
-from .domain import Fault, Session
+from .domain import Drift, Fault, Session, Tenant
 
 
 STYLE = """
@@ -27,7 +27,7 @@ SCRIPT = """
 let generation = 0;
 document.addEventListener('submit', async event => {
   const form = event.target;
-  if (!(form instanceof HTMLFormElement)) return;
+  if (!(form instanceof HTMLFormElement) || form.method === 'dialog') return;
   event.preventDefault();
   const ticket = ++generation;
   const body = new URLSearchParams(new FormData(form));
@@ -48,32 +48,48 @@ document.addEventListener('submit', async event => {
 
 
 def shell(session: Session) -> str:
+    brand = "Harbor Bank B — Customer Operations" if session.tenant == Tenant.BANK_B else "Northstar Example Credit Union — Branch Operations"
     return f'''<!doctype html><html lang="en"><meta charset="utf-8"><title>Branch Operations Terminal</title>
-<style>{STYLE}</style><body><header><h1>Northstar Example Credit Union — Branch Operations</h1>
+<style>{STYLE}</style><body><header><h1>{brand}</h1>
 <small>TRAINING SYSTEM / FICTIONAL RECORDS ONLY / Terminal 04</small></header>
-<nav>Employee session: TRAINING CLERK &nbsp; | &nbsp; Member Services &nbsp; | &nbsp; Release 4.7</nav>
+<nav>Employee session: TRAINING CLERK &nbsp; | &nbsp; Member Services &nbsp; | &nbsp; Release {escape(session.application_version)}</nav>
 <div class="layout"><main aria-label="Member workspace">{search_form(session)}</main><aside><iframe title="Account opening reference" src="/reference"></iframe>
 <p>Internal use — simulation only</p><a href="/">Start fresh employee session</a></aside></div>
-<footer>Ready &nbsp; | &nbsp; Local training records reset with each employee session</footer>
+<footer>Ready &nbsp; | &nbsp; Local training records reset with each employee session
+<div>Institution: <span role="status" aria-label="Institution identifier">{session.tenant.value}</span>
+Product: <span role="status" aria-label="Application product">legacy-bank-simulator</span>
+Version: <span role="status" aria-label="Application version">{escape(session.application_version)}</span></div></footer>
 <script>{SCRIPT}</script></body></html>'''
 
 
 def search_form(session: Session) -> str:
-    label = "Member Number" if session.fallback else "Member ID"
-    duplicate = '<button type="submit">Search</button>' if session.fault == Fault.AMBIGUOUS_CONTROL else ""
-    return f'''<h2>Member Search</h2><div class="panel"><form action="/search" method="post">
-<table><tr><td><label for="member-key">{label}</label></td><td><input id="member-key" name="member_id" autocomplete="off" maxlength="20"></td></tr></table>
-<button type="submit">Search</button>{duplicate}</form></div><p>Use member identifier to retrieve the current record.</p>'''
+    bank_b = session.tenant == Tenant.BANK_B
+    label = "Customer Number" if bank_b else ("Member Number" if session.fallback else "Member ID")
+    if session.drift == Drift.LABEL_DRIFT:
+        label = "Customer #" if bank_b else "Member #"
+    button = "Find Customer" if bank_b else "Search"
+    field_id = "customer-reference" if bank_b else "member-key"
+    duplicate = f'<button type="submit">{button}</button>' if (
+        session.fault == Fault.AMBIGUOUS_CONTROL or session.drift == Drift.AMBIGUOUS_DRIFT) else ""
+    entry = f'<label for="{field_id}">{label}</label><input id="{field_id}" name="member_id" autocomplete="off" maxlength="20">'
+    if bank_b:
+        entry = f'<fieldset><legend>Customer lookup</legend><div class="lookup-entry">{entry}</div></fieldset>'
+    if session.drift == Drift.STRUCTURAL_DRIFT:
+        entry = f'<section><div><div class="relocated-input">{entry}</div></div></section>'
+    return f'''<h2>{"Customer Lookup" if bank_b else "Member Search"}</h2>
+<div class="panel"><form action="/search" method="post">{entry}
+<button type="submit">{button}</button>{duplicate}</form></div><p>Use the identifier to retrieve the current record.</p>'''
 
 
 def identity(session: Session) -> str:
     assert session.member is not None
-    return f'<tr><th>Loaded member identifier</th><td><span role="status" aria-label="Loaded member identifier">{escape(session.member.identifier)}</span></td></tr>'
+    label = "Loaded customer identifier" if session.tenant == Tenant.BANK_B else "Loaded member identifier"
+    return f'<tr><th>{label}</th><td><span role="status" aria-label="{label}">{escape(session.member.identifier)}</span></td></tr>'
 
 
 def render_state(session: Session, state: str) -> str:
     messages = {
-        "MEMBER_NOT_FOUND": "Member not found",
+        "MEMBER_NOT_FOUND": "Customer not found" if session.tenant == Tenant.BANK_B else "Member not found",
         "MEMBER_INELIGIBLE": "Member is not eligible for a new savings sub-account",
         "SESSION_EXPIRED": "Employee session expired. Start a fresh employee session.",
         "PERMISSION_DENIED": "Permission denied: account opening is restricted for this session.",
@@ -85,18 +101,23 @@ def render_state(session: Session, state: str) -> str:
         return f'<p role="alert" class="notice">{messages[state]}</p>{retry}'
     assert session.member is not None
     if state == "DETAILS":
+        savings_label = "Available Savings" if session.tenant == Tenant.BANK_B else "Savings balance"
         accounts = ''.join(
             f'<tr><td>{account.identifier}</td><td>{account.balance:.2f}</td></tr>'
             for account in session.subaccounts if account.member_id == session.member.identifier
         )
         account_table = f'<h3>Additional savings sub-accounts</h3><table>{accounts}</table>' if accounts else ''
         modal = '''<dialog aria-label="Unexpected terminal notice"><h2>Unscheduled terminal notice</h2>
-<p>Supervisor acknowledgement required before proceeding.</p></dialog>''' if session.fault == Fault.UNEXPECTED_MODAL else ""
-        return f'''<section aria-label="Member details"><h2>Member Details</h2><div class="panel"><table>
+<p>Supervisor acknowledgement required before proceeding.</p>
+<form method="dialog"><button>Acknowledge supervisor notice</button></form></dialog>''' if session.fault == Fault.UNEXPECTED_MODAL else ""
+        markup = f'''<section aria-label="Member details"><h2>Member Details</h2><div class="panel"><table>
 {identity(session)}<tr><th>Display name</th><td>{escape(session.member.display_name)}</td></tr>
-<tr><th>Savings balance</th><td><span role="status" aria-label="Savings balance">{session.member.savings_balance:.2f}</span></td></tr>
+<tr><th>{savings_label}</th><td><span role="status" aria-label="{savings_label}">{session.member.savings_balance:.2f}</span></td></tr>
 <tr><th>Sub-account eligibility</th><td>{'Eligible' if session.member.eligible else 'Restricted'}</td></tr></table>
 {account_table}<form action="/open" method="post"><button>Open New Savings Sub-account</button></form></div></section>{modal}'''
+        if session.tenant == Tenant.BANK_B:
+            markup = '<div class="customer-record-shell"><article>' + markup + '</article></div>'
+        return markup
     if state == "OPENING":
         return opening_form(session)
     if state == "REVIEW":
@@ -106,7 +127,7 @@ def render_state(session: Session, state: str) -> str:
 <form action="/confirm" method="post"><button>Confirm / Open Account</button></form></section>'''
     if state == "CONFIRMED":
         return f'''<section aria-label="Account opened"><h2>Savings sub-account opened</h2><table>{identity(session)}
-<tr><th>Training receipt</th><td>{escape(session.receipt or '')}</td></tr><tr><th>Initial deposit posted</th><td>{session.deposit}</td></tr></table></section>'''
+<tr><th>Training receipt</th><td>{escape(session.receipt or '')}</td></tr><tr><th>Initial deposit posted</th><td><span role="status" aria-label="Posted initial deposit">{session.deposit}</span></td></tr></table></section>'''
     raise ValueError("Unknown simulator state")
 
 

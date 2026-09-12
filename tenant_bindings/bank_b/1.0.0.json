@@ -1,0 +1,128 @@
+{
+  "binding_version": "1.0.0",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "canonical_digest": "81f153b28c9fd39b96c0d5a514d0dd234f79f397939710de29af0f45950b4f9d",
+  "product": "legacy-bank-simulator",
+  "application_version": "1",
+  "tenant_id": "bank_b",
+  "targets": [
+    {
+      "canonical_target": {
+        "concept": "observed_0",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Member ID"
+          },
+          {
+            "type": "label",
+            "value": "Member ID"
+          },
+          {
+            "type": "css",
+            "value": "#member-key"
+          }
+        ]
+      },
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "textbox",
+          "name": "Customer Number"
+        },
+        {
+          "type": "label",
+          "value": "Customer Number"
+        },
+        {
+          "type": "css",
+          "value": "#customer-reference"
+        }
+      ]
+    },
+    {
+      "canonical_target": {
+        "concept": "observed_1",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Search"
+          },
+          {
+            "type": "text",
+            "value": "Search"
+          }
+        ]
+      },
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "button",
+          "name": "Find Customer"
+        },
+        {
+          "type": "text",
+          "value": "Find Customer"
+        }
+      ]
+    },
+    {
+      "canonical_target": {
+        "concept": "observed_1",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "status",
+            "name": "Savings balance"
+          }
+        ]
+      },
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "status",
+          "name": "Available Savings"
+        }
+      ]
+    },
+    {
+      "canonical_target": {
+        "concept": "observed_0",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "status",
+            "name": "Loaded member identifier"
+          }
+        ]
+      },
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "status",
+          "name": "Loaded customer identifier"
+        }
+      ]
+    },
+    {
+      "canonical_target": {
+        "concept": "member_not_found",
+        "strategies": [
+          {
+            "type": "text",
+            "value": "Member not found"
+          }
+        ]
+      },
+      "strategies": [
+        {
+          "type": "text",
+          "value": "Customer not found"
+        }
+      ]
+    }
+  ]
+}

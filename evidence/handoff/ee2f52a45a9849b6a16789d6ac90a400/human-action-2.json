@@ -1,0 +1,35 @@
+{
+  "actor": "HUMAN",
+  "input_source": "scripted_acceptance",
+  "timestamp": "2026-09-12T20:02:44.319336+00:00",
+  "run_id": "ee2f52a45a9849b6a16789d6ac90a400",
+  "session_id": "72892090ac694bd29212bdf7129da547",
+  "action": "click",
+  "target": "confirm_account",
+  "target_kind": "configured_semantic_target",
+  "before": {
+    "visible": true,
+    "element_count": 4,
+    "dialog_count": 0,
+    "text": "[redacted]",
+    "verified_conditions": [
+      "handoff_member_verified",
+      "handoff_review",
+      "handoff_deposit_verified"
+    ]
+  },
+  "after": {
+    "visible": true,
+    "element_count": 3,
+    "dialog_count": 0,
+    "text": "[redacted]",
+    "verified_conditions": [
+      "handoff_account_opened",
+      "handoff_member_verified",
+      "handoff_posted_deposit"
+    ]
+  },
+  "value": null,
+  "status": "VERIFIED",
+  "screenshot": "screenshots/human_2.png"
+}

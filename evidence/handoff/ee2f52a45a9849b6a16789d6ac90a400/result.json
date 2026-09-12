@@ -1,0 +1,16 @@
+{
+  "run_id": "ee2f52a45a9849b6a16789d6ac90a400",
+  "model_calls": 0,
+  "handoff_occurred": true,
+  "human_action_count": 2,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/handoff/ee2f52a45a9849b6a16789d6ac90a400/metadata.json",
+    "evidence/handoff/ee2f52a45a9849b6a16789d6ac90a400/events.jsonl",
+    "evidence/handoff/ee2f52a45a9849b6a16789d6ac90a400/result.json"
+  ]
+}

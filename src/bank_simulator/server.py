@@ -8,7 +8,7 @@ from time import sleep
 from urllib.parse import parse_qs, urlsplit
 from uuid import uuid4
 
-from .domain import Fault, Session
+from .domain import Drift, Fault, Session, Tenant
 from .views import REFERENCE, render_state, shell
 
 
@@ -62,10 +62,16 @@ class Handler(BaseHTTPRequestHandler):
         query = parse_qs(url.query)
         try:
             fault = Fault(query.get("fault", ["NONE"])[0])
+            tenant = Tenant(query.get("tenant", ["bank_a"])[0])
+            drift = Drift(query.get("drift", ["none"])[0])
+            application_version = query.get("application_version", ["1"])[0]
+            if application_version not in {"1", "2"}:
+                raise ValueError
         except ValueError:
             self.reply("Unknown fault mode", 400)
             return
-        session = Session(fault=fault, fallback=query.get("variant", [""])[0] == "fallback")
+        session = Session(fault=fault, fallback=query.get("variant", [""])[0] == "fallback",
+                          tenant=tenant, drift=drift, application_version=application_version)
         token = uuid4().hex
         with self.simulator.lock:
             self.simulator.sessions[token] = session

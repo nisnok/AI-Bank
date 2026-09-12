@@ -1,0 +1,16 @@
+{
+  "run_id": "d96e824a8ad74f67878c7055ea3abeea",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/tenants/d96e824a8ad74f67878c7055ea3abeea/metadata.json",
+    "evidence/tenants/d96e824a8ad74f67878c7055ea3abeea/events.jsonl",
+    "evidence/tenants/d96e824a8ad74f67878c7055ea3abeea/result.json"
+  ]
+}

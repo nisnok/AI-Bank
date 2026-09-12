@@ -1,0 +1,16 @@
+{
+  "run_id": "a11b22997ba046579eede1b007f0c194",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/tenants/a11b22997ba046579eede1b007f0c194/metadata.json",
+    "evidence/tenants/a11b22997ba046579eede1b007f0c194/events.jsonl",
+    "evidence/tenants/a11b22997ba046579eede1b007f0c194/result.json"
+  ]
+}

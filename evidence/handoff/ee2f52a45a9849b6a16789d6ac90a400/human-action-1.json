@@ -1,0 +1,29 @@
+{
+  "actor": "HUMAN",
+  "input_source": "scripted_acceptance",
+  "timestamp": "2026-09-12T20:02:43.621221+00:00",
+  "run_id": "ee2f52a45a9849b6a16789d6ac90a400",
+  "session_id": "72892090ac694bd29212bdf7129da547",
+  "action": "click",
+  "target": "acknowledge_notice",
+  "target_kind": "configured_semantic_target",
+  "before": {
+    "visible": true,
+    "element_count": 5,
+    "dialog_count": 1,
+    "text": "[redacted]",
+    "verified_conditions": []
+  },
+  "after": {
+    "visible": true,
+    "element_count": 4,
+    "dialog_count": 0,
+    "text": "[redacted]",
+    "verified_conditions": [
+      "notice_dismissed"
+    ]
+  },
+  "value": null,
+  "status": "VERIFIED",
+  "screenshot": "screenshots/human_1.png"
+}

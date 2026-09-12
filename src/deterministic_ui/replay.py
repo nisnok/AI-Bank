@@ -6,8 +6,9 @@ from time import monotonic
 from uuid import uuid4
 
 from .conditions import ConditionEvaluator
-from .evidence import EvidenceWriter
-from .models import Action, CapabilityArtifact, Condition, Decision, Failure, RunResult, Scalar, Status, Step
+from .evidence import EvidenceContext, EvidenceWriter
+from .handoff_port import HandoffHandler, ResumeDisposition
+from .models import Risk, ResumeInfo, Action, CapabilityArtifact, Condition, Decision, Failure, RunResult, Scalar, Status, Step
 from .policy import PolicyEngine
 from .resolver import LocatorResolver
 from .surface import Surface, SurfaceError, SurfaceTimeout
@@ -16,13 +17,18 @@ from .templates import ValueValidationError, bind_conditions, render, validate_i
 
 class ReplayEngine:
     def __init__(self, surface: Surface, *, evidence_root: Path = Path("evidence"),
-                 resolver: LocatorResolver | None = None, policy: PolicyEngine | None = None):
+                 resolver: LocatorResolver | None = None, policy: PolicyEngine | None = None,
+                 handoff: HandoffHandler | None = None,
+                 evidence_context: EvidenceContext | None = None):
+        self.evidence_context = evidence_context
+        self.handoff = handoff
         self.surface = surface
         self.evidence_root = evidence_root
         self.resolver = resolver or LocatorResolver()
         self.policy = policy or PolicyEngine()
         self.conditions = ConditionEvaluator(self.resolver)
         self._lock = asyncio.Lock()
+        self._action_attempted = False
 
     async def execute(self, artifact: CapabilityArtifact, inputs: Mapping[str, object]) -> RunResult:
         """Artifact parsing errors belong to loading; runtime outcomes are structured."""
@@ -33,7 +39,7 @@ class ReplayEngine:
         run_id = uuid4().hex
         started = monotonic()
         try:
-            evidence = EvidenceWriter(self.evidence_root, run_id, artifact)
+            evidence = EvidenceWriter(self.evidence_root, run_id, artifact, context=self.evidence_context)
         except OSError:
             return self._failure(run_id, None, Status.HARD_FAILURE, "EVIDENCE_UNAVAILABLE")
         current_step = None
@@ -58,6 +64,14 @@ class ReplayEngine:
                     step_started = monotonic()
                     evidence.emit("step_started", step_id=step.id, action=step.action, status="RUNNING")
                     result = await self._step(artifact, step, typed_inputs, outputs, evidence)
+                    while result is not None and result.status == Status.HUMAN_REQUIRED and self.handoff:
+                        disposition = await self.handoff.resolve(artifact, step, result, typed_inputs, evidence)
+                        if disposition == ResumeDisposition.COMPLETED_STEP:
+                            result = None
+                        elif disposition == ResumeDisposition.RETRY_STEP:
+                            result = await self._step(artifact, step, typed_inputs, outputs, evidence)
+                        else:
+                            break
                     evidence.emit("step_finished", step_id=step.id, action=step.action,
                                   duration_ms=round((monotonic() - step_started) * 1000, 3),
                                   status=result.status if result else Status.SUCCESS)
@@ -85,8 +99,13 @@ class ReplayEngine:
                 await self.surface.release_targets()
             except Exception:
                 pass
+        if self.handoff:
+            result = result.model_copy(update={"handoff_occurred": self.handoff.handoff_occurred,
+                                               "human_action_count": self.handoff.human_action_count})
         refs = [str(evidence.directory / name) for name in ("metadata.json", "events.jsonl", "result.json")]
         result = result.model_copy(update={"evidence_refs": refs})
+        if result.resume:
+            result = result.model_copy(update={"resume": result.resume.model_copy(update={"evidence_ref": refs[1]})})
         if result.failure:
             result = result.model_copy(update={"failure": result.failure.model_copy(update={"evidence_refs": refs})})
         try:
@@ -94,6 +113,8 @@ class ReplayEngine:
             evidence.emit("run_finished", status=result.status,
                           duration_ms=round((monotonic() - started) * 1000, 3))
             evidence.finish(result)
+            if self.handoff:
+                self.handoff.finished(result)
         except OSError:
             return self._failure(run_id, current_step, Status.HARD_FAILURE, "EVIDENCE_UNAVAILABLE")
         return result
@@ -102,6 +123,7 @@ class ReplayEngine:
                     inputs: Mapping[str, Scalar], outputs: dict[str, Scalar],
                     evidence: EvidenceWriter) -> RunResult | None:
         for attempt in range(1, step.retry.max_attempts + 1):
+            self._action_attempted = False
             evidence.emit("step_attempt", step_id=step.id, action=step.action, attempt=attempt)
             try:
                 # Timeout covers the entire attempt, including resolution and checkpoints.
@@ -110,8 +132,24 @@ class ReplayEngine:
             except (SurfaceTimeout, TimeoutError):
                 result = self._failure(evidence.run_id, step.id, Status.RECOVERABLE_ERROR, "STEP_TIMEOUT",
                                        condition=step.postcondition or step.precondition)
+            if result is not None and result.failure:
+                result = result.model_copy(update={"failure": result.failure.model_copy(
+                    update={"action_attempted": self._action_attempted})})
             if result is None or result.status != Status.RECOVERABLE_ERROR:
                 return result
+            if step.risk == Risk.IRREVERSIBLE:
+                # Never replay an uncertain mutation, even if a caller labels it repeatable.
+                if step.postcondition:
+                    verified = await self._checkpoint(artifact, step.postcondition, evidence, step.id, step.timeout_ms)
+                    if verified is None:
+                        return None
+                    if verified.status == Status.BUSINESS_OUTCOME:
+                        return verified
+                uncertain = self._failure(evidence.run_id, step.id, Status.HUMAN_REQUIRED,
+                                          "UNCERTAIN_MUTATION", condition=step.postcondition)
+                assert uncertain.failure is not None
+                return uncertain.model_copy(update={"failure": uncertain.failure.model_copy(
+                    update={"action_attempted": self._action_attempted})})
             if not step.retry.safe_to_repeat:
                 assert result.failure is not None  # Recoverable failures always carry details.
                 return result.model_copy(update={"failure": result.failure.model_copy(update={"retryable": False})})
@@ -125,6 +163,11 @@ class ReplayEngine:
     async def _attempt(self, artifact: CapabilityArtifact, step: Step,
                        inputs: Mapping[str, Scalar], outputs: dict[str, Scalar],
                        evidence: EvidenceWriter) -> RunResult | None:
+        if self.handoff:
+            observation = await self.surface.observe()
+            if observation.dialogs:
+                return self._failure(evidence.run_id, step.id, Status.HUMAN_REQUIRED,
+                                     "UNEXPECTED_BLOCKING_UI", condition=step.precondition)
         if step.precondition:
             result = await self._checkpoint(artifact, step.precondition, evidence, step.id, step.timeout_ms)
             if result:
@@ -140,8 +183,10 @@ class ReplayEngine:
         evidence.emit("policy", step_id=step.id, action=step.action, status=policy.decision)
         if policy.decision != Decision.ALLOW:
             status = Status.HUMAN_REQUIRED if policy.decision == Decision.REQUIRE_HUMAN else Status.HARD_FAILURE
-            return self._failure(evidence.run_id, step.id, status, policy.code)
+            result = self._failure(evidence.run_id, step.id, status, policy.code, condition=step.postcondition)
+            return result
         extracted = None
+        self._action_attempted = step.action != Action.WAIT
         if step.action == Action.FILL:
             assert step.input is not None  # Guaranteed by Step.action_fields validation.
             await self.surface.fill(resolved.target, render(step.input, inputs), step.timeout_ms)
@@ -197,7 +242,11 @@ class ReplayEngine:
             Status.RECOVERABLE_ERROR: "Inspect current UI and evidence before retrying; the action may have completed",
             Status.HARD_FAILURE: "Review the artifact, inputs, surface, and evidence before a new run",
         }[status]
-        return RunResult(run_id=run_id, status=status, failure=Failure(
+        return RunResult(run_id=run_id, status=status,
+            resume=ResumeInfo(blocked_step_id=step_id, reason_code=code,
+                              checkpoint_ids=[condition.id] if condition else [])
+                   if status == Status.HUMAN_REQUIRED and step_id else None,
+            failure=Failure(
             run_id=run_id, step_id=step_id, code=code,
             expected_condition=condition.id if condition else None,
             observed_condition="ambiguous" if code == "AMBIGUOUS_TARGET" else "not_verified",

@@ -52,7 +52,7 @@ export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
 .venv/bin/python examples/run_simulator.py get_member_balance --variant fallback
 ```
 
-Add `--headed` to watch the browser. The runner closes the browser when replay returns, including HUMAN_REQUIRED; session takeover/resume is deliberately not implemented. The CLI prints status, a safe result code, and the evidence path. It does not print input or output values. This is a demonstration command; business and failure statuses are in the structured result rather than separate process exit codes.
+Add `--headed` to watch the browser. The runner closes the browser when replay returns, including HUMAN_REQUIRED; this older runner does not retain a handoff session. Use the [Milestone 5 operator demo](handoff.md) for same-session takeover and resume. The CLI prints status, a safe result code, and the evidence path. It does not print input or output values. This is a demonstration command; business and failure statuses are in the structured result rather than separate process exit codes.
 
 The runner loads `capabilities/simulator/get_member_balance.json` or `capabilities/simulator/prepare_new_savings_subaccount.json`, opens `PlaywrightSurface`, and calls `ReplayEngine.execute`. It uses no custom browser commands or selectors. The original `capabilities/get_member_balance.json` remains the Milestone 1 fixture for the old demo and its existing tests.
 
@@ -129,3 +129,7 @@ This server is only for local training: it has no real authentication, durable l
 The reference iframe is meaningful to an employee but is not an automated transaction frame. General frame traversal remains out of scope. Screenshots remain fully masked. Application/version compatibility metadata remains descriptive. Operational faults use checkpoint errors rather than bespoke session/modal classifications. Initial-deposit comparison against the review UI is covered by the controlled simulator's server state and tests; the artifact verifies the review page and member, not an independent numeric deposit comparison. A real financial workflow should add that comparison and stronger freshness/transaction binding before deployment.
 
 Before discovery, review compiler validation and approval trust, risk labels, record-identity/freshness guarantees, deposit reconciliation, observation redaction, and same-session lifecycle ownership. No Gemini, discovery, compiler, takeover UI, tenant overlays, health scoring, drift aggregation, or automatic healing is implemented in this milestone.
+
+Milestone 5 makes the existing supervisor-notice modal acknowledgeable and adds a semantic posted-deposit value for verified handback. The dedicated handoff demo performs the human confirmation through its audited operator controller; the original preparation runner retains its stop-before-confirmation behavior.
+
+Milestone 6 adds independent `tenant=bank_a|bank_b` and `drift=none|label|structural|ambiguous` simulator parameters, plus visible product/version identity. Both tenants share the existing business domain. See [the tenant guide](tenants.md) for the generated-capability replay command.

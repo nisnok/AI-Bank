@@ -4,6 +4,18 @@ from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 
 
+class Tenant(StrEnum):
+    BANK_A = "bank_a"
+    BANK_B = "bank_b"
+
+
+class Drift(StrEnum):
+    NONE = "none"
+    LABEL_DRIFT = "label"
+    STRUCTURAL_DRIFT = "structural"
+    AMBIGUOUS_DRIFT = "ambiguous"
+
+
 class Fault(StrEnum):
     NONE = "NONE"
     SLOW_PAGE = "SLOW_PAGE"
@@ -56,6 +68,9 @@ class SavingsSubaccount:
 
 @dataclass
 class Session:
+    tenant: Tenant = Tenant.BANK_A
+    drift: Drift = Drift.NONE
+    application_version: str = "1"
     fault: Fault = Fault.NONE
     fallback: bool = False
     stage: Stage = Stage.SEARCH
