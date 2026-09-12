@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "name": "Get member savings balance",
+  "description": "Search a member and read their savings balance without modifying financial records.",
+  "inputs": {
+    "member_id": {
+      "type": "string",
+      "description": "Member identifier",
+      "sensitive": true
+    }
+  },
+  "outputs": {
+    "savings_balance": {
+      "type": "decimal",
+      "description": "Exact savings balance in account currency",
+      "sensitive": true
+    }
+  },
+  "steps": [
+    {
+      "id": "enter_member_id",
+      "action": "fill",
+      "target": {
+        "concept": "member_identifier",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Member ID"
+          },
+          {
+            "type": "label",
+            "value": "Member Number"
+          },
+          {
+            "type": "css",
+            "value": "#member-id"
+          }
+        ]
+      },
+      "input": "{{ inputs.member_id }}",
+      "timeout_ms": 3000,
+      "retry": {
+        "max_attempts": 2,
+        "safe_to_repeat": true,
+        "delay_ms": 100
+      },
+      "risk": "REVERSIBLE_WRITE"
+    },
+    {
+      "id": "search_member",
+      "action": "click",
+      "target": {
+        "concept": "search_member",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Search"
+          },
+          {
+            "type": "label",
+            "value": "Search members"
+          },
+          {
+            "type": "css",
+            "value": "#search"
+          }
+        ]
+      },
+      "postcondition": {
+        "id": "member_details_visible",
+        "target": {
+          "concept": "member_details",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Member details"
+            },
+            {
+              "type": "css",
+              "value": "#details"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      },
+      "timeout_ms": 3000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "risk": "READ"
+    },
+    {
+      "id": "read_savings_balance",
+      "action": "extract",
+      "target": {
+        "concept": "savings_balance",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "status",
+            "name": "Savings balance"
+          },
+          {
+            "type": "relative",
+            "anchor": {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Member details"
+            },
+            "role": "status",
+            "name": "Savings balance"
+          },
+          {
+            "type": "css",
+            "value": "#savings-balance"
+          }
+        ]
+      },
+      "precondition": {
+        "id": "member_details_visible",
+        "target": {
+          "concept": "member_details",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "region",
+              "name": "Member details"
+            },
+            {
+              "type": "css",
+              "value": "#details"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      },
+      "output": "savings_balance",
+      "timeout_ms": 3000,
+      "risk": "READ"
+    }
+  ],
+  "success": {
+    "id": "balance_visible",
+    "target": {
+      "concept": "savings_balance",
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "status",
+          "name": "Savings balance"
+        },
+        {
+          "type": "relative",
+          "anchor": {
+            "type": "accessibility",
+            "role": "region",
+            "name": "Member details"
+          },
+          "role": "status",
+          "name": "Savings balance"
+        },
+        {
+          "type": "css",
+          "value": "#savings-balance"
+        }
+      ]
+    },
+    "expected": {
+      "kind": "visible"
+    }
+  },
+  "business_outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "No member exists for the supplied identifier.",
+      "condition": {
+        "id": "member_not_found_visible",
+        "target": {
+          "concept": "member_not_found",
+          "strategies": [
+            {
+              "type": "text",
+              "value": "Member not found"
+            },
+            {
+              "type": "css",
+              "value": "#not-found"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible"
+        }
+      }
+    }
+  ],
+  "compatibility": {
+    "application": "legacy-member-demo",
+    "application_version": "1",
+    "surface_contract": "1",
+    "required_features": [
+      "accessibility",
+      "label",
+      "text",
+      "relative",
+      "css"
+    ]
+  },
+  "safety": {
+    "approved_for_replay": true,
+    "max_risk": "REVERSIBLE_WRITE",
+    "notes": "Approval applies only to the local demo. Search is read-only; form fill can be repeated."
+  }
+}

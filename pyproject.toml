@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deterministic-ui"
+version = "0.1.0"
+description = "Provider-independent deterministic capability replay"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2,<3", "playwright>=1.45,<2"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10", "pytest-asyncio>=0.24,<2", "pyright>=1.1,<2"]
+
+[tool.pyright]
+include = ["src", "examples", "tests"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.12"
+extraPaths = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

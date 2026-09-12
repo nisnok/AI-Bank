@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Legacy member demo</title>
+<body><h1>Member lookup</h1>
+<label for="member-id">Member ID</label><input id="member-id" autocomplete="off">
+<button id="search">Search</button>
+<section id="details" role="region" aria-label="Member details" hidden>
+<h2>Member details</h2><p>Savings balance: <span id="savings-balance" role="status" aria-label="Savings balance"></span></p>
+</section><p id="not-found" hidden>Member not found</p>
+<script>
+const input = document.querySelector('#member-id');
+const details = document.querySelector('#details');
+const missing = document.querySelector('#not-found');
+input.addEventListener('input', () => { details.hidden = true; missing.hidden = true; });
+document.querySelector('#search').addEventListener('click', () => {
+  details.hidden = true; missing.hidden = true;
+  setTimeout(() => {
+    if (input.value === 'demo-001') {
+      document.querySelector('#savings-balance').textContent = '1234.56';
+      details.hidden = false;
+    } else { missing.hidden = false; }
+  }, 100);
+});
+</script></body></html>
