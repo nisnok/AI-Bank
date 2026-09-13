@@ -5,6 +5,7 @@ from pathlib import Path
 
 from deterministic_ui.models import (CapabilityArtifact, CapabilityLifecycle, Decision, Model,
                                      ResolutionResult, Risk, RunResult, Scalar, Status, Step)
+from deterministic_ui.evidence import EvidenceContext
 from deterministic_ui.policy import PolicyEngine, PolicyResult, RISK_ORDER
 from deterministic_ui.replay import ReplayEngine
 from deterministic_ui.surface import Surface
@@ -53,7 +54,8 @@ class CapabilityValidator:
         if source == inputs:
             return ValidationResult(artifact=artifact, different_inputs=False,
                                     code='DIFFERENT_INPUTS_REQUIRED', draft_digest=digest)
-        replay = await ReplayEngine(surface, policy=DraftValidationPolicy(artifact, inputs), evidence_root=evidence_root).execute(artifact, inputs)
+        replay = await ReplayEngine(surface, policy=DraftValidationPolicy(artifact, inputs), evidence_root=evidence_root,
+                                    evidence_context=EvidenceContext(purpose="VALIDATION")).execute(artifact, inputs)
         if replay.status != Status.SUCCESS:
             return ValidationResult(artifact=artifact, replay=replay, different_inputs=True,
                                     code='VALIDATION_FAILED', draft_digest=digest)

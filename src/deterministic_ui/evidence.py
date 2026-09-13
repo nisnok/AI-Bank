@@ -40,6 +40,7 @@ class EvidenceContext(Model):
     provider: str | None = None
     model: str | None = None
     goal: str | None = None
+    purpose: str | None = None
     tenant_id: str | None = None
     binding_version: str | None = None
     canonical_digest: str | None = None
@@ -74,6 +75,9 @@ class EvidenceWriter:
             "started_at": datetime.now(timezone.utc).isoformat(),
             "redaction": "all runtime values omitted; screenshots fully masked",
         }, indent=2))
+
+        if self.context.purpose:
+            self.emit("run_purpose",status=self.context.purpose)
 
     def _write(self, name: str, contents: str) -> None:
         with (self.directory / name).open("x", encoding="utf-8") as stream:
