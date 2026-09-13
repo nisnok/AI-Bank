@@ -1,0 +1,12 @@
+{
+  "repository": {
+    "status": "PASS",
+    "files_scanned": 455,
+    "findings": []
+  },
+  "evidence": {
+    "status": "PASS",
+    "files_scanned": 367,
+    "findings": []
+  }
+}

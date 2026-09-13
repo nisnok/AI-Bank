@@ -1,0 +1,21 @@
+{
+  "run_id": "378ac3811fb447f8b82b9bed3c362e2a",
+  "status": "HARD_FAILURE",
+  "code": "MODEL_FAILURE_LIMIT",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "model_calls": 6,
+  "usage": {
+    "input_tokens": 1398,
+    "output_tokens": 160,
+    "thinking_tokens": 404
+  },
+  "latency_ms": 83817.356,
+  "evidence_directory": "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live/discovery/378ac3811fb447f8b82b9bed3c362e2a",
+  "goal": "Find member [MEMBER_ID] and retrieve their savings balance.",
+  "outputs": {},
+  "trajectory": [
+    "trajectory-001.json",
+    "trajectory-003.json"
+  ]
+}

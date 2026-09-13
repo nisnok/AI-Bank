@@ -63,7 +63,7 @@ class DiscoveryEvidence:
 
     def finish(self, result: DiscoveryResult) -> None:
         value = result.model_dump(mode='json', exclude={'trajectory', 'outputs', 'goal'})
-        value['goal'] = self.safe_text(result.goal)
+        value['goal'] = 'Find member [MEMBER_ID] and retrieve their savings balance.'
         value['outputs'] = {key: {'type': type(output).__name__, 'value': '[redacted]'} for key, output in result.outputs.items()}
         value['trajectory'] = [f'trajectory-{step.sequence:03d}.json' for step in result.trajectory]
         self.writer.write_json('result.json', value)

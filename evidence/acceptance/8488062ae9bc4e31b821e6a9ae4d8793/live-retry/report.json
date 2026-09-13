@@ -1,0 +1,37 @@
+{
+  "claims": {
+    "discovery": {
+      "status": "PASS",
+      "evidence": "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/discovery/eabe5b06931b4f8cba2266ef8ae1ccfb",
+      "model_calls": 4,
+      "provider": "gemini",
+      "model": "gemini-3.5-flash"
+    },
+    "compilation": {
+      "status": "PASS",
+      "evidence": "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/artifacts/get_member_balance/1.0.0/draft.json",
+      "discovery_run_id": "eabe5b06931b4f8cba2266ef8ae1ccfb",
+      "parameterized": true,
+      "observed_strategies_verified": true,
+      "immutable": true
+    },
+    "zero_model_replay": {
+      "status": "PASS",
+      "evidence": "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/validation/33f1407521cc4aec9dc205106d43d013",
+      "different_member": true,
+      "identity_verified": true,
+      "balance_verified": true,
+      "model_calls": 0,
+      "model_credentials_present": false,
+      "loaded_model_modules": [],
+      "model_import_guard": "enabled"
+    },
+    "business_outcome": {
+      "status": "PASS",
+      "evidence": "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/business/de9ca6c7d970452da70317f8c5fdd68d",
+      "business_code": "MEMBER_NOT_FOUND",
+      "infrastructure_failure": false,
+      "model_calls": 0
+    }
+  }
+}

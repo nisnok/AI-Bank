@@ -51,13 +51,13 @@ async def run(args):
                 print(f"Operator panel: {panel.url}", flush=True)
                 print(f"Retained application session: {controller.session_id}", flush=True)
                 replay = ReplayEngine(controller.automation, policy=policy, handoff=manager,
-                                      evidence_root=Path("evidence/handoff"))
+                                      evidence_root=args.evidence_root)
                 task = asyncio.create_task(replay.execute(artifact, {"member_id":"48321", "initial_deposit":"500.00"}))
                 if args.scripted:
                     await scripted_operator(manager)
                 result = await task
                 print(f"Result: {result.status}; human_action_count={result.human_action_count}; model_calls={result.model_calls}", flush=True)
-                print(f"Evidence: evidence/handoff/{result.run_id}", flush=True)
+                print(f"Evidence: {args.evidence_root}/{result.run_id}", flush=True)
                 with server.lock:
                     sessions = list(server.sessions.values())
                     assert len(sessions) == 1
@@ -75,5 +75,6 @@ async def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/handoff"))
     parser.add_argument("--scripted", action="store_true", help="Explicitly labeled automated operator acceptance driver")
     raise SystemExit(asyncio.run(run(parser.parse_args())))

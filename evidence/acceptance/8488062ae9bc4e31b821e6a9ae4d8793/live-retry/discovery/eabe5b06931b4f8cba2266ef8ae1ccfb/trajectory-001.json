@@ -1,0 +1,193 @@
+{
+  "sequence": 1,
+  "actor": "MODEL",
+  "timestamp": "2026-09-13T18:05:10.094447+00:00",
+  "before": {
+    "path": "/",
+    "title": "[redacted]",
+    "visible_text": "[redacted]",
+    "elements": [
+      {
+        "id": "e0",
+        "role": "textbox",
+        "name": "Member ID",
+        "kind": "input",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": "[redacted]"
+      },
+      {
+        "id": "e1",
+        "role": "button",
+        "name": "Search",
+        "kind": "button",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e2",
+        "role": "link",
+        "name": "[redacted]",
+        "kind": "a",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e3",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e4",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e5",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      }
+    ],
+    "dialog_count": 0,
+    "frame_count": 1
+  },
+  "decision": {
+    "action": "FILL",
+    "target_id": "e0",
+    "target_description": "[redacted]",
+    "input_binding": "member_id",
+    "output": null,
+    "expected_text": null,
+    "reason": "Model proposed FILL on an observed UI element."
+  },
+  "semantic_target": {
+    "concept": "observed_0",
+    "strategies": [
+      {
+        "type": "accessibility",
+        "role": "textbox",
+        "name": "Member ID"
+      },
+      {
+        "type": "label",
+        "value": "Member ID"
+      },
+      {
+        "type": "css",
+        "value": "[redacted]"
+      }
+    ]
+  },
+  "resolution": {
+    "succeeded": true,
+    "strategy": "accessibility",
+    "quality": "semantic",
+    "matches": 1,
+    "code": "RESOLVED",
+    "attempts": [
+      {
+        "strategy": "accessibility",
+        "index": 0,
+        "matches": 1,
+        "diagnostic": "unique"
+      }
+    ]
+  },
+  "attempted": true,
+  "executed": true,
+  "verified": true,
+  "compilation_eligible": true,
+  "after": {
+    "path": "/",
+    "title": "[redacted]",
+    "visible_text": "[redacted]",
+    "elements": [
+      {
+        "id": "e0",
+        "role": "textbox",
+        "name": "Member ID",
+        "kind": "input",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": "[redacted]"
+      },
+      {
+        "id": "e1",
+        "role": "button",
+        "name": "Search",
+        "kind": "button",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e2",
+        "role": "link",
+        "name": "[redacted]",
+        "kind": "a",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e3",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e4",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      },
+      {
+        "id": "e5",
+        "role": "status",
+        "name": "[redacted]",
+        "kind": "span",
+        "enabled": true,
+        "visible": true,
+        "text": "[redacted]",
+        "value": null
+      }
+    ],
+    "dialog_count": 0,
+    "frame_count": 1
+  },
+  "postcondition": "observed_effect",
+  "status": "VERIFIED",
+  "duration_ms": 87.656,
+  "prior_failures": 0
+}

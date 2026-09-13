@@ -27,7 +27,7 @@ async def run(args):
     canonical=CapabilityArtifact.model_validate_json(original)
     bindings={tenant:TenantBinding.model_validate_json(Path(f"tenant_bindings/{tenant}/1.0.0.json").read_text())
               for tenant in ("bank_a","bank_b")}
-    evaluation=Path("evidence/reliability")/uuid4().hex
+    evaluation=args.evidence_root/uuid4().hex
     evaluation.mkdir(parents=True,exist_ok=False)
     thresholds=Thresholds()
     snapshots=[]
@@ -100,5 +100,6 @@ async def run(args):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/reliability"))
     parser.add_argument("--include-failures",action="store_true",help="Add six genuine ambiguity/incompatibility runs")
     raise SystemExit(asyncio.run(run(parser.parse_args())))

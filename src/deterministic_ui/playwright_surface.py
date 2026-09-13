@@ -4,11 +4,12 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from time import monotonic
 from uuid import uuid4
-from urllib.parse import urlsplit
 
 from playwright.async_api import ElementHandle, Error, Locator, Page, TimeoutError as BrowserTimeout, async_playwright
 
 from .models import Anchor, Expectation, FrameInfo, MatchSet, Observation, ObservedElement, SemanticTarget, Strategy, TargetRef
+from .origins import OriginPolicy
+from .screenshot import ScreenshotManifest, ScreenshotPolicy
 from .surface import Surface, SurfaceError, SurfaceTimeout
 
 
@@ -25,24 +26,49 @@ async def _translate_errors():
 class PlaywrightSurface(Surface):
     features = frozenset({"accessibility", "label", "text", "relative", "css", "select"})
 
-    def __init__(self, page: Page):
+    def __init__(self, page: Page, origins: OriginPolicy | None = None,
+                 screenshot_policy: ScreenshotPolicy = ScreenshotPolicy.SELECTIVE_REDACTION):
         # Internal use only; public callers use open(), which yields a Surface.
         self._page = page
+        self._origins = origins or OriginPolicy.for_url(page.url)
+        self._origin_blocked = False
+        self.screenshot_policy = screenshot_policy
         self._handles: dict[str, ElementHandle] = {}
 
     @classmethod
     @asynccontextmanager
-    async def open(cls, url: str, *, headless: bool = True):
+    async def open(cls, url: str, *, headless: bool = True,
+                   allowed_origins: frozenset[str] | None = None,
+                   screenshot_policy: ScreenshotPolicy = ScreenshotPolicy.SELECTIVE_REDACTION):
+        origins = OriginPolicy.for_url(url, allowed_origins)
         async with _translate_errors():
             async with async_playwright() as provider:
                 browser = await provider.chromium.launch(headless=headless)
                 try:
-                    context = await browser.new_context()
+                    context = await browser.new_context(service_workers="block", accept_downloads=False)
                     page = await context.new_page()
+                    surface = cls(page, origins, screenshot_policy)
+
+                    async def guard(route):
+                        # Context-wide routing covers frames, popups, redirects and fetch.
+                        if not origins.permits(route.request.url):
+                            surface._origin_blocked = True
+                            await route.abort("blockedbyclient")
+                        else:
+                            await route.continue_()
+
+                    await context.route("**/*", guard)
+                    # WebSockets are not part of the Surface contract.
+                    await context.route_web_socket("**/*", lambda socket: socket.close())
                     await page.goto(url, wait_until="domcontentloaded")
-                    yield cls(page)
+                    surface._check_origin()
+                    yield surface
                 finally:
                     await browser.close()
+
+    def _check_origin(self):
+        if self._origin_blocked or not self._origins.permits(self._page.url):
+            raise SurfaceError("ORIGIN_NOT_ALLOWED")
 
     def _locator(self, strategy: Anchor, root: Page | Locator | None = None) -> Locator:
         root = self._page if root is None else root
@@ -67,6 +93,7 @@ class PlaywrightSurface(Surface):
         return visible
 
     async def query(self, strategy: Strategy) -> MatchSet:
+        self._check_origin()
         async with _translate_errors():
             anchor: Locator | None = None
             if strategy.type == "relative":
@@ -106,6 +133,7 @@ class PlaywrightSurface(Surface):
             raise SurfaceError("Unknown or expired target") from None
 
     async def observe(self, target: TargetRef | None = None) -> Observation:
+        self._check_origin()
         async with _translate_errors():
             if target is None:
                 return await self._normalized_observation()
@@ -163,18 +191,23 @@ class PlaywrightSurface(Surface):
                            frames=[FrameInfo.model_validate(frame) for frame in snapshot['frames']])
 
     async def select(self, target: TargetRef, value: str, timeout_ms: int) -> None:
+        self._check_origin()
         async with _translate_errors():
             await self._handle(target).select_option(value=value, timeout=timeout_ms)
 
     async def click(self, target: TargetRef, timeout_ms: int) -> None:
+        self._check_origin()
         async with _translate_errors():
             await self._handle(target).click(timeout=timeout_ms)
+            self._check_origin()
 
     async def fill(self, target: TargetRef, value: str, timeout_ms: int) -> None:
+        self._check_origin()
         async with _translate_errors():
             await self._handle(target).fill(value, timeout=timeout_ms)
 
     async def extract(self, target: TargetRef, timeout_ms: int) -> str:
+        self._check_origin()
         async with _translate_errors():
             try:
                 async with asyncio.timeout(timeout_ms / 1000):
@@ -197,15 +230,62 @@ class PlaywrightSurface(Surface):
                 return False
             await asyncio.sleep(min(0.05, remaining))
 
-    async def screenshot(self, path: Path) -> None:
+    async def screenshot(self, path: Path) -> ScreenshotManifest:
+        self._check_origin()
+        policy = self.screenshot_policy
+        if policy == ScreenshotPolicy.DISABLED:
+            return ScreenshotManifest(policy=policy)
         async with _translate_errors():
-            # Conservative default: suppress every UI value, including financial data,
-            # images, canvas, frames and CSS-generated text. No raw image is written.
-            await self._page.screenshot(
-                path=str(path), full_page=False,
+            if policy == ScreenshotPolicy.SELECTIVE_REDACTION:
+                before = await self._redaction_inventory()
+                if before["valid"]:
+                    # Masks and stylesheet are applied by Chromium before encoding. No
+                    # unmasked path is ever passed to screenshot(). Broad cell/input masks
+                    # also cover newly inserted values during normal simulator transitions.
+                    selector = '[data-sensitive], input, textarea, select, [contenteditable], td, iframe, canvas, img, video'
+                    safe = await self._page.screenshot(full_page=False,
+                        mask=[self._page.locator(selector)], mask_color="#263445",
+                        animations="disabled", caret="hide",
+                        style=selector + ' { color: transparent !important; text-shadow: none !important; }')
+                    after = await self._redaction_inventory()
+                    if after == before:
+                        path.write_bytes(safe)
+                        return ScreenshotManifest(policy=policy, masked_regions=before["count"],
+                                                  categories=before["categories"])
+                # Unknown profile, missing required category, or a changed DOM: discard
+                # the in-memory image and capture a full mask. Never persist raw pixels.
+            safe = await self._page.screenshot(full_page=False,
                 mask=[self._page.locator("html")], mask_color="#000000",
-                style="*, *::before, *::after { visibility: hidden !important; } html { background: #000 !important; }",
-            )
+                style="*, *::before, *::after { visibility: hidden !important; } html { background: #000 !important; }")
+            path.write_bytes(safe)
+            fallback = policy == ScreenshotPolicy.SELECTIVE_REDACTION
+            return ScreenshotManifest(policy=policy, masked_regions=1, categories=["FULL_PAGE"],
+                fallback_full_mask=fallback, reason="REDACTION_FALLBACK_FULL_MASK" if fallback else None)
+
+    async def _redaction_inventory(self):
+        return await self._page.evaluate("""() => {
+            const root = document.querySelector('main > [data-evidence-state]');
+            const required = {
+                SEARCH: [], DETAILS: ['MEMBER_ID', 'MEMBER_NAME', 'BALANCE'],
+                OPENING: ['MEMBER_ID', 'DEPOSIT'], REVIEW: ['MEMBER_ID', 'DEPOSIT'],
+                CONFIRMED: ['MEMBER_ID', 'DEPOSIT', 'ACCOUNT_NUMBER'],
+                INVALID_DEPOSIT: ['MEMBER_ID', 'DEPOSIT'], LOADING: [], ERROR: [],
+                MEMBER_NOT_FOUND: [], MEMBER_INELIGIBLE: [], SESSION_EXPIRED: [],
+                PERMISSION_DENIED: [], INVALID_STATE: []
+            };
+            const known = ['MEMBER_ID','MEMBER_NAME','BALANCE','ACCOUNT_NUMBER','DEPOSIT','SECRET'];
+            const nodes = [...document.querySelectorAll('[data-sensitive], input, textarea, select, [contenteditable], td, iframe, canvas, img, video')];
+            const visible = nodes.filter(el => !!(el.getBoundingClientRect().width && el.getBoundingClientRect().height));
+            const categories = [...new Set(visible.map(el => known.includes(el.dataset.sensitive) ? el.dataset.sensitive :
+                ['INPUT','TEXTAREA','SELECT'].includes(el.tagName) || el.hasAttribute('contenteditable') ? 'SENSITIVE_INPUT' :
+                el.tagName === 'TD' ? 'TABLE_VALUE' : 'EMBEDDED_CONTENT'))].sort();
+            const state = root?.dataset.evidenceState;
+            const valid = document.body?.dataset.evidenceProfile === 'simulator-v1' &&
+                document.querySelectorAll('main > [data-evidence-state]').length === 1 &&
+                Object.hasOwn(required, state || '') && required[state].every(cat => categories.includes(cat));
+            // HTML used only in memory to detect changes around capture, never persisted.
+            return {valid, count: visible.length, categories, state, revision: document.body?.innerHTML.replace(/ style=""/g, '')};
+        }""")
 
     async def release_targets(self) -> None:
         handles, self._handles = self._handles, {}

@@ -1,0 +1,10 @@
+{
+  "policy": "SELECTIVE_REDACTION",
+  "masked_regions": 2,
+  "categories": [
+    "EMBEDDED_CONTENT",
+    "MEMBER_ID"
+  ],
+  "fallback_full_mask": false,
+  "reason": null
+}

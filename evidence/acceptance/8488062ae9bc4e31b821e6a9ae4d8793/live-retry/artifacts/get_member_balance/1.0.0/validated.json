@@ -1,0 +1,299 @@
+{
+  "schema_version": "1.0",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "name": "Get verified member savings balance",
+  "description": "Compiled from verified discovery actions; validates member identity before reading savings.",
+  "inputs": {
+    "member_id": {
+      "type": "string",
+      "required": true,
+      "description": "",
+      "sensitive": true
+    }
+  },
+  "outputs": {
+    "savings_balance": {
+      "type": "decimal",
+      "required": true,
+      "description": "",
+      "sensitive": true
+    }
+  },
+  "steps": [
+    {
+      "id": "discovered_1",
+      "action": "fill",
+      "target": {
+        "concept": "observed_0",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "textbox",
+            "name": "Member ID"
+          },
+          {
+            "type": "label",
+            "value": "Member ID"
+          },
+          {
+            "type": "css",
+            "value": "#member-key"
+          }
+        ]
+      },
+      "input": "{{ inputs.member_id }}",
+      "output": null,
+      "precondition": {
+        "id": "input_visible",
+        "target": {
+          "concept": "observed_0",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "textbox",
+              "name": "Member ID"
+            },
+            {
+              "type": "label",
+              "value": "Member ID"
+            },
+            {
+              "type": "css",
+              "value": "#member-key"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible",
+          "value": null
+        }
+      },
+      "postcondition": {
+        "id": "input_value_verified",
+        "target": {
+          "concept": "observed_0",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "textbox",
+              "name": "Member ID"
+            },
+            {
+              "type": "label",
+              "value": "Member ID"
+            },
+            {
+              "type": "css",
+              "value": "#member-key"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "value_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "timeout_ms": 3000,
+      "retry": {
+        "max_attempts": 1,
+        "delay_ms": 100,
+        "safe_to_repeat": false
+      },
+      "risk": "REVERSIBLE_WRITE"
+    },
+    {
+      "id": "discovered_2",
+      "action": "click",
+      "target": {
+        "concept": "observed_1",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "button",
+            "name": "Search"
+          },
+          {
+            "type": "text",
+            "value": "Search"
+          }
+        ]
+      },
+      "input": null,
+      "output": null,
+      "precondition": {
+        "id": "search_visible",
+        "target": {
+          "concept": "observed_1",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "button",
+              "name": "Search"
+            },
+            {
+              "type": "text",
+              "value": "Search"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible",
+          "value": null
+        }
+      },
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "observed_0",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "timeout_ms": 3000,
+      "retry": {
+        "max_attempts": 1,
+        "delay_ms": 100,
+        "safe_to_repeat": false
+      },
+      "risk": "READ"
+    },
+    {
+      "id": "discovered_3",
+      "action": "extract",
+      "target": {
+        "concept": "observed_1",
+        "strategies": [
+          {
+            "type": "accessibility",
+            "role": "status",
+            "name": "Savings balance"
+          }
+        ]
+      },
+      "input": null,
+      "output": "savings_balance",
+      "precondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "observed_0",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "postcondition": {
+        "id": "correct_member_loaded",
+        "target": {
+          "concept": "observed_0",
+          "strategies": [
+            {
+              "type": "accessibility",
+              "role": "status",
+              "name": "Loaded member identifier"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "text_equals",
+          "value": "{{ inputs.member_id }}"
+        }
+      },
+      "timeout_ms": 3000,
+      "retry": {
+        "max_attempts": 1,
+        "delay_ms": 100,
+        "safe_to_repeat": false
+      },
+      "risk": "READ"
+    }
+  ],
+  "success": {
+    "id": "correct_member_loaded",
+    "target": {
+      "concept": "observed_0",
+      "strategies": [
+        {
+          "type": "accessibility",
+          "role": "status",
+          "name": "Loaded member identifier"
+        }
+      ]
+    },
+    "expected": {
+      "kind": "text_equals",
+      "value": "{{ inputs.member_id }}"
+    }
+  },
+  "business_outcomes": [
+    {
+      "code": "MEMBER_NOT_FOUND",
+      "description": "The simulator has no member for the supplied identifier.",
+      "condition": {
+        "id": "member_not_found",
+        "target": {
+          "concept": "member_not_found",
+          "strategies": [
+            {
+              "type": "text",
+              "value": "Member not found"
+            }
+          ]
+        },
+        "expected": {
+          "kind": "visible",
+          "value": null
+        }
+      }
+    }
+  ],
+  "compatibility": {
+    "application": "legacy-bank-simulator",
+    "application_version": "1",
+    "surface_contract": "1",
+    "required_features": [
+      "accessibility",
+      "label",
+      "text",
+      "css"
+    ]
+  },
+  "safety": {
+    "approved_for_replay": false,
+    "max_risk": "REVERSIBLE_WRITE",
+    "notes": "Draft requires scoped deterministic validation; no human approval is asserted."
+  },
+  "lifecycle": "VALIDATED",
+  "provenance": {
+    "generated_from": "discovery",
+    "discovery_run_id": "eabe5b06931b4f8cba2266ef8ae1ccfb",
+    "discovery_timestamp": "2026-09-13T18:05:10.094447+00:00",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash",
+    "compiler_version": "1.0.0",
+    "source_application": "legacy-bank-simulator",
+    "source_sequences": [
+      1,
+      2,
+      3
+    ],
+    "validation_run_id": "33f1407521cc4aec9dc205106d43d013"
+  }
+}

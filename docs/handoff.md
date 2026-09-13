@@ -113,7 +113,7 @@ Replay imports only its abstract handoff continuation port and domain services. 
 - Only configured resume contracts are supported. Unknown states stay paused; complex cross-step advancement and output recovery are deferred.
 - Resume conditions are separate UI reads, not an atomic financial transaction. The simulator is controlled and fictional; production freshness/reconciliation would need stronger application guarantees.
 - Continuations are in memory. Process loss closes the browser and requires reconciliation; no durable resume, crash recovery, or persistent session service is implemented.
-- Evidence is file-backed and screenshots are fully masked. A browser failure during an action may leave only its pre-dispatch intent event.
+- Evidence is file-backed; new simulator screenshots use selective masking with conservative fallback. A browser failure during an action may leave only its pre-dispatch intent event.
 - The automated acceptance run proves the mechanism; a person can exercise the interactive command above. No physical human participation is claimed.
 
 [Milestone 6](tenants.md) adds locator-only tenant reuse separately. Capability health, automatic healing, LLM repair, and distributed services remain out of scope.

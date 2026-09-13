@@ -1,0 +1,21 @@
+{
+  "combined_suite": {
+    "status": "PASS",
+    "summary": "244 passed in 97.20s (0:01:37)",
+    "command": "RUN_BROWSER_TESTS=1 PLAYWRIGHT_BROWSERS_PATH=\"$PWD/.playwright\" .venv/bin/python -m pytest -q"
+  },
+  "normal_suite": {
+    "status": "PASS",
+    "passed": 208,
+    "browser_skipped": 36
+  },
+  "browser_suite": {
+    "status": "PASS",
+    "passed": 36
+  },
+  "pyright": {
+    "status": "PASS",
+    "errors": 0,
+    "warnings": 0
+  }
+}

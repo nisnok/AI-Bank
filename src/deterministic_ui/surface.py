@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+from .screenshot import ScreenshotManifest
 from .models import Expectation, MatchSet, Observation, Strategy, TargetRef
 
 
@@ -36,7 +37,7 @@ class Surface(ABC):
     async def wait(self, target: TargetRef, expected: Expectation, timeout_ms: int) -> bool: ...
 
     @abstractmethod
-    async def screenshot(self, path: Path) -> None:
+    async def screenshot(self, path: Path) -> ScreenshotManifest | None:
         """Write a privacy-safe screenshot; never capture unmasked UI content."""
 
     async def release_targets(self) -> None:

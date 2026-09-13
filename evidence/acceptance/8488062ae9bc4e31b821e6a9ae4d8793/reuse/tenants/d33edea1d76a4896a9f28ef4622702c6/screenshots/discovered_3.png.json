@@ -1,0 +1,13 @@
+{
+  "policy": "SELECTIVE_REDACTION",
+  "masked_regions": 7,
+  "categories": [
+    "BALANCE",
+    "EMBEDDED_CONTENT",
+    "MEMBER_ID",
+    "MEMBER_NAME",
+    "TABLE_VALUE"
+  ],
+  "fallback_full_mask": false,
+  "reason": null
+}

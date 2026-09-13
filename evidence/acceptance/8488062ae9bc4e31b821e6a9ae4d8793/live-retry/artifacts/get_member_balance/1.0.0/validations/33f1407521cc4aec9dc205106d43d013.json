@@ -1,0 +1,13 @@
+{
+  "code": "VALIDATED",
+  "different_inputs": true,
+  "draft_digest": "f63599587a8e92c163b362c39e0b300d929f5bc48882f5a96908697a15d968c9",
+  "replay_run_id": "33f1407521cc4aec9dc205106d43d013",
+  "replay_status": "SUCCESS",
+  "model_calls": 0,
+  "evidence_refs": [
+    "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/validation/33f1407521cc4aec9dc205106d43d013/metadata.json",
+    "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/validation/33f1407521cc4aec9dc205106d43d013/events.jsonl",
+    "evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/validation/33f1407521cc4aec9dc205106d43d013/result.json"
+  ]
+}

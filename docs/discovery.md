@@ -7,7 +7,7 @@ Discovery asks a model to choose individual UI actions against the live simulato
 Install the existing dependencies and Chromium as described in the README. Set credentials in the environment or in the ignored root `.env`:
 
 ```dotenv
-GEMINI_API_KEY=your_actual_key
+GEMINI_API_KEY=<your-key>
 GEMINI_MODEL=gemini-3.5-flash
 ```
 
@@ -101,11 +101,11 @@ Trajectory entries contain the decision, semantic target, actual resolution stra
 
 Only successful whole-run trajectories are accepted by the [Milestone 4 compiler](compiler.md). An individual eligible step is not blanket approval for compilation.
 
-Full typed observations, decisions, semantic targets, trajectory, goal, and outputs remain in the returned in-memory result. Disk records omit runtime values and raw visible text, redact unknown labels, omit free-form model reasoning, and record a short generic operational reason. Screenshots remain fully masked. Provider responses and thought parts are never persisted. The logged goal substitutes the member identifier; output records show their type and a redaction marker. Consequently, disk evidence is auditable but is not a lossless compiler input; Milestone 4 consumes the in-memory trajectory and excluded-from-serialization invocation bindings.
+Full typed observations, decisions, semantic targets, trajectory, goal, and outputs remain in the returned in-memory result. Disk records omit runtime values and raw visible text, redact unknown labels, omit free-form model reasoning, and record a short generic operational reason. Historical screenshots are fully masked; new simulator captures use selective redaction with a full-mask fallback (see [acceptance](acceptance.md)). Provider responses and thought parts are never persisted. The logged goal is a fixed redacted workflow description; output records show their type and a redaction marker. Consequently, disk evidence is auditable but is not a lossless compiler input; Milestone 4 consumes the in-memory trajectory and excluded-from-serialization invocation bindings.
 
 Final results include provider, configured model name, total model-call attempts, token usage from successful structured replies, and total latency. HTTP errors do not expose token usage. Deterministic `RunResult` now explicitly has `model_calls=0`; ReplayEngine still imports no model component.
 
-Existing tracked replay evidence is untouched. Only new `evidence/discovery/` is ignored, alongside `.env`.
+Existing tracked replay evidence is untouched. New generated runs are ignored, alongside `.env`; the curated `evidence/acceptance/` archive is explicitly retained.
 
 ## Tests and files
 

@@ -65,7 +65,7 @@ class LeasedSurface(Surface):
         return await self._controller.invoke(self._actor, "wait", target, expected, timeout_ms)
 
     async def screenshot(self, path):
-        await self._controller.invoke(self._actor, "screenshot", path)
+        return await self._controller.invoke(self._actor, "screenshot", path)
 
     async def release_targets(self):
         await self._controller.invoke(self._actor, "release_targets")

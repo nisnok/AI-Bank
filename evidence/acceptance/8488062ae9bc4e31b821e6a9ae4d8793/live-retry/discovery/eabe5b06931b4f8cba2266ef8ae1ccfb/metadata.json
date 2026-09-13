@@ -1,0 +1,14 @@
+{
+  "run_id": "eabe5b06931b4f8cba2266ef8ae1ccfb",
+  "capability_id": null,
+  "capability_version": null,
+  "schema_version": null,
+  "execution_mode": "llm_discovery",
+  "actor": "MODEL",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "goal": "Find member [MEMBER_ID] and retrieve their savings balance.",
+  "model_calls_at_start": 0,
+  "started_at": "2026-09-13T18:05:07.333528+00:00",
+  "redaction": "runtime values omitted; screenshot policy recorded in per-image manifests"
+}

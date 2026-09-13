@@ -2,7 +2,7 @@
 
 ## Run the complete loop
 
-Install dependencies and Chromium using the root README. Put `GEMINI_API_KEY=your_actual_key` in the ignored root `.env`; `GEMINI_MODEL` is optional. Never commit the key.
+Install dependencies and Chromium using the root README. Put `GEMINI_API_KEY=<your-key>` in the ignored root `.env`; `GEMINI_MODEL` is optional. Never commit the key.
 
 ```sh
 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/discover_and_compile.py \
@@ -77,7 +77,7 @@ Evidence and artifact paths:
 - Validation replay: `evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/`
 - Negative replay: `evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/`
 
-Discovery remains gitignored and exists locally; rerunning produces a new bundle. Compilation/replay evidence and generated artifacts can be retained with the repository. All screenshots follow the existing fully masked policy. Persisted trajectories are privacy projections, not lossless compiler inputs; compilation uses the actual in-memory result.
+Discovery remains gitignored and exists locally; rerunning produces a new bundle. Compilation/replay evidence and generated artifacts can be retained with the repository. Historical captures use full masking; new captures follow the selective simulator policy documented in [acceptance](acceptance.md). Persisted trajectories are privacy projections, not lossless compiler inputs; compilation uses the actual in-memory result.
 
 ## Credible zero-model separation
 

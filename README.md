@@ -88,6 +88,18 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_reliab
 
 The genuine reliability demonstration kept Bank A HEALTHY while Bank B became DEGRADED with 100% completion, 16.7% action-target fallback usage, and an increasing-fallback trend. The separate health layer recomputes tenant assessments from evidence; it never rewrites the capability or automatically blocks degraded reads. See [health thresholds, metrics, and evidence](docs/health.md).
 
+## Acceptance and security audit
+
+The [reviewer acceptance report](docs/acceptance.md) records actual results for discovery, compilation, isolated model-free replay, business outcomes, recovery, handoff, tenant reuse, drift, health, and privacy. It includes the retained provider failure and successful fresh attempt, security findings, and selected screenshots.
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py
+# Use GEMINI_API_KEY for actual Gemini discovery
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py --live-discovery
+```
+
+The browser adapter restricts origins and defaults to selective simulator redaction, with full masking when coverage cannot be certified. New bulk evidence is gitignored; [curated acceptance evidence](evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/README.md) preserves representative proofs. No mock test is reported as real Gemini discovery.
+
 ## Setup and run
 
 ```sh
@@ -148,7 +160,7 @@ Domain models import only Python's standard library and Pydantic.
 
 Condition expectations also accept `{{ inputs.member_id }}` references. `bind_conditions` substitutes validated inputs into a run-local copy; the stored artifact and evidence never receive the bound values. This allows the simulator capabilities to verify record identity, not just the presence of a result panel.
 
-`EvidenceWriter` creates `evidence/<run_id>/{metadata.json,events.jsonl,result.json,screenshots/}`. Events include run/step IDs, mode, actor, strategy attempts, match counts, quality, policy decisions, timings, retries, and status. It writes no runtime input/output values, UI text, exception messages, selectors, or templates. Typed outputs are returned in memory; persisted `result.json` deliberately has an empty outputs map. All screenshots are fully masked before writing. Screenshot failure records `CAPTURE_UNAVAILABLE` without invalidating an otherwise successful operation. Failure to write required evidence stops execution; if storage itself is unavailable, a structured `EVIDENCE_UNAVAILABLE` result is returned and complete evidence cannot be guaranteed.
+`EvidenceWriter` creates `evidence/<run_id>/{metadata.json,events.jsonl,result.json,screenshots/}`. Events include run/step IDs, mode, actor, strategy attempts, match counts, quality, policy decisions, timings, retries, and status. It writes no runtime input/output values, UI text, exception messages, selectors, or templates. Typed outputs are returned in memory; persisted `result.json` deliberately has an empty outputs map. Simulator screenshots selectively mask sensitive fields before capture; unknown pages fall back to full masking. Per-image JSON manifests record coverage and fallback reasons. Screenshot failure records `CAPTURE_UNAVAILABLE` without invalidating an otherwise successful operation. Failure to write required evidence stops execution; if storage itself is unavailable, a structured `EVIDENCE_UNAVAILABLE` result is returned and complete evidence cannot be guaranteed.
 
 ## Result semantics
 
@@ -168,9 +180,9 @@ Failures contain run/step IDs, a code, expected condition ID, a redacted observe
 
 ## Deterministic replay limits and next-milestone review
 
-- This is an in-process executor for trusted artifacts and an already authorized UI session. Artifact signing, approval workflows, authentication, navigation/origin restrictions, and real legacy application qualification are not implemented. Application/version metadata is descriptive; Surface contract version and required features are enforced.
+- This is an in-process executor for trusted artifacts and an already authorized UI session. Artifact signing, production approval/authentication workflows, and real legacy application qualification are not implemented. The browser adapter now enforces an exact-origin allowlist for the local demo. Application/version metadata is descriptive; Surface contract version and required features are enforced.
 - The adapter covers the current page and uniquely scoped descendants. Multi-window workflows, special iframe bindings, and desktop support are not implemented. Exact matching and plain decimal extraction are conservative.
-- Fully masked screenshots preserve privacy but provide little visual diagnostic value. Review an application-specific redaction design before enabling informative captures. Artifact identifiers and condition IDs must themselves contain no secrets. Runtime values are excluded regardless of `sensitive` metadata.
+- Selective redaction is limited to the trusted simulator privacy profile. Other applications need their own reviewed coverage contract and otherwise use full masking. Artifact identifiers and condition IDs must themselves contain no secrets. Runtime values are excluded regardless of `sensitive` metadata.
 - JSONL writes are synchronous, append-only within a run, and permission-restricted; no crash recovery or durable transaction is promised. Process termination/cancellation can leave incomplete evidence. Failed operations may already have affected the UI.
 - Repeated condition checks can create many locator events/handles until the step ends. For long-running sessions, review handle lifecycle and polling volume. Full run output payloads are intentionally not persisted.
 - Artifacts must describe the expected initial UI state and use preconditions where required. Stale business markers or a stale details panel can misclassify a run unless the workflow clears them or checks member identity. The local demo clears results on input. Review record-identity checkpoints carefully before using a real financial application.

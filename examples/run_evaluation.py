@@ -22,7 +22,7 @@ async def run(args):
               for tenant in ("bank_a","bank_b")}
     selected=[s for s in SCENARIOS if args.scenario is None or s.id==args.scenario]
     with running_server() as server:
-        runner=EvaluationRunner(canonical,bindings,server.url,PlaywrightSurface.open)
+        runner=EvaluationRunner(canonical,bindings,server.url,PlaywrightSurface.open, evidence_root=args.evidence_root)
         summary,folder=await runner.execute(selected,repeats=args.repeats)
     if any(name.partition(".")[0] in BLOCKED for name in sys.modules):
         raise RuntimeError("MODEL_IMPORT_DETECTED")
@@ -44,6 +44,7 @@ async def run(args):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/evals"))
     parser.add_argument("--repeats",type=int,default=1)
     parser.add_argument("--scenario",choices=[s.id for s in SCENARIOS])
     raise SystemExit(asyncio.run(run(parser.parse_args())))

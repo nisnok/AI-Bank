@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "run_id": "0584bc159c734f4698c5c031b54faa16",
+  "result": "RECOVERABLE_ERROR",
+  "retry_count": 1,
+  "retried_step": "verify_member",
+  "safe_to_repeat": true,
+  "search_submissions": 1,
+  "model_calls": 0
+}

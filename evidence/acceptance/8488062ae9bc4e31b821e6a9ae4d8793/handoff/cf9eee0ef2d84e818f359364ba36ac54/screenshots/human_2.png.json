@@ -1,0 +1,13 @@
+{
+  "policy": "SELECTIVE_REDACTION",
+  "masked_regions": 6,
+  "categories": [
+    "ACCOUNT_NUMBER",
+    "DEPOSIT",
+    "EMBEDDED_CONTENT",
+    "MEMBER_ID",
+    "TABLE_VALUE"
+  ],
+  "fallback_full_mask": false,
+  "reason": null
+}

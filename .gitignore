@@ -5,3 +5,8 @@ __pycache__/
 .playwright/
 .env
 evidence/discovery/
+
+# Local generated runs stay local. Existing tracked historical evidence is retained.
+/evidence/*
+!/evidence/acceptance/
+/health/

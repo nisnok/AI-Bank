@@ -126,7 +126,7 @@ All seven reference the same canonical digest and report zero model calls. Bank 
 
 The label-drift run records primary failure, successful CSS fallback at depth 2, one match, css_fallback quality, and final SUCCESS. Its three fallback signals correspond to the input visibility check, fill target resolution, and value postcondition.
 
-Browser tests independently assert the returned balance is Decimal("807.20") for member 83921 on both tenants and safe drift variants. Runtime balances are intentionally omitted from persisted result outputs. Screenshots retain the existing full masking.
+Browser tests independently assert the returned balance is Decimal("807.20") for member 83921 on both tenants and safe drift variants. Runtime balances are intentionally omitted from persisted result outputs. These historical screenshots retain full masking; new simulator captures use selective redaction.
 
 The acceptance bundle predates the additional observed-product/tenant fields for rejected preflight runs; it has not been rewritten. New executions include those fields. The existing rejected-version record already records the actual incompatibility result.
 
@@ -142,7 +142,7 @@ Tests cover both tenants, typed contracts, protected binding fields, digest/vers
 
 The full browser suite passed 192 tests before the final three binding-ladder tests were added. Those additional tests passed in the focused tenant suite. The requested final browser rerun was declined by the approval prompt; no newer full-browser result is claimed.
 
-Remaining limitations are trusted unsigned locator configuration, exact version matching, file-backed evidence, full-mask screenshots, per-resolution telemetry volume, and preflight identity that is not continuously re-attested during every UI operation. Effective capabilities are transient and there is no persistent binding-promotion/governance service. New business workflows require new capability versions.
+Remaining limitations are trusted unsigned locator configuration, exact version matching, file-backed evidence, simulator-specific screenshot redaction, per-resolution telemetry volume, and preflight identity that is not continuously re-attested during every UI operation. Effective capabilities are transient and there is no persistent binding-promotion/governance service. New business workflows require new capability versions.
 
 Capability-health aggregation, automatic repair, self-healing, tenant dashboards, and distributed infrastructure remain out of scope.
 

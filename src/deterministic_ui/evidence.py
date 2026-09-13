@@ -7,6 +7,7 @@ from pydantic import Field
 
 from .models import Action, CapabilityArtifact, Model, ResolutionResult, RunResult
 from .surface import Surface
+from .screenshot import ScreenshotPolicy
 from .telemetry import DriftSignal, LocatorTelemetry
 
 
@@ -73,7 +74,7 @@ class EvidenceWriter:
             **self.context.model_dump(exclude_none=True),
             "model_calls_at_start": 0,
             "started_at": datetime.now(timezone.utc).isoformat(),
-            "redaction": "all runtime values omitted; screenshots fully masked",
+            "redaction": "runtime values omitted; screenshot policy recorded in per-image manifests",
         }, indent=2))
 
         if self.context.purpose:
@@ -125,7 +126,16 @@ class EvidenceWriter:
     async def screenshot(self, surface: Surface, step_id: str | None) -> str | None:
         name = f"screenshots/{step_id or 'final'}.png"
         try:
-            await surface.screenshot(self.directory / name)
+            manifest = await surface.screenshot(self.directory / name)
+            if manifest is not None:
+                manifest_path = self.directory / (name + ".json")
+                manifest_path.write_text(manifest.model_dump_json(indent=2) + "\n")
+                manifest_path.chmod(0o600)
+                if manifest.policy == ScreenshotPolicy.DISABLED:
+                    self.emit("screenshot", step_id=step_id, status="DISABLED")
+                    return None
+                if manifest.fallback_full_mask:
+                    self.emit("redaction", step_id=step_id, status="REDACTION_FALLBACK_FULL_MASK")
             (self.directory / name).chmod(0o600)
         except Exception:
             self.emit("screenshot", step_id=step_id, status="CAPTURE_UNAVAILABLE")

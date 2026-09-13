@@ -7,7 +7,7 @@ name = "deterministic-ui"
 version = "0.1.0"
 description = "Provider-independent deterministic capability replay"
 requires-python = ">=3.12"
-dependencies = ["pydantic>=2,<3", "playwright>=1.45,<2"]
+dependencies = ["pydantic>=2,<3", "playwright>=1.48,<2"]
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10", "pytest-asyncio>=0.24,<2", "pyright>=1.1,<2"]

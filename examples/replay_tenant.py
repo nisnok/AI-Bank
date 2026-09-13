@@ -42,7 +42,7 @@ async def run(args):
                  ("bank_b","ambiguous",args.member_id,"1"), ("bank_b","none","99999","1"),
                  ("bank_b","none",args.member_id,"2")] if args.all else [
                      (args.tenant,args.drift,args.member_id,args.application_version)]
-    index = EvidenceWriter(Path("evidence/tenant-demos"), uuid4().hex, canonical)
+    index = EvidenceWriter(args.evidence_root/"tenant-demos", uuid4().hex, canonical)
     index_rows = []
     with running_server() as server:
         for tenant_id, drift, member, version in scenarios:
@@ -52,8 +52,8 @@ async def run(args):
             binding_path = Path("tenant_bindings")/tenant_id/"1.0.0.json"
             binding = TenantBinding.model_validate_json(binding_path.read_text())
             async with PlaywrightSurface.open(tenant.base_url) as surface:
-                result = await replay_tenant(canonical, tenant, binding, surface, {"member_id":member})
-            folder = Path("evidence/tenants")/result.run_id
+                result = await replay_tenant(canonical, tenant, binding, surface, {"member_id":member}, evidence_root=args.evidence_root/"tenants")
+            folder = args.evidence_root/"tenants"/result.run_id
             telemetry = json.loads((folder/"locator-telemetry.json").read_text())
             signals = telemetry["drift_signals"]
             with server.lock:
@@ -101,6 +101,7 @@ async def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--evidence-root", type=Path, default=Path("evidence"))
     parser.add_argument("--tenant", choices=["bank_a","bank_b"], default="bank_a")
     parser.add_argument("--drift", choices=["none","label","structural","ambiguous"], default="none")
     parser.add_argument("--member-id", default="83921")
