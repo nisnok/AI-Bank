@@ -111,3 +111,5 @@ Current limits:
 - Masked screenshots and redacted disk trajectories limit retrospective debugging. No raw reasoning or credentials are persisted.
 
 [Milestone 5](handoff.md) now implements same-session operator handoff separately. [Milestone 6](tenants.md) adds locator-only tenant bindings. Health aggregation, automatic healing, governance services, and distributed persistence remain out of scope.
+
+[Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

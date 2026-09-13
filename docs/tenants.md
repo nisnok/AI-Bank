@@ -145,3 +145,5 @@ The full browser suite passed 192 tests before the final three binding-ladder te
 Remaining limitations are trusted unsigned locator configuration, exact version matching, file-backed evidence, full-mask screenshots, per-resolution telemetry volume, and preflight identity that is not continuously re-attested during every UI operation. Effective capabilities are transient and there is no persistent binding-promotion/governance service. New business workflows require new capability versions.
 
 Capability-health aggregation, automatic repair, self-healing, tenant dashboards, and distributed infrastructure remain out of scope.
+
+[Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

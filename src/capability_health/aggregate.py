@@ -1,5 +1,6 @@
 """Deterministic counts, rates, bounded trends, and explainable demo thresholds."""
 from datetime import datetime, timezone
+from collections.abc import Sequence
 from decimal import Decimal, ROUND_HALF_UP
 
 from .models import (Assessment, CapabilityHealth, EvidenceIssue, HealthReason, HealthStatus,
@@ -7,12 +8,13 @@ from .models import (Assessment, CapabilityHealth, EvidenceIssue, HealthReason, 
 from deterministic_ui.models import Status
 
 
-def rate(numerator, denominator):
+def rate(numerator: int, denominator: int) -> Decimal | None:
     return (Decimal(numerator)/Decimal(denominator)).quantize(Decimal(".0001"), rounding=ROUND_HALF_UP) if denominator else None
 
 
-def mean(values):
-    return (sum(values)/len(values)).quantize(Decimal(".001"),rounding=ROUND_HALF_UP) if values else None
+def mean(values: Sequence[Decimal | None]) -> Decimal | None:
+    present=[value for value in values if value is not None]
+    return (sum(present,Decimal(0))/len(present)).quantize(Decimal(".001"),rounding=ROUND_HALF_UP) if present else None
 
 
 class HealthAggregator:
@@ -34,7 +36,7 @@ class HealthAggregator:
         recovered_runs=sum(r.recovery_attempts>0 for r in runs)
         intervention=sum(r.human_handoff_count>0 or r.human_action_count>0 or r.status==Status.HUMAN_REQUIRED for r in runs)
         latencies=sorted(r.duration_ms for r in runs if r.duration_ms is not None)
-        values=dict(total_runs=total, successful_runs=success, business_outcomes=business,
+        values=Assessment(total_runs=total, successful_runs=success, business_outcomes=business,
             hard_failures=hard, human_required_runs=human,
             success_rate=rate(success+business,total) or Decimal(0),
             primary_locator_match_rate=rate(primary,attempts), fallback_rate=rate(fallback,attempts),
@@ -59,7 +61,7 @@ class HealthAggregator:
             validation_successes=sum(r.validation_outcome==Status.SUCCESS for r in runs),
             model_calls=sum(r.model_calls for r in runs),
             binding_versions=sorted({r.binding_version for r in runs if r.binding_version}),
-            run_ids=[r.run_id for r in runs])
+            run_ids=[r.run_id for r in runs],status=HealthStatus.HEALTHY,reasons=[],recommendation="")
         reasons=[]
         status=HealthStatus.HEALTHY
         def reason(code,metric,observed=None,threshold=None):
@@ -68,34 +70,34 @@ class HealthAggregator:
             status=HealthStatus.INSUFFICIENT_DATA
             reason("MINIMUM_RUNS_NOT_MET","total_runs",Decimal(total),Decimal(t.minimum_runs))
         else:
-            if values["fallback_rate"] is not None and values["fallback_rate"]>t.maximum_fallback_rate:
-                reason("FALLBACK_USAGE_HIGH","fallback_rate",values["fallback_rate"],t.maximum_fallback_rate)
-            if values["primary_locator_match_rate"] is not None and values["primary_locator_match_rate"]<t.minimum_primary_rate:
-                reason("PRIMARY_LOCATOR_MATCH_RATE_LOW","primary_locator_match_rate",values["primary_locator_match_rate"],t.minimum_primary_rate)
-            if values["recovery_rate"]>t.maximum_recovery_rate:
-                reason("RECOVERY_USAGE_HIGH","recovery_rate",values["recovery_rate"],t.maximum_recovery_rate)
-            if values["human_intervention_rate"]>t.maximum_intervention_rate:
-                reason("HUMAN_INTERVENTION_HIGH","human_intervention_rate",values["human_intervention_rate"],t.maximum_intervention_rate)
-            if values["drift_signal_count"]:
-                reason("LOCATOR_DRIFT_OBSERVED","drift_rate",values["drift_rate"])
+            if values.fallback_rate is not None and values.fallback_rate>t.maximum_fallback_rate:
+                reason("FALLBACK_USAGE_HIGH","fallback_rate",values.fallback_rate,t.maximum_fallback_rate)
+            if values.primary_locator_match_rate is not None and values.primary_locator_match_rate<t.minimum_primary_rate:
+                reason("PRIMARY_LOCATOR_MATCH_RATE_LOW","primary_locator_match_rate",values.primary_locator_match_rate,t.minimum_primary_rate)
+            if values.recovery_rate>t.maximum_recovery_rate:
+                reason("RECOVERY_USAGE_HIGH","recovery_rate",values.recovery_rate,t.maximum_recovery_rate)
+            if values.human_intervention_rate>t.maximum_intervention_rate:
+                reason("HUMAN_INTERVENTION_HIGH","human_intervention_rate",values.human_intervention_rate,t.maximum_intervention_rate)
+            if values.drift_signal_count:
+                reason("LOCATOR_DRIFT_OBSERVED","drift_rate",values.drift_rate)
             if ambiguity_runs:
-                reason("AMBIGUITY_OBSERVED","ambiguity_rate",values["ambiguity_rate"])
+                reason("AMBIGUITY_OBSERVED","ambiguity_rate",values.ambiguity_rate)
             if hard:
-                reason("HARD_FAILURES_OBSERVED","hard_failure_rate",values["hard_failure_rate"])
+                reason("HARD_FAILURES_OBSERVED","hard_failure_rate",values.hard_failure_rate)
             if any(r.status==Status.RECOVERABLE_ERROR for r in runs):
-                reason("RECOVERY_EXHAUSTED","success_rate",values["success_rate"])
+                reason("RECOVERY_EXHAUSTED","success_rate",values.success_rate)
             if reasons:
                 status=HealthStatus.DEGRADED
-            if hard>=t.minimum_repeated_failures and values["hard_failure_rate"]>=t.unhealthy_failure_rate:
+            if hard>=t.minimum_repeated_failures and values.hard_failure_rate>=t.unhealthy_failure_rate:
                 status=HealthStatus.UNHEALTHY
-                reason("REPEATED_HARD_FAILURES","hard_failure_rate",values["hard_failure_rate"],t.unhealthy_failure_rate)
-            if ambiguity_runs>=t.minimum_repeated_failures and values["ambiguity_rate"]>=t.unhealthy_ambiguity_rate:
+                reason("REPEATED_HARD_FAILURES","hard_failure_rate",values.hard_failure_rate,t.unhealthy_failure_rate)
+            if ambiguity_runs>=t.minimum_repeated_failures and values.ambiguity_rate>=t.unhealthy_ambiguity_rate:
                 status=HealthStatus.UNHEALTHY
-                reason("REPEATED_AMBIGUITY","ambiguity_rate",values["ambiguity_rate"],t.unhealthy_ambiguity_rate)
+                reason("REPEATED_AMBIGUITY","ambiguity_rate",values.ambiguity_rate,t.unhealthy_ambiguity_rate)
             if (hard+ambiguity_runs>=t.minimum_repeated_failures
-                and values["success_rate"]<t.minimum_reliable_completion_rate):
+                and values.success_rate<t.minimum_reliable_completion_rate):
                 status=HealthStatus.UNHEALTHY
-                reason("RELIABLE_COMPLETION_RATE_LOW","success_rate",values["success_rate"],t.minimum_reliable_completion_rate)
+                reason("RELIABLE_COMPLETION_RATE_LOW","success_rate",values.success_rate,t.minimum_reliable_completion_rate)
 
         recent_ids,previous_ids=[],[]
         if trends and total>=max(t.minimum_runs,t.recent_window+t.historical_window):
@@ -113,9 +115,10 @@ class HealthAggregator:
                 }
             old,new=measures(previous),measures(recent)
             for code in old:
-                if old[code] is None or new[code] is None:
+                old_rate,new_rate=old[code],new[code]
+                if old_rate is None or new_rate is None:
                     continue
-                delta=old[code]-new[code] if code=="SUCCESS_RATE_DECLINING" else new[code]-old[code]
+                delta=old_rate-new_rate if code=="SUCCESS_RATE_DECLINING" else new_rate-old_rate
                 if delta>=t.trend_rate_delta:
                     reasons.append(HealthReason(code=code,metric="window_rate",previous=old[code],
                                                 recent=new[code],threshold=t.trend_rate_delta))
@@ -133,8 +136,8 @@ class HealthAggregator:
             HealthStatus.DEGRADED:"REVIEW_RECOMMENDED: review binding and source runs before the next release; unique safe replay may continue.",
             HealthStatus.UNHEALTHY:"NEEDS_REVALIDATION: investigate failure and ambiguity evidence before relying on this binding.",
         }
-        return Assessment(**values,status=status,reasons=reasons,recommendation=recommendations[status],
-                          historical_run_ids=previous_ids,recent_run_ids=recent_ids)
+        return values.model_copy(update={"status":status,"reasons":reasons,"recommendation":recommendations[status],
+                                         "historical_run_ids":previous_ids,"recent_run_ids":recent_ids})
 
     def aggregate(self, capability_id: str, version: str, runs: list[RunMetrics], *,
                   issues: list[EvidenceIssue] | None=None, generated_at: datetime | None=None) -> CapabilityHealth:

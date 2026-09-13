@@ -1,0 +1,16 @@
+{
+  "run_id": "6a0b49ca9e6e4faab9a1c5182f0bb23d",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/6a0b49ca9e6e4faab9a1c5182f0bb23d/metadata.json",
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/6a0b49ca9e6e4faab9a1c5182f0bb23d/events.jsonl",
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/6a0b49ca9e6e4faab9a1c5182f0bb23d/result.json"
+  ]
+}

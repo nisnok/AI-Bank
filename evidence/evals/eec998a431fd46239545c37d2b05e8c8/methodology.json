@@ -1,0 +1,115 @@
+{
+  "scenarios": [
+    {
+      "id": "happy_path",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "NONE",
+      "expected_status": "SUCCESS",
+      "expected_failure": null
+    },
+    {
+      "id": "primary_failure_fallback_success",
+      "tenant_id": "bank_a",
+      "drift": "label",
+      "fault": "NONE",
+      "expected_status": "SUCCESS",
+      "expected_failure": null
+    },
+    {
+      "id": "all_locators_failed",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "ALL_LOCATORS_FAILED",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "FALLBACK_EXHAUSTED"
+    },
+    {
+      "id": "required_element_missing",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "REQUIRED_ELEMENT_MISSING",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "REQUIRED_ELEMENT_MISSING"
+    },
+    {
+      "id": "stale_member",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "STALE_MEMBER",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "PAGE_STATE_INVALID"
+    },
+    {
+      "id": "partial_page_load",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "PARTIAL_PAGE",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "PAGE_STATE_INVALID"
+    },
+    {
+      "id": "tenant_baseline",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "fault": "NONE",
+      "expected_status": "SUCCESS",
+      "expected_failure": null
+    },
+    {
+      "id": "tenant_label_drift",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "fault": "NONE",
+      "expected_status": "SUCCESS",
+      "expected_failure": null
+    },
+    {
+      "id": "tenant_structural_drift",
+      "tenant_id": "bank_b",
+      "drift": "structural",
+      "fault": "NONE",
+      "expected_status": "SUCCESS",
+      "expected_failure": null
+    },
+    {
+      "id": "ambiguous_control",
+      "tenant_id": "bank_b",
+      "drift": "ambiguous",
+      "fault": "NONE",
+      "expected_status": "HUMAN_REQUIRED",
+      "expected_failure": "AMBIGUOUS_TARGET"
+    },
+    {
+      "id": "value_not_retained",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "VALUE_NOT_RETAINED",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "POSTCONDITION_FAILED"
+    },
+    {
+      "id": "unexpected_workspace",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "UNEXPECTED_PAGE",
+      "expected_status": "RECOVERABLE_ERROR",
+      "expected_failure": "PAGE_STATE_INVALID"
+    },
+    {
+      "id": "member_not_found",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "fault": "NONE",
+      "expected_status": "BUSINESS_OUTCOME",
+      "expected_failure": null
+    }
+  ],
+  "repeats": 1,
+  "locator_denominator": "action-target resolutions only; excludes polling/business probes",
+  "success_denominator": "all completed runs; SUCCESS and valid BUSINESS_OUTCOME count as completion",
+  "fallback_recovery_denominator": "runs with an attempted non-business fallback",
+  "unrecoverable": "terminal HARD_FAILURE or RECOVERABLE_ERROR after bounded recovery",
+  "human_intervention": "HUMAN_REQUIRED or recorded handoff",
+  "failure_classification": "engine evidence and redacted observed page facts; not injected scenario names"
+}

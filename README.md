@@ -1,6 +1,6 @@
 # Deterministic UI capabilities
 
-A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Milestone 5 adds same-session operator takeover and verified resume. Milestone 6 adds cross-tenant reuse through strict locator bindings and controlled UI-drift telemetry. Production tenant infrastructure and aggregate reliability services remain out of scope.
+A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Milestone 5 adds same-session operator takeover and verified resume. Milestone 6 adds cross-tenant reuse through strict locator bindings and controlled UI-drift telemetry. Capability health now aggregates explainable tenant-level reliability, and automated evaluation exercises controlled failures. Production tenant infrastructure remains out of scope.
 
 Milestone 2 adds a local legacy back-office simulator and real-browser replay workflows. See [the simulator guide](docs/simulator.md) for startup, replay commands, fault modes, identity verification, safety tests, and remaining limits. The original Milestone 1 demo below remains available.
 
@@ -47,6 +47,46 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/replay_ten
 ```
 
 The command runs Bank A/Bank B baselines, label drift, structural drift, ambiguity, a missing member, and an incompatible version. Unique fallback continues with telemetry; ambiguous controls stop before clicking. No Gemini key, rediscovery, copied capability, or health scoring is involved. The command prints a generated reviewer evidence index.
+
+## Automated evaluation and failure analysis
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_evaluation.py
+```
+
+The suite executes the unchanged generated capability across 13 controlled scenarios: happy paths, primary-locator failure with fallback, all locators failing, a missing required input, stale identity, partial loading, tenant label/structural drift, ambiguity, a value that is not retained, an unexpected workspace, and MEMBER_NOT_FOUND.
+
+Reports under `evidence/evals/<id>/` contain JSON metrics, classified failures, page-state facts, source run IDs/digests, and a readable index. Classification uses actual engine evidence and observations. A successful fallback remains success; expected negative scenarios are distinguished from unexpected evaluation regressions.
+
+Metrics include reliable completion, primary locator success, fallback usage/recovery, terminal failures, human intervention, and drift counts. Locator rates exclude polling/business probes. Deterministic evaluation makes locator changes, safety stops, and identity-verification failures repeatable and measurable rather than depending on a model's narrative. See [methodology and scenarios](docs/evaluation.md).
+
+Observed output from the [completed evaluation](evidence/evals/3dbc86c3ef07491c85270bbf96790974/summary.json):
+
+```text
+get_member_balance@1.0.0
+Runs: 13
+Success rate (valid business outcomes included): 46.2%
+Primary locator: 91.3%
+Fallback usage: 8.7%
+Fallback recovery: 40.0%
+Unrecoverable: 46.2%
+Human intervention: 7.7%
+Drift events: 7
+Scenario expectations passed: 100.0%
+Most common failure: PAGE_STATE_INVALID
+Model calls: 0
+```
+
+This intentionally adversarial mix produced five successful balance reads, one valid business outcome, six terminal failures, and one human stop. All 13 matched their expected behavior. The 46.2% completion rate describes this stress suite, not production reliability; fallback recovery is two recovered runs out of five runs that attempted fallback.
+
+## Capability health
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_reliability_eval.py
+.venv/bin/python -m capability_health.cli --evidence evidence/tenants
+```
+
+The genuine reliability demonstration kept Bank A HEALTHY while Bank B became DEGRADED with 100% completion, 16.7% action-target fallback usage, and an increasing-fallback trend. The separate health layer recomputes tenant assessments from evidence; it never rewrites the capability or automatically blocks degraded reads. See [health thresholds, metrics, and evidence](docs/health.md).
 
 ## Setup and run
 

@@ -29,6 +29,7 @@ class ReplayEngine:
         self.conditions = ConditionEvaluator(self.resolver)
         self._lock = asyncio.Lock()
         self._action_attempted = False
+        self._active_condition: Condition | None = None
 
     async def execute(self, artifact: CapabilityArtifact, inputs: Mapping[str, object]) -> RunResult:
         """Artifact parsing errors belong to loading; runtime outcomes are structured."""
@@ -124,6 +125,7 @@ class ReplayEngine:
                     evidence: EvidenceWriter) -> RunResult | None:
         for attempt in range(1, step.retry.max_attempts + 1):
             self._action_attempted = False
+            self._active_condition = None
             evidence.emit("step_attempt", step_id=step.id, action=step.action, attempt=attempt)
             try:
                 # Timeout covers the entire attempt, including resolution and checkpoints.
@@ -131,7 +133,7 @@ class ReplayEngine:
                     result = await self._attempt(artifact, step, inputs, outputs, evidence)
             except (SurfaceTimeout, TimeoutError):
                 result = self._failure(evidence.run_id, step.id, Status.RECOVERABLE_ERROR, "STEP_TIMEOUT",
-                                       condition=step.postcondition or step.precondition)
+                                       condition=self._active_condition)
             if result is not None and result.failure:
                 result = result.model_copy(update={"failure": result.failure.model_copy(
                     update={"action_attempted": self._action_attempted})})
@@ -172,6 +174,7 @@ class ReplayEngine:
             result = await self._checkpoint(artifact, step.precondition, evidence, step.id, step.timeout_ms)
             if result:
                 return result
+        self._active_condition = None
         resolved = await self.resolver.resolve(step.target, self.surface)
         evidence.resolution(resolved, step.id)
         if not resolved.succeeded:
@@ -218,6 +221,7 @@ class ReplayEngine:
     async def _checkpoint(self, artifact: CapabilityArtifact, condition: Condition,
                           evidence: EvidenceWriter, step_id: str | None,
                           timeout_ms: int) -> RunResult | None:
+        self._active_condition = condition
         try:
             async with asyncio.timeout(timeout_ms / 1000):
                 checked = await self.conditions.wait(condition, artifact.business_outcomes, self.surface,

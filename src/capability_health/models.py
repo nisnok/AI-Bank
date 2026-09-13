@@ -134,8 +134,8 @@ class TenantHealth(Assessment):
 
 
 class CapabilityHealth(Assessment):
-    capability_id: str
-    capability_version: str
+    capability_id: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
+    capability_version: str = Field(pattern=r"^\d+\.\d+\.\d+$")
     generated_at: datetime
     tenant_health: list[TenantHealth]
     thresholds: Thresholds

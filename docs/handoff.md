@@ -117,3 +117,5 @@ Replay imports only its abstract handoff continuation port and domain services. 
 - The automated acceptance run proves the mechanism; a person can exercise the interactive command above. No physical human participation is claimed.
 
 [Milestone 6](tenants.md) adds locator-only tenant reuse separately. Capability health, automatic healing, LLM repair, and distributed services remain out of scope.
+
+[Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

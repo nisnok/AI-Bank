@@ -1,0 +1,38 @@
+{
+  "run_id": "d563b95579ab4d3e80fa98291604b1cd",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": {
+    "blocked_step_id": "discovered_2",
+    "reason_code": "AMBIGUOUS_TARGET",
+    "expected_state": "Operator must satisfy the declared resume checks",
+    "checkpoint_ids": [
+      "search_visible"
+    ],
+    "evidence_ref": "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/events.jsonl"
+  },
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "d563b95579ab4d3e80fa98291604b1cd",
+    "step_id": "discovered_2",
+    "code": "AMBIGUOUS_TARGET",
+    "expected_condition": "search_visible",
+    "observed_condition": "ambiguous",
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Request operator review; do not continue automatically",
+    "evidence_refs": [
+      "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/metadata.json",
+      "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/events.jsonl",
+      "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/metadata.json",
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/events.jsonl",
+    "evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/runs/d563b95579ab4d3e80fa98291604b1cd/result.json"
+  ]
+}

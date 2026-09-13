@@ -63,6 +63,8 @@ Version: <span role="status" aria-label="Application version">{escape(session.ap
 
 
 def search_form(session: Session) -> str:
+    if session.fault == Fault.UNEXPECTED_PAGE:
+        return '<section role="region" aria-label="Unexpected workspace"><h2>Terminal maintenance workspace</h2></section>'
     bank_b = session.tenant == Tenant.BANK_B
     label = "Customer Number" if bank_b else ("Member Number" if session.fallback else "Member ID")
     if session.drift == Drift.LABEL_DRIFT:
@@ -71,7 +73,14 @@ def search_form(session: Session) -> str:
     field_id = "customer-reference" if bank_b else "member-key"
     duplicate = f'<button type="submit">{button}</button>' if (
         session.fault == Fault.AMBIGUOUS_CONTROL or session.drift == Drift.AMBIGUOUS_DRIFT) else ""
-    entry = f'<label for="{field_id}">{label}</label><input id="{field_id}" name="member_id" autocomplete="off" maxlength="20">'
+    input_name = "member_id"
+    if session.fault == Fault.ALL_LOCATORS_FAILED:
+        label, field_id, input_name = "Lookup token", "lookup-token", "lookup_token"
+    entry = f'<label for="{field_id}">{label}</label><input id="{field_id}" name="{input_name}" autocomplete="off" maxlength="20">'
+    if session.fault == Fault.REQUIRED_ELEMENT_MISSING:
+        entry = '<p>Lookup field unavailable</p>'
+    if session.fault == Fault.VALUE_NOT_RETAINED:
+        entry = entry.replace('<input ', """<input oninput="this.value = ''" """)
     if bank_b:
         entry = f'<fieldset><legend>Customer lookup</legend><div class="lookup-entry">{entry}</div></fieldset>'
     if session.drift == Drift.STRUCTURAL_DRIFT:
@@ -101,6 +110,8 @@ def render_state(session: Session, state: str) -> str:
         return f'<p role="alert" class="notice">{messages[state]}</p>{retry}'
     assert session.member is not None
     if state == "DETAILS":
+        if session.fault == Fault.PARTIAL_PAGE:
+            return '<p role="status" aria-label="Application loading">Loading customer workspace...</p>'
         savings_label = "Available Savings" if session.tenant == Tenant.BANK_B else "Savings balance"
         accounts = ''.join(
             f'<tr><td>{account.identifier}</td><td>{account.balance:.2f}</td></tr>'

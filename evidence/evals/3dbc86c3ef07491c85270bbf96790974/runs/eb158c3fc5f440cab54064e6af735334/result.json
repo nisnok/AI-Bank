@@ -1,0 +1,30 @@
+{
+  "run_id": "eb158c3fc5f440cab54064e6af735334",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "RECOVERABLE_ERROR",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "eb158c3fc5f440cab54064e6af735334",
+    "step_id": "discovered_1",
+    "code": "STEP_TIMEOUT",
+    "expected_condition": "input_value_verified",
+    "observed_condition": "not_verified",
+    "retryable": false,
+    "action_attempted": true,
+    "safe_next_action": "Inspect current UI and evidence before retrying; the action may have completed",
+    "evidence_refs": [
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/metadata.json",
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/events.jsonl",
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/metadata.json",
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/events.jsonl",
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/eb158c3fc5f440cab54064e6af735334/result.json"
+  ]
+}

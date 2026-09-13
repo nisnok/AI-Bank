@@ -122,3 +122,5 @@ Added `src/discovery/{models,model_client,gemini_client,mock_client,safety,evide
 Remaining fragile areas: accessible-name normalization is a bounded approximation rather than a full accessibility-tree implementation; frame interactions are unsupported; the read-only safety/success contract is intentionally simulator-specific; semantic text checkpoints are weaker than transaction-bound assertions; projected evidence cannot reconstruct sensitive values; provider output and availability remain nondeterministic. Observation races are checked conservatively but browser operations are not atomic transactions.
 
 The [Milestone 5 handoff layer](handoff.md) adds operator takeover separately. [Milestone 6](tenants.md) adds tenant bindings separately. Health aggregation, drift dashboards, automatic healing, and persistent/distributed infrastructure remain unimplemented.
+
+[Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

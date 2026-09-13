@@ -1,0 +1,38 @@
+{
+  "run_id": "7b53c332691e494692abacf5ee894421",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": {
+    "blocked_step_id": "discovered_2",
+    "reason_code": "AMBIGUOUS_TARGET",
+    "expected_state": "Operator must satisfy the declared resume checks",
+    "checkpoint_ids": [
+      "search_visible"
+    ],
+    "evidence_ref": "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/events.jsonl"
+  },
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "7b53c332691e494692abacf5ee894421",
+    "step_id": "discovered_2",
+    "code": "AMBIGUOUS_TARGET",
+    "expected_condition": "search_visible",
+    "observed_condition": "ambiguous",
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Request operator review; do not continue automatically",
+    "evidence_refs": [
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/metadata.json",
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/events.jsonl",
+      "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/metadata.json",
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/events.jsonl",
+    "evidence/evals/3dbc86c3ef07491c85270bbf96790974/runs/7b53c332691e494692abacf5ee894421/result.json"
+  ]
+}
