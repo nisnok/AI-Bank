@@ -1,10 +1,12 @@
 # AI-Bank: computer-use automation
 
+**Discover once. Compile verified behavior. Replay without an LLM.**
+
 Turn a natural-language member-balance goal into a reusable UI capability: real Gemini discovery observes and acts on a fictional banking application, verifies its trajectory, and passes it to CapabilityCompiler. The compiler produces a typed, versioned artifact; deterministic replay executes it with different inputs and **zero LLM calls**.
 
 Replay checks identity and outcomes, uses bounded recovery, and stops safely for ambiguity or human intervention. Interactive discovery and replay share live-session handoff. Locator-only tenant bindings support reuse and drift detection; capability health summarizes the resulting evidence.
 
-**Start here:** [assignment report](REPORT.md) · [claim-to-evidence map](evidence/README.md) · [acceptance methodology](docs/acceptance.md)
+**Start here:** [assignment report](REPORT.md) · [5-minute evidence walkthrough](evidence/README.md) · [acceptance methodology](docs/acceptance.md)
 
 ```mermaid
 flowchart LR

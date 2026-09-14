@@ -120,7 +120,7 @@ Browser tests independently verify the expected Decimal balance for the differen
 RUN_BROWSER_TESTS=1 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python -m pytest -q
 ```
 
-Tests cover both tenants, typed contracts, protected binding fields, digest/version checks, approval preservation, missing bindings, fallback signals, ambiguity without clicks, structural drift, business outcomes, observed compatibility, and all earlier milestones.
+Tests cover both tenants, typed contracts, protected binding fields, digest/version checks, approval preservation, missing bindings, fallback signals, ambiguity without clicks, structural drift, business outcomes, observed compatibility, and the other system layers.
 
 Current full-suite results are recorded in [acceptance](acceptance.md).
 

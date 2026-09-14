@@ -16,7 +16,7 @@ export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
 
 Open **http://127.0.0.1:8765/** in a browser. The default bind address is loopback only. `--port 8766` changes the port; pass the same address to the replay runner's `--url` option. Use `127.0.0.1` consistently for the local origin check.
 
-The employee portal starts a fresh fictional session. It has old-style tables, beveled controls, sparse/nested markup, a changing work area, and an iframe showing account-opening rules. The iframe is a reference pane; this milestone does not add frame traversal to Surface. Forms have ordinary product attributes, not `data-testid` shortcuts. Most action controls have no IDs.
+The employee portal starts a fresh fictional session. It has old-style tables, beveled controls, sparse/nested markup, a changing work area, and an iframe showing account-opening rules. The iframe is a reference pane; the adapter does not implement frame traversal to Surface. Forms have ordinary product attributes, not `data-testid` shortcuts. Most action controls have no IDs.
 
 Each session stores its state in memory. Refreshing the landing page creates a fresh session; restarting the server clears all sessions. No credentials are required or collected.
 
@@ -52,9 +52,9 @@ export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
 .venv/bin/python examples/run_simulator.py get_member_balance --variant fallback
 ```
 
-Add `--headed` to watch the browser. The runner closes the browser when replay returns, including HUMAN_REQUIRED; this older runner does not retain a handoff session. Use the [Milestone 5 operator demo](handoff.md) for same-session takeover and resume. The CLI prints status, a safe result code, and the evidence path. It does not print input or output values. This is a demonstration command; business and failure statuses are in the structured result rather than separate process exit codes.
+Add `--headed` to watch the browser. The runner closes the browser when replay returns, including HUMAN_REQUIRED; this older runner does not retain a handoff session. Use the [human handoff operator demo](handoff.md) for same-session takeover and resume. The CLI prints status, a safe result code, and the evidence path. It does not print input or output values. This is a demonstration command; business and failure statuses are in the structured result rather than separate process exit codes.
 
-The runner loads `capabilities/simulator/get_member_balance.json` or `capabilities/simulator/prepare_new_savings_subaccount.json`, opens `PlaywrightSurface`, and calls `ReplayEngine.execute`. It uses no custom browser commands or selectors. The original `capabilities/get_member_balance.json` remains the Milestone 1 fixture for the old demo and its existing tests.
+The runner loads `capabilities/simulator/get_member_balance.json` or `capabilities/simulator/prepare_new_savings_subaccount.json`, opens `PlaywrightSurface`, and calls `ReplayEngine.execute`. It uses no custom browser commands or selectors. The original `capabilities/get_member_balance.json` remains the deterministic replay fixture for the old demo and its existing tests.
 
 ## Deterministic faults
 
@@ -80,7 +80,7 @@ Run each required fault:
 .venv/bin/python examples/run_simulator.py get_member_balance --member-id 48321 --fault STALE_MEMBER
 ```
 
-Operational faults are not mislabeled as business outcomes. This milestone uses the existing checkpoint/timeout result semantics rather than adding application-specific error handling to ReplayEngine. MEMBER_NOT_FOUND and MEMBER_INELIGIBLE are recognized as normal business outcomes through stable visible messages.
+Operational faults are not mislabeled as business outcomes. The simulator uses the existing checkpoint/timeout result semantics rather than adding application-specific error handling to ReplayEngine. MEMBER_NOT_FOUND and MEMBER_INELIGIBLE are recognized as normal business outcomes through stable visible messages.
 
 The only intentional sleep is the server's configured slow-response fault. Browser tests do not use arbitrary sleeps: they use the existing semantic checkpoints. Test servers bind ephemeral ports and start serving from an already-bound socket.
 
@@ -130,6 +130,6 @@ The reference iframe is meaningful to an employee but is not an automated transa
 
 Discovery, compilation, takeover, tenant bindings, health and evaluation are separate layers described in the root README. The simulator does not invoke those layers. Automatic healing is not implemented.
 
-Milestone 5 makes the existing supervisor-notice modal acknowledgeable and adds a semantic posted-deposit value for verified handback. The dedicated handoff demo performs the human confirmation through its audited operator controller; the original preparation runner retains its stop-before-confirmation behavior.
+The handoff workflow makes the existing supervisor-notice modal acknowledgeable and adds a semantic posted-deposit value for verified handback. The dedicated handoff demo performs the human confirmation through its audited operator controller; the original preparation runner retains its stop-before-confirmation behavior.
 
-Milestone 6 adds independent `tenant=bank_a|bank_b` and `drift=none|label|structural|ambiguous` simulator parameters, plus visible product/version identity. Both tenants share the existing business domain. See [the tenant guide](tenants.md) for the generated-capability replay command.
+Tenant support provides independent `tenant=bank_a|bank_b` and `drift=none|label|structural|ambiguous` simulator parameters, plus visible product/version identity. Both tenants share the existing business domain. See [the tenant guide](tenants.md) for the generated-capability replay command.

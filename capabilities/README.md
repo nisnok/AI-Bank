@@ -1,7 +1,7 @@
 # Capability artifacts
 
-- `get_member_balance.json`: hand-authored Milestone 1 example.
-- `simulator/*.json`: hand-authored Milestone 2 examples and fault-test contracts.
+- `get_member_balance.json`: hand-authored deterministic replay example.
+- `simulator/*.json`: hand-authored simulator examples and fault-test contracts.
 - `generated/<capability_id>/<version>/draft.json`: compiler output from an actual successful discovery.
 - `generated/<capability_id>/<version>/validated.json`: immutable workflow snapshot with successful different-input replay provenance.
 - `generated/<capability_id>/<version>/validations/*.json`: validation result references, without invocation values or balances.

@@ -29,6 +29,7 @@ htmlcov/
 # Runtime evidence is local; retain only curated proof and canonical provenance.
 /evidence/*
 !/evidence/README.md
+!/evidence/reviewer/
 !/evidence/acceptance/
 !/evidence/compilation/
 /evidence/compilation/*

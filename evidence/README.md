@@ -1,50 +1,25 @@
-# Assignment evidence
+# Five-minute evidence walkthrough
 
-Start with the table below. These are selected **real execution records**, not hand-written success fixtures. Gemini decisions are real where marked; acceptance human actions are explicitly scripted operator inputs, not a claim of physical human participation.
+If you have five minutes, inspect these five proofs in order.
 
-| Assignment claim | Best evidence | What it proves |
-|---|---|---|
-| Real Gemini discovery and successful trajectory | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live/discovery/0d722350416e48fd8c73cf92ff66bf55/result.json) | Actual four-call provider run; adjacent trajectory-*.json files contain the redacted verified steps. |
-| Compiled/versioned capability | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live/artifacts/get_member_balance/1.0.0/draft.json) | DRAFT generated from that actual successful run; canonical reusable version is linked below. |
-| Different-input replay and zero model calls | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live/report.json) | Fresh worker checks changed input, correct identity/balance, absent credentials and blocked model imports. |
-| Business outcome | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live/business/1997d773741e47c387de77f39e14ad94/result.json) | BUSINESS_OUTCOME / MEMBER_NOT_FOUND, with zero model calls. |
-| Recoverable failure | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/recovery/report.json) | Bounded wait retry; one search submission, structured RECOVERABLE_ERROR. |
-| Ambiguity fails closed; multi-tenant reuse; UI drift/fallback | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reuse/tenant-demos/6085ec575672402c8e3fd16e7ed011c2/scenarios.json) | Same canonical capability on both tenants; unique fallback succeeds, ambiguous search is never submitted. |
-| Discovery-time human handoff | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e/report.json) | Real Gemini decisions, scripted operator, same session, one acknowledgement, verified continuation. |
-| Replay human handoff and session preservation | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/control-summary.json) | Two ownership cycles; zero automation actions during HUMAN; one account confirmation. |
-| Human action audit | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/human-action-1.json) | Actor/source, semantic action, before/after state and verified checkpoints; adjacent events.jsonl gives the timeline. |
-| Capability health | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/health/7cdb05d231234f6ea4403167cb1de13c/derived/successful_drift/get_member_balance/1.0.0/6677c3630ef84d5c9ed29e9d4f88dd3e/summary.json) | 15 successful runs: Bank A HEALTHY, Bank B DEGRADED from fallback use; controlled evidence only. |
-| Automated evaluation | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/evals/c812dfc3de4c41248f5f6c279a228b2a/summary.json) | 13 injected scenarios, all expectations matched; 46.2% completion is an adverse-scenario metric. |
-| Selective screenshot redaction | [Open record](acceptance/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e/runs/0d072fa6487540ed8e0841b5a1dff5a2/screenshots/handoff_1.png) | Readable supervisor notice/layout with sensitive values masked; adjacent .png.json documents coverage. |
-| Fail-closed screenshot behavior | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/screenshots/search_member.png.json) | fallback_full_mask=true. Adjacent image is intentionally opaque because selective capture could not be certified. |
-| Honest provider failure | [Open record](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/live/discovery/378ac3811fb447f8b82b9bed3c362e2a/result.json) | Retained actual failed provider run; a separate fresh attempt succeeded. |
+1. [Real Gemini discovery](reviewer/01_real_discovery.md)
+2. [Compiled capability](reviewer/02_compiled_capability.md)
+3. [Different-input zero-LLM replay](reviewer/03_zero_llm_replay.md)
+4. [Failure handling + human handoff](reviewer/04_failure_and_handoff.md)
+5. [Multi-tenant reuse + drift + health](reviewer/05_multitenant_and_health.md)
 
-## Latest successful pipeline
+**Primary reviewer run:** `key-retry-20260914-1`. This is the latest retained successful real-Gemini discovery → compilation → different-input replay pipeline. Proofs 1–3 follow that one run. Proofs 4–5 use supporting / historical evidence for distinct fault, handoff and tenant-health scenarios. The older canonical tenant artifact keeps its original provenance.
 
-[Open the latest real Gemini evidence](acceptance/key-retry-20260914-1/README.md): six discovery calls including retries, compiled/versioned artifact, different-input replay with zero model calls, and MEMBER_NOT_FOUND. The run used the updated local credential; no credential value is persisted.
+## Additional / audit evidence
 
-## Artifact provenance
+These are supporting records for deeper inspection, not additional steps in the primary walkthrough.
 
-The unchanged [canonical VALIDATED capability](../capabilities/generated/get_member_balance/1.0.0/validated.json), its [DRAFT](../capabilities/generated/get_member_balance/1.0.0/draft.json), and [validation record](../capabilities/generated/get_member_balance/1.0.0/validations/c0a8057c3d2b40bb95d380807c51c33a.json) remain the exact artifacts used by tenant reuse. The original compilation, validation and generated-replay text records remain under their original directories. The original discovery source is local-only; the table links a separately retained real discovery-to-compilation proof. Historical opaque screenshots are omitted while their original references remain in unchanged logs.
+- [Primary run report and source/hash map](acceptance/key-retry-20260914-1/README.md).
+- Supporting / historical archives: [recovery, tenants, health and replay handoff](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/README.md); [discovery handoff and earlier live pipeline](acceptance/ca89e14b3e69427a87b8360d73f527e0/README.md).
+- [Automated evaluation](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/evals/c812dfc3de4c41248f5f6c279a228b2a/summary.json): 13 controlled scenarios; see [methodology](../docs/evaluation.md).
+- [Selective screenshot manifest](acceptance/key-retry-20260914-1/validation/a7e113edc24045959dd31b58116d18a2/screenshots/final.png.json) and [privacy policy](../docs/acceptance.md#screenshot-privacy).
+- [FULL_MASK fallback manifest](acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/screenshots/search_member.png.json): the adjacent black image demonstrates only fail-closed privacy, not a usable workflow view.
+- [Initial provider failure](acceptance/cleanup-live-failure/report.json) and [verification summary with successful follow-up](acceptance/cleanup-verification.json): failures remain visible rather than being replaced with success.
+- [Recorded privacy/integrity checks](acceptance/cleanup-checks.json) and [acceptance reproduction commands](../docs/acceptance.md#reproduce). Check counts describe that recorded pass, not subsequent documentation edits.
 
-## Structure and selection
-
-```text
-evidence/
-  README.md
-  acceptance/
-    cleanup-verification.json  latest actual verification summary
-    cleanup-live-failure/      initial failed provider attempt
-    key-retry-20260914-1/      latest successful real Gemini pipeline
-    8488062.../     recovery, replay handoff, tenants, health, evaluation, privacy
-    ca89e14.../     real discovery/compilation/replay and discovery handoff
-  compilation/     original canonical compilation provenance (text)
-  validation/      original canonical validation provenance (text)
-  generated-replay/ original canonical business-outcome replay (text)
-```
-
-The two archive README files describe their selected captures and omissions. Raw records and retained screenshots are unchanged; archive manifests preserve original hashes and map ignored source paths to retained copies. Aggregate reports containing machine-specific absolute paths are excluded, not rewritten. Only selected raw runs are included for repeated evaluation/health traffic; source references to unselected runs are provenance, not clone-relative promises.
-
-Bulk new output, cache files and historical duplicates remain ignored/local. Reproduce checks using [acceptance commands](../docs/acceptance.md); see the [final cleanup review](../docs/cleanup.md) for current results. No successful evidence was fabricated or edited during cleanup.
-
-Latest verification: the [successful real Gemini retry](acceptance/key-retry-20260914-1/README.md) passed discovery, compilation, different-input zero-model replay and the business-outcome check. The [summary](acceptance/cleanup-verification.json) preserves both attempts; the [initial provider failure](acceptance/cleanup-live-failure/report.json) remains unchanged.
+Raw JSON/logs remain the source of truth. Archive manifests map original ignored local paths to retained copies; unselected original captures are not promised in a fresh clone. No raw records were rewritten or moved for this walkthrough. New runtime output stays in ignored `acceptance-local/`.
