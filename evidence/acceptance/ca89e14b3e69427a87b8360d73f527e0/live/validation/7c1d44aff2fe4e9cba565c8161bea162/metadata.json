@@ -1,0 +1,12 @@
+{
+  "run_id": "7c1d44aff2fe4e9cba565c8161bea162",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "schema_version": "1.0",
+  "execution_mode": "deterministic_replay",
+  "actor": "replay_engine",
+  "purpose": "VALIDATION",
+  "model_calls_at_start": 0,
+  "started_at": "2026-09-14T00:11:04.757887+00:00",
+  "redaction": "runtime values omitted; screenshot policy recorded in per-image manifests"
+}

@@ -67,6 +67,9 @@ def main(args):
     row('J. Capability health','health','Bank A HEALTHY; successful Bank B DEGRADED from telemetry',root/'health')
     run('handoff',[python,'examples/run_handoff.py','--scripted','--evidence-root',str(root/'handoff')])
     row('G. Same-session handoff','handoff','Two mediated actions; no automation during HUMAN; one account created',root/'handoff')
+    run('discovery_handoff',[python,'examples/accept_discovery_handoff.py','--evidence-root',str(root/'discovery-handoff')])
+    row('Discovery-time same-session handoff','discovery_handoff',
+        'Retained page; HUMAN ownership; audited action; verified fresh decision; SUCCESS',root/'discovery-handoff')
     run('recovery',[python,'examples/accept_recovery.py','--evidence-root',str(root/'recovery')])
     row('E. Bounded recovery','recovery','One safe wait retry; one search submission; RECOVERABLE_ERROR',root/'recovery')
     if args.live_discovery:

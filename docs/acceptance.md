@@ -1,93 +1,46 @@
-# Acceptance verification and security audit
+# Acceptance verification
 
-Executed against the real local simulator and Chromium on 2026-09-13 UTC. This pass hardens the existing architecture; ReplayEngine remains deterministic and model-free.
-
-**Headline proof:** real Gemini discovery completed in four calls, compiled from that actual trajectory, and validated a different member in a fresh process with no model credentials or model imports. The expected identity and balance were checked in memory; persisted outputs contain no values.
-
-[Curated evidence index](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/README.md) · [Final reviewed claims](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reviewed-report.json) · [Independent evidence assertions](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/independent-checks.json)
+Use the [evidence map](../evidence/README.md) to inspect the strongest proof for each assignment claim. The retained archives contain real executions against local Chromium and the fictional simulator. Real Gemini records are distinguished from scripted model decisions and scripted operator actions.
 
 ## Reproduce
 
 ```sh
 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py
-# Opt in to actual Gemini calls (GEMINI_API_KEY in environment or ignored .env):
 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py --live-discovery
 ```
 
-The default command never substitutes a mock for Gemini: discovery and its dependent fresh-compilation claims are SKIPPED_WITH_REASON. The opt-in command also skips if the key is absent. Provider failures are FAIL, with dependent checks skipped. Ordinary browser tests use deterministic proposals to test schema/policy containment; those are not counted as real discovery.
+The runner executes normal tests, opt-in browser tests, pyright, all 13 evaluation scenarios, tenant reuse, health, replay handoff, discovery handoff, recovery, independent saved-evidence assertions, and privacy scans. New runs go to ignored `evidence/acceptance-local/`. Live discovery requires a local Gemini key; missing keys are explicitly skipped, provider failures are FAIL, and dependent claims are skipped. No mock result substitutes for real discovery.
 
-Individual commands below use `.venv/bin/python examples/<command>`. The two `accept_*.py` commands require a fresh `--evidence-root <directory>`; the complete commands used are preserved in the JSON reports. All runners bound execution and preserve source evidence.
+Historical completion verification passed 215 normal tests and 37 separate browser tests, with zero type errors. [Real unassisted discovery](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live/report.json) passed compilation and isolated different-input replay; [real Gemini handoff](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e/report.json) completed in four calls with one scripted operator action. These historical passes do not guarantee current provider availability. The final cleanup verification results are recorded in [cleanup review](cleanup.md).
 
-## Core claims
+## Handoff semantics
 
-| Claim | Command | Expected result | Evidence | Status |
-|---|---|---|---|---|
-| A. Real discovery | `accept_discovery.py` | Gemini chooses structured actions and verifies balance | [Real trajectory/result](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/discovery/eabe5b06931b4f8cba2266ef8ae1ccfb/result.json) | PASS |
-| B. Compilation | `accept_discovery.py` | Actual successful trajectory → parameterized immutable DRAFT | [DRAFT](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/artifacts/get_member_balance/1.0.0/draft.json) | PASS |
-| C. Zero-LLM replay | `accept_discovery.py` | Different member; identity/balance correct; credentials absent; model imports blocked; zero calls | [Validation result](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/validation/33f1407521cc4aec9dc205106d43d013/result.json) | PASS |
-| D. Business outcome | `accept_discovery.py` | BUSINESS_OUTCOME / MEMBER_NOT_FOUND; no infrastructure failure | [Business result](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/live-retry/business/de9ca6c7d970452da70317f8c5fdd68d/result.json) | PASS |
-| E. Recovery | `accept_recovery.py` | One safe wait retry; search submitted once; structured RECOVERABLE_ERROR | [Recovery assertions](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/recovery/report.json) | PASS |
-| F. Ambiguity | `replay_tenant.py --all` | HUMAN_REQUIRED; zero ambiguous search submissions | [Tenant scenarios](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reuse/tenant-demos/6085ec575672402c8e3fd16e7ed011c2/scenarios.json) | PASS |
-| G. Human handoff | `run_handoff.py --scripted` | Same live session; two ownership cycles; fresh checkpoints; irreversible confirmation once | [Control summary](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/control-summary.json) | PASS |
-| H. Multi-tenant reuse | `replay_tenant.py --all` | Bank A/B succeed using one canonical version; zero model calls; binding semantics preserved | [Shared artifact evidence](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reuse/tenant-demos/6085ec575672402c8e3fd16e7ed011c2/scenarios.json) | PASS |
-| I. Drift | `replay_tenant.py --all` | Unique fallback succeeds; ambiguous drift stops safely | [Evaluation metrics](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/evals/c812dfc3de4c41248f5f6c279a228b2a/summary.json) | PASS |
-| J. Health | `run_reliability_eval.py` | 15 successful runs; Bank A HEALTHY; Bank B DEGRADED from fallback telemetry | [Derived health](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/health/7cdb05d231234f6ea4403167cb1de13c/derived/successful_drift/get_member_balance/1.0.0/6677c3630ef84d5c9ed29e9d4f88dd3e/summary.json) | PASS |
+Interactive discovery and replay share HandoffManager and SessionController. HUMAN_REQUIRED pauses the same session; taking control grants HUMAN ownership and blocks automation UI actions. Supported human actions are audited. Handback requires a fresh observation and trusted identity/state checkpoints. Discovery discards cached output and requests a new decision; replay does not repeat a completed human confirmation.
 
-All ten core claims passed. The first real-provider attempt received HTTP 503 responses and did not complete. Its FAIL and downstream skips are retained in `report.json` and `live/`; one fresh bounded attempt in `live-retry/` passed all four dependent checks. The reviewed report retains both attempts rather than rewriting a failed run.
+Discovery currently supports supervisor-notice acknowledgement. Other interventions remain paused for inspection/cancellation until the total deadline. Non-interactive discovery returns HUMAN_REQUIRED and closes. Successful human-assisted discovery retains evidence but is not automatically compiled: explicit review/approval would be required, and that workflow is intentionally not implemented. Acceptance operators are scripted; a person can use the same panel through the interactive commands.
 
-## Tests and evaluation
+## Evidence selection and integrity
 
-- Final combined suite: **244 passed** (97.20 seconds), including all 36 browser tests.
-- Normal suite: 208 passed, 36 browser tests skipped by default.
-- Opt-in browser suite: 36 passed, including five new browser security tests.
-- Pyright: zero errors and warnings.
-- Automated evaluation: all 13 expectations matched; five successful reads, one valid business outcome, six terminal failures, one human stop. Completion 46.2%, primary resolution 91.3%, fallback usage 8.7%, fallback recovery 40%, human intervention 7.7%, seven drift events. The injected-fault mix is not a production reliability estimate.
-- Secret-shape and current-credential matching found no credential leaks in repository text. Fictional PII/secret canary scans passed over newly generated evidence, including numeric business values. Matched values are never printed. These are bounded scans, not a general DLP guarantee.
+Two curated archives cover complementary claims: the initial hardening archive contains recovery, evaluation, tenant/health telemetry, replay handoff and a retained provider 503 failure; the completion archive adds real discovery-time takeover and a fresh unassisted pipeline. Canonical capability provenance remains at its original paths.
 
-Re-run the bounded text scan with:
+Successful raw JSON/JSONL and selected images are unchanged. Original archive manifests preserve SHA-256/source mappings. Cleanup excludes six aggregate command reports with machine-specific absolute paths; component run reports and traces remain. The archive indexes name these omissions. Original source references identify ignored local runs; use manifest mappings for selected copies. Unselected bulk runs and omitted legacy screenshots are not promised as files in a fresh clone.
+
+## Screenshot privacy
+
+Selective redaction is the default for the trusted simulator privacy profile. Inputs, table values, sensitive fields and embedded content are masked before encoding/writing; labels, headings, buttons and layout remain visible. Per-image manifests record coverage and policy, never masked values. Unknown/incomplete/unstable coverage causes FULL_MASK; DISABLED is also supported.
+
+The first archive intentionally retains two opaque fallback images with `fallback_full_mask=true`. They demonstrate fail-closed privacy, not usable visual debugging. Other retained image examples are selectively redacted. Pixel tests check sensitive masks and visible headings; representative actual captures are visually inspected. Legacy all-black captures without a useful privacy manifest are excluded.
+
+## Security and limits
+
+Exact-origin controls block off-origin requests/redirects; service workers, downloads and WebSockets are disabled. Typed discovery actions exclude model-provided scripts, shell, raw selectors and arbitrary URLs. Policy remains authoritative. Tested injection containment is not universal prompt-injection immunity.
+
+Text scans check credential shapes, current key values and fictional PII canaries without printing matches. They are bounded checks, not general DLP. Fixtures intentionally contain fictional banking data. Selective redaction needs a reviewed profile. Artifacts are trusted local configuration; operator authentication and in-memory resume are demonstration scope. Health/evaluation results describe controlled scenarios, not production reliability.
 
 ```sh
-.venv/bin/python -m acceptance.privacy --repository --evidence evidence/acceptance-local/<run-id>
+.venv/bin/python -m acceptance.privacy --repository --evidence evidence/acceptance
 ```
 
-## Screenshot policy and inspection
+## Latest live pipeline verification
 
-`PlaywrightSurface.open(..., screenshot_policy=ScreenshotPolicy.SELECTIVE_REDACTION)` is the default. `FULL_MASK` and `DISABLED` remain explicit options. The trusted simulator declares a capture-only privacy profile and workflow state; capability locators do not use these annotations. Required categories must be present for sensitive states. All inputs, table values, marked sensitive fields, and embedded content are masked. Labels, headings, branding, buttons, loading notices, and modal/workflow structure remain visible. The reference iframe is conservatively masked.
-
-Chromium applies masks before image encoding. Screenshot calls receive no disk path; only the safe bytes are written. The adapter compares inventories and DOM structure before/after selective capture, discards uncertified in-memory bytes, and captures FULL_MASK if coverage or stability cannot be established. Each evidence image has a `.png.json` manifest with policy, category/count, and fallback reason; it contains no masked values. DISABLED produces a manifest/event and no image.
-
-Pixel tests verify solid masks over member/name/balance/account/deposit/password/token fields, while heading pixels remain non-uniform. Inspection of representative account-opened and balance screens confirms useful layout and hidden values. Application screenshots show the workflow/modal state; ownership is recorded in the associated handoff events, not claimed as native-browser gesture capture.
-
-Some historical images remain fully black because they predate this policy. Two captures in the initial current acceptance run also used the conservative full-mask fallback when a stable selective capture could not be certified; the manifests explicitly say REDACTION_FALLBACK_FULL_MASK. Representative final balance and account-opening screenshots are selective, not fully black. Both actual black fallback examples are retained for review.
-
-## Evidence selection
-
-The final submission selection is `evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/`. It retains the real discovery/compilation/validation pipeline, recovery and handoff traces, aggregate evaluation/tenant/health reports, a few representative raw runs, and 16 representative screenshots. Bulk runs remain under ignored `evidence/acceptance-local/8488062ae9bc4e31b821e6a9ae4d8793/`. No historically committed evidence was deleted or rewritten. Existing documentation references were inventoried before changing ignore rules.
-
-The archive manifest gives SHA-256 hashes and maps original paths to copied files. Source JSON is preserved byte-for-byte, so original evidence references still name the local root; use the archive mapping for retained copies. Unselected raw stress runs can be regenerated with the recorded commands; their aggregate metrics, source IDs, and digests remain in the reports.
-
-## Security guardrails verified
-
-| Guardrail | Finding / action | Verification |
-|---|---|---|
-| Origin restriction | Added exact scheme/host/port allowlist. Loopback defaults; file demos pin one file URL. Context-wide routing blocks off-origin navigation, redirects, frames, popups, and fetches. Service workers/downloads disabled; WebSockets blocked. | Allowed local navigation and blocked external/redirect browser tests. |
-| Screenshot privacy | Replaced unconditional black screenshots with certified simulator masking and fail-closed fallback. | Pixel assertions, manifests, no-path capture assertions, manual image inspection. |
-| Goal privacy | Free-form discovery goals could retain nonnumeric private text. Replaced persisted goal with fixed redacted workflow description. | Secret-canary discovery test and generated evidence scans. |
-| Model action boundary | Existing typed operations already reject scripts, shell commands, URLs, literal inputs, CSS/XPath, and model-supplied policy fields. No new execution route added. | Schema rejection tests plus real-browser adversarial proposal. |
-| Prompt injection | Malicious-looking simulator text is observation data; an attempted Transfer All Funds proposal is blocked by authoritative unreviewed-risk policy before dispatch. | HUMAN_REQUIRED, attempted=false, server mutation counters zero. Not universal immunity. |
-| Policy integrity | Existing draft validation, binding restrictions, and reliability policy preserve safety. | Prior tests verify draft cannot self-approve, bindings cannot change semantics, degraded health cannot weaken BLOCK/REQUIRE_HUMAN. |
-| Ownership and mutation | Existing controller blocks automation during HUMAN ownership; irreversible uncertainty verifies instead of blind retry. | Browser takeover tests, retained ownership counts, fresh resume checkpoints, one confirmation/account. |
-| Model-free replay | Existing transitive dependency checks retained; fresh validation worker blocks model modules and removes model credentials. | Import graph tests and actual different-member validation. |
-
-Configure additional trusted origins explicitly with `allowed_origins=frozenset({"http://127.0.0.1:8765"})`. Entries are exact origins, not URL prefixes. An off-origin request taints the session and subsequent Surface interactions fail closed. This is a trusted local demo boundary, not browser-process sandboxing.
-
-## Known limitations
-
-- Handoff uses a bounded mediated operator panel and a clearly labeled scripted acceptance driver, not arbitrary native-browser action capture.
-- Resume/control state is in memory; no durable cross-process recovery.
-- Authentication is local/minimal; artifacts and application markup are trusted, not cryptographically authenticated.
-- Selective redaction is a reviewed simulator contract, not automatic PII discovery. Unknown applications require a new reviewed profile or use FULL_MASK. Fully masking embedded content trades detail for privacy.
-- Typed actions and policy contain the tested injection attempt; a malicious application that misrepresents a safe control is outside this proof. No universal prompt-injection immunity is claimed.
-- Desktop automation remains an abstraction without an implementation.
-- Provider availability and browser timing remain variable. Live discovery can fail independently of deterministic replay, as the retained 503 attempt demonstrates.
-- Replay tests and stress evaluation demonstrate bounded scenarios, not statistical production reliability or authorization for real financial transactions.
+After the credential update, the [retained real Gemini retry](../evidence/acceptance/key-retry-20260914-1/README.md) passed discovery, compilation, different-input zero-model replay and MEMBER_NOT_FOUND. Discovery used six calls including retries. This follow-up resolves the earlier live-check gap; the original failed attempt and full-suite results remain intact. No additional full-suite or handoff rerun is claimed.

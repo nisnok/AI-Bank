@@ -1,0 +1,21 @@
+{
+  "session_id": "a09b132c20af4f2f94b7497bde7f3c34",
+  "input_source": "scripted_acceptance",
+  "handoff_count": 1,
+  "human_action_count": 1,
+  "ownership_checks": [
+    {
+      "handoff": 1,
+      "automation_actions_during_human_control": 0
+    },
+    {
+      "handoff": 1,
+      "automation_actions_during_human_control": 0
+    }
+  ],
+  "action_counts": {
+    "AUTOMATION": 2,
+    "HUMAN": 1
+  },
+  "status": "SUCCESS"
+}

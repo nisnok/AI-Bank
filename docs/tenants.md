@@ -1,4 +1,4 @@
-# Milestone 6: canonical capability reuse and controlled UI drift
+# canonical capability reuse and controlled UI drift
 
 ## Reviewer commands
 
@@ -104,31 +104,13 @@ The existing EvidenceWriter records typed LocatorTelemetry per resolution, inclu
 
 Quality uses the existing resolver categories: semantic, structural, css_fallback, unresolved. A fallback remains successful when its target is unique. The engine does not automatically disable, degrade, rewrite, or fail a capability because a fallback was used.
 
-A signal indicates a changed resolution path or ambiguity; it does not by itself establish the cause. Structural changes that preserve semantic resolution may produce no drift signal. No aggregate health score or reliability dashboard is implemented.
+A signal indicates a changed resolution path or ambiguity; it does not by itself establish the cause. Structural changes that preserve semantic resolution may produce no drift signal. The separate health layer aggregates these signals; no interactive reliability dashboard is implemented.
 
 ## Actual acceptance evidence
 
-The genuine seven-scenario browser run is indexed at:
+The [retained seven-scenario browser report](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reuse/tenant-demos/6085ec575672402c8e3fd16e7ed011c2/scenarios.json) covers Bank A/B baselines, label and structural drift, ambiguity, a missing member, and an incompatible version. All use one canonical artifact digest and zero model calls. Unique fallback succeeds; ambiguity records zero search submissions. Selected raw telemetry and result bundles are retained next to the report; bulk traces are local-only.
 
-[evidence/tenant-demos/f95ba7b302414500a75301a83da87b72/README.md](../evidence/tenant-demos/f95ba7b302414500a75301a83da87b72/README.md)
-
-| Scenario | Result | Run directory under evidence/tenants |
-|---|---|---|
-| Bank A baseline | SUCCESS | 0b438a1e721342aab35fa41bdc3623ef |
-| Bank B baseline | SUCCESS | d96e824a8ad74f67878c7055ea3abeea |
-| Bank B label drift | SUCCESS, fallback signals | cea50aab61f3487b8a50cd4898193617 |
-| Bank B structural drift | SUCCESS | a11b22997ba046579eede1b007f0c194 |
-| Bank B ambiguity | HUMAN_REQUIRED / AMBIGUOUS_TARGET | 2c1ab64ee52e44938c1dae0b64bac76e |
-| Bank B missing member | BUSINESS_OUTCOME / MEMBER_NOT_FOUND | 9bc634bdd8994398bdee8a84db41fc90 |
-| Bank B incompatible version | HARD_FAILURE / INCOMPATIBLE_APPLICATION_VERSION | f50be57402da4ee59662cb533fbc4081 |
-
-All seven reference the same canonical digest and report zero model calls. Bank B's successful and drift runs reference the same binding file. The ambiguity scenario records zero server-observed search submissions. The generated index also records import-guard checks and submission counts; these come from execution, not hand-authored success records.
-
-The label-drift run records primary failure, successful CSS fallback at depth 2, one match, css_fallback quality, and final SUCCESS. Its three fallback signals correspond to the input visibility check, fill target resolution, and value postcondition.
-
-Browser tests independently assert the returned balance is Decimal("807.20") for member 83921 on both tenants and safe drift variants. Runtime balances are intentionally omitted from persisted result outputs. These historical screenshots retain full masking; new simulator captures use selective redaction.
-
-The acceptance bundle predates the additional observed-product/tenant fields for rejected preflight runs; it has not been rewritten. New executions include those fields. The existing rejected-version record already records the actual incompatibility result.
+Browser tests independently verify the expected Decimal balance for the different member on both tenants. Runtime values are deliberately omitted from persisted results. The [evidence index](../evidence/README.md) links the shared artifact and identity/isolation checks.
 
 ## Verification and remaining limits
 
@@ -140,10 +122,10 @@ RUN_BROWSER_TESTS=1 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python
 
 Tests cover both tenants, typed contracts, protected binding fields, digest/version checks, approval preservation, missing bindings, fallback signals, ambiguity without clicks, structural drift, business outcomes, observed compatibility, and all earlier milestones.
 
-The full browser suite passed 192 tests before the final three binding-ladder tests were added. Those additional tests passed in the focused tenant suite. The requested final browser rerun was declined by the approval prompt; no newer full-browser result is claimed.
+Current full-suite results are recorded in [acceptance](acceptance.md).
 
 Remaining limitations are trusted unsigned locator configuration, exact version matching, file-backed evidence, simulator-specific screenshot redaction, per-resolution telemetry volume, and preflight identity that is not continuously re-attested during every UI operation. Effective capabilities are transient and there is no persistent binding-promotion/governance service. New business workflows require new capability versions.
 
-Capability-health aggregation, automatic repair, self-healing, tenant dashboards, and distributed infrastructure remain out of scope.
+Capability-health aggregation is implemented separately. Automatic repair, self-healing, tenant dashboards, and distributed infrastructure remain out of scope.
 
 [Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

@@ -31,3 +31,9 @@ def savings_plans():
                            irreversible=True, preconditions=[identity, review, deposit],
                            postconditions=[opened, identity, posted])]),
     }
+
+
+def discovery_plans():
+    """Only the existing supervisor notice action is supported for balance discovery."""
+    existing = savings_plans()["verify_member"]
+    return {"discovery": ResumePlan(completed=existing.retry, actions=existing.actions)}

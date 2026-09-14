@@ -1,4 +1,4 @@
-# Milestone 2: legacy banking back-office simulator
+# legacy banking back-office simulator
 
 The simulator is a separate, local Python package. It exercises the existing deterministic replay architecture; it is not discovery and never reads the Gemini API key. No additional dependencies, databases, frontend frameworks, or model integrations were added.
 
@@ -122,13 +122,13 @@ Actual runs write existing evidence bundles under `evidence/<run_id>/`: metadata
 
 Surface, PlaywrightSurface, LocatorResolver, PolicyEngine, and the evidence API are unchanged. Replay depends only on domain services and Surface. Existing architecture tests still enforce that its transitive imports contain no Playwright or LLM SDK, that artifacts import only the standard library/Pydantic, and that Playwright imports remain isolated to the adapter.
 
-## Deliberate limits before discovery
+## Deliberate simulator limits
 
 This server is only for local training: it has no real authentication, durable ledger, TLS, session expiry clock, cleanup scheduler, or restart recovery. Sessions are retained until process exit. Faults are selected at session creation, not injected randomly. The threaded server intentionally favors transparency over production hosting features.
 
 The reference iframe is meaningful to an employee but is not an automated transaction frame. General frame traversal remains out of scope. Historical screenshots are fully masked; new simulator captures use selective redaction with a full-mask fallback (see [acceptance](acceptance.md)). Application/version compatibility metadata remains descriptive. Operational faults use checkpoint errors rather than bespoke session/modal classifications. Initial-deposit comparison against the review UI is covered by the controlled simulator's server state and tests; the artifact verifies the review page and member, not an independent numeric deposit comparison. A real financial workflow should add that comparison and stronger freshness/transaction binding before deployment.
 
-Before discovery, review compiler validation and approval trust, risk labels, record-identity/freshness guarantees, deposit reconciliation, observation redaction, and same-session lifecycle ownership. No Gemini, discovery, compiler, takeover UI, tenant overlays, health scoring, drift aggregation, or automatic healing is implemented in this milestone.
+Discovery, compilation, takeover, tenant bindings, health and evaluation are separate layers described in the root README. The simulator does not invoke those layers. Automatic healing is not implemented.
 
 Milestone 5 makes the existing supervisor-notice modal acknowledgeable and adds a semantic posted-deposit value for verified handback. The dedicated handoff demo performs the human confirmation through its audited operator controller; the original preparation runner retains its stop-before-confirmation behavior.
 

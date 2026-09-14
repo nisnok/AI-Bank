@@ -18,6 +18,8 @@ class CapabilityCompiler:
 
     def compile(self, discovery_result: DiscoveryResult, capability_spec: CapabilitySpec) -> CapabilityArtifact:
         result, spec = discovery_result, capability_spec
+        if result.handoff_occurred or result.human_action_count:
+            raise CompilationError('HUMAN_ASSISTED_TRAJECTORY_REQUIRES_REVIEW')
         if result.status != DiscoveryStatus.SUCCESS or not result.trajectory:
             raise CompilationError('SUCCESSFUL_DISCOVERY_REQUIRED')
         if set(spec.inputs) != {'member_id'} or set(spec.outputs) != {'savings_balance'}:

@@ -1,0 +1,30 @@
+{
+  "handoff_occurred": true,
+  "human_action_count": 1,
+  "run_id": "823887aebba94a52931c514ea83e562b",
+  "status": "SUCCESS",
+  "code": "VERIFIED_BALANCE",
+  "provider": "mock",
+  "model": "scripted-decisions",
+  "model_calls": 4,
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "thinking_tokens": 0
+  },
+  "latency_ms": 653.521,
+  "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/discovery-handoff/407c1afb6b6740e3a300d1aac3e67073/runs/823887aebba94a52931c514ea83e562b",
+  "goal": "Find member [MEMBER_ID] and retrieve their savings balance.",
+  "outputs": {
+    "savings_balance": {
+      "type": "Decimal",
+      "value": "[redacted]"
+    }
+  },
+  "trajectory": [
+    "trajectory-001.json",
+    "trajectory-002.json",
+    "trajectory-004.json",
+    "trajectory-005.json"
+  ]
+}

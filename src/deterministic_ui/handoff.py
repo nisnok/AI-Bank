@@ -10,7 +10,7 @@ from .control import ControlOwner, SessionController
 from .evidence import EvidenceWriter
 from .handoff_port import HandoffHandler, ResumeDisposition
 from .models import (Action, CapabilityArtifact, Condition, Model, ResumeInfo, Risk,
-                     RunResult, Scalar, SemanticTarget, Status, Step)
+                     RunResult, Scalar, SemanticTarget, Status, Step, Failure)
 from .resolver import LocatorResolver
 from .surface import SurfaceError
 from .templates import render
@@ -96,7 +96,34 @@ class HandoffManager(HandoffHandler):
 
     async def resolve(self, artifact: CapabilityArtifact, step: Step, result: RunResult,
                       inputs: dict[str, Scalar], evidence: EvidenceWriter) -> ResumeDisposition:
+        return await self._resolve(step, result, inputs, evidence)
+
+    async def resolve_discovery(self, reason: str, inputs: dict[str, Scalar],
+                                evidence: EvidenceWriter) -> ResumeDisposition:
+        """Use the same control-transfer loop with a trusted discovery resume plan.
+
+        This checkpoint is bookkeeping, not a discovered action to execute or compile.
+        No model-authored action, target, or risk config enters the operator plan.
+        """
+        plan = self.plans.get("discovery", ResumePlan())
+        checkpoint = (plan.completed or plan.retry)
+        if not checkpoint:
+            # An unconfigured stop can still be inspected/cancelled, never resumed.
+            target = SemanticTarget.model_validate({"concept":"discovery_stop", "strategies":[
+                {"type":"accessibility", "role":"status", "name":"Unconfigured discovery checkpoint"}]})
+        else:
+            target = checkpoint[0].target
+        step = Step(id="discovery", action=Action.WAIT, target=target, risk=Risk.READ,
+                    postcondition=checkpoint[0] if checkpoint else Condition(id="discovery_resume", target=target))
+        result = RunResult(run_id=evidence.run_id, status=Status.HUMAN_REQUIRED,
+            failure=Failure(run_id=evidence.run_id, step_id=step.id, code=reason,
+                            safe_next_action="Use the bounded operator panel or stop the run"))
+        return await self._resolve(step, result, inputs, evidence, require_human_action=True)
+
+    async def _resolve(self, step: Step, result: RunResult, inputs: dict[str, Scalar],
+                       evidence: EvidenceWriter, *, require_human_action: bool = False) -> ResumeDisposition:
         self._evidence, self._inputs = evidence, inputs
+        human_actions_before = self.human_action_count
         self._plan = self.plans.get(step.id, ResumePlan())
         self._handoff_number += 1
         self.handoff_occurred = True
@@ -106,7 +133,8 @@ class HandoffManager(HandoffHandler):
             checkpoint_ids=[c.id for c in [*self._plan.completed, *self._plan.retry]],
             evidence_ref=str(evidence.events_path))
         self.pending = result.model_copy(update={"resume": resume, "outputs": {}})
-        evidence.write_json(f"handoff-{self._handoff_number}.json", self.pending.model_dump(mode="json"))
+        evidence.write_json(f"handoff-{self._handoff_number}.json", self.pending.model_dump(mode="json",
+            exclude={"model_calls"} if evidence.context.execution_mode == "llm_discovery" else set()))
         self._emit("handoff_requested", step_id=step.id, status=resume.reason_code)
         self.state = HandoffState.PAUSED
         self._emit("automation_paused", step_id=step.id, status=self.state)
@@ -123,6 +151,10 @@ class HandoffManager(HandoffHandler):
             self._emit("resume_observation", step_id=step.id,
                        status="BLOCKING_DIALOG" if observation.dialogs else "FRESH_OBSERVATION")
             await evidence.screenshot(surface, f"handback_{self._handoff_number}_{self.human_action_count}")
+            if require_human_action and self.human_action_count == human_actions_before:
+                self.state = HandoffState.HUMAN_REQUIRED
+                self._emit("resume_rejected", step_id=step.id, status="HUMAN_ACTION_REQUIRED")
+                continue
             completed = [*self._plan.completed]
             if step.postcondition:
                 completed.append(step.postcondition)
@@ -253,8 +285,11 @@ class HandoffManager(HandoffHandler):
                     "page_text": observation.text,  # Live local display only, never disk evidence.
                     "human_action_count": self.human_action_count}
 
-    def finished(self, result):
-        self.state = HandoffState.COMPLETED if result.status == Status.SUCCESS else HandoffState.FAILED
+    def finished(self, result: RunResult):
+        self.finish_run(result.status, result.model_calls)
+
+    def finish_run(self, status: str, model_calls: int):
+        self.state = HandoffState.COMPLETED if status in {Status.SUCCESS, Status.BUSINESS_OUTCOME} else HandoffState.FAILED
         if self._evidence:
             self._evidence.write_json("control-summary.json", {
                 "session_id": self.controller.session_id,
@@ -263,6 +298,6 @@ class HandoffManager(HandoffHandler):
                 "human_action_count": self.human_action_count,
                 "ownership_checks": self._ownership_checks,
                 "action_counts": self.controller.action_counts,
-                "status": result.status,
+                "status": status,
             })
-            self._emit("final_result", status=result.status, model_calls=0)
+            self._emit("final_result", status=status, model_calls=model_calls)

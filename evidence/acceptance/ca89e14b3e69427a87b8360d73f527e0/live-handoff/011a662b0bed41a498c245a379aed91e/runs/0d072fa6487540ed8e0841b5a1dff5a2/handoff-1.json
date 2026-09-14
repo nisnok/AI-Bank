@@ -1,0 +1,30 @@
+{
+  "run_id": "0d072fa6487540ed8e0841b5a1dff5a2",
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": {
+    "blocked_step_id": "discovery",
+    "reason_code": "DIALOG_PRESENT",
+    "expected_state": "Operator must satisfy the declared resume checks",
+    "checkpoint_ids": [
+      "handoff_member_verified",
+      "notice_dismissed"
+    ],
+    "evidence_ref": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e/runs/0d072fa6487540ed8e0841b5a1dff5a2/events.jsonl"
+  },
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "0d072fa6487540ed8e0841b5a1dff5a2",
+    "step_id": "discovery",
+    "code": "DIALOG_PRESENT",
+    "expected_condition": null,
+    "observed_condition": null,
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Use the bounded operator panel or stop the run",
+    "evidence_refs": []
+  },
+  "evidence_refs": []
+}

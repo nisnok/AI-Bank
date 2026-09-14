@@ -18,15 +18,14 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_reliab
 
 The harness prints its evaluation directory. To recompute its final population, pass that directory's `runs` subdirectory to `--evidence`. Optional `--thresholds path.json` loads a strict Thresholds model; `--store path` selects the derived-data root.
 
-The actual 21-run demonstration is indexed at
-[evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/README.md](../evidence/reliability/cd5175d3d05e40d0bd1646db8d1bdd4a/README.md).
+The retained 15-run demonstration is indexed in the [health evidence](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/health/7cdb05d231234f6ea4403167cb1de13c/README.md). The optional six-failure extension can be reproduced with `--include-failures`.
 
 | Phase | Bank A | Bank B | Overall |
 |---|---|---|---|
 | 5 Bank A clean runs | HEALTHY | no samples yet | HEALTHY |
 | Add 5 Bank B clean runs | HEALTHY | HEALTHY | HEALTHY |
 | Add 5 Bank B label-drift runs, all SUCCESS | HEALTHY | DEGRADED | DEGRADED |
-| Add 3 Bank B ambiguity + 3 incompatible-version runs | HEALTHY | UNHEALTHY | UNHEALTHY |
+| Optional extension: add 3 Bank B ambiguity + 3 incompatible-version runs (not part of retained 15-run sample) | HEALTHY | UNHEALTHY | UNHEALTHY |
 
 At the successful-drift phase, all 15 executions succeeded. Bank B's action-target fallback rate was 16.7%, compared with 0% for Bank A. Bank B's latest five runs used fallback on 33.3% of action-target resolutions, versus 0% in its preceding five runs. Reasons included FALLBACK_USAGE_HIGH, PRIMARY_LOCATOR_MATCH_RATE_LOW, LOCATOR_DRIFT_OBSERVED, and FALLBACK_USAGE_INCREASING.
 

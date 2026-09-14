@@ -1,6 +1,5 @@
 # Curated acceptance evidence
 
-[Final reviewed results](reviewed-report.json) · [Initial attempt](report.json) · [Final test/type checks](final-checks.json) · [Submission scans](submission-scans.json) · [Source/archive mapping](archive-manifest.json)
 
 Source JSON/JSONL is copied byte-for-byte. Original paths refer to the ignored local run root; the archive manifest maps them to these retained files. Image manifests for omitted images describe original captures; only the representative images below are included.
 
@@ -23,3 +22,9 @@ Source JSON/JSONL is copied byte-for-byte. Original paths refer to the ignored l
 - [handoff/cf9eee0ef2d84e818f359364ba36ac54/screenshots/search_member.png](handoff/cf9eee0ef2d84e818f359364ba36ac54/screenshots/search_member.png)
 
 - [Supervisor notice before handoff](handoff/cf9eee0ef2d84e818f359364ba36ac54/screenshots/handoff_1.png)
+
+## Cleanup selection
+
+The original archive manifest remains unchanged. These aggregate reports are intentionally excluded because their command strings contain machine-specific absolute paths: `checks.json`, `initial-run-index.md`, `report.json`, `reviewed-report.json`. Component run records remain unchanged and their hashes can be checked against the manifest. Omitted entries are not missing successful-run evidence. Use the [submission evidence map](../../README.md) and [current verification](../../../docs/cleanup.md).
+
+The `search_member.png` and failed-provider `3.png` examples above are intentional FULL_MASK fallback captures. Their adjacent manifests record `fallback_full_mask=true`; all-black pixels demonstrate fail-closed privacy when selective coverage could not be certified.

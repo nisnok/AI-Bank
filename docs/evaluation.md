@@ -80,7 +80,7 @@ Raw runtime values, page text, credentials, and selectors are not copied into fa
 
 ## Interpretation and limits
 
-The [completed browser evaluation](../evidence/evals/3dbc86c3ef07491c85270bbf96790974/summary.json) exercised all 13 scenarios with 100% expectation agreement and zero model calls. Reliable completion was 46.2% (5 successes plus 1 business outcome), primary locator success 91.3% (21/23 action resolutions), fallback usage 8.7% (2/23), fallback recovery 40% (2/5 fallback-attempting runs), terminal failures 46.2% (6/13), and human intervention 7.7% (1/13). It recorded seven drift events; PAGE_STATE_INVALID was the most frequent failure. Earlier evaluation directories retain the actual unsuccessful development checks rather than being overwritten.
+The [completed browser evaluation](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/evals/c812dfc3de4c41248f5f6c279a228b2a/summary.json) exercised all 13 scenarios with 100% expectation agreement and zero model calls. Reliable completion was 46.2% (5 successes plus 1 business outcome), primary locator success 91.3% (21/23 action resolutions), fallback usage 8.7% (2/23), fallback recovery 40% (2/5 fallback-attempting runs), terminal failures 46.2% (6/13), and human intervention 7.7% (1/13). It recorded seven drift events; PAGE_STATE_INVALID was the most frequent failure. Redundant development runs are excluded from submission and preserved locally; retained provider-failure evidence is identified in the evidence index.
 
 The default suite is deliberately adversarial. A safe refusal in a negative scenario counts as an evaluation expectation passing, while remaining an unsuccessful workflow in the execution metrics. Always inspect both rates.
 

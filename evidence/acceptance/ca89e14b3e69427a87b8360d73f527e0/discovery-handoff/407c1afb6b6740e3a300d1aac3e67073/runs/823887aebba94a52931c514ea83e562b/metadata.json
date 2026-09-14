@@ -1,0 +1,14 @@
+{
+  "run_id": "823887aebba94a52931c514ea83e562b",
+  "capability_id": null,
+  "capability_version": null,
+  "schema_version": null,
+  "execution_mode": "llm_discovery",
+  "actor": "MODEL",
+  "provider": "mock",
+  "model": "scripted-decisions",
+  "goal": "Find member [MEMBER_ID] and retrieve their savings balance.",
+  "model_calls_at_start": 0,
+  "started_at": "2026-09-14T00:10:25.362278+00:00",
+  "redaction": "runtime values omitted; screenshot policy recorded in per-image manifests"
+}

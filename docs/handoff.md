@@ -1,4 +1,4 @@
-# Milestone 5: same-session operator takeover and safe resume
+# same-session operator takeover and safe resume
 
 ## Interactive demo
 
@@ -78,7 +78,7 @@ One simulator session; search=1; confirm=1; accounts_opened=1
 Automation actions during each HUMAN lease: 0
 ```
 
-Evidence: `evidence/handoff/b6eab5f962ac4003b58b03dc576d3924/`.
+Evidence: [retained replay handoff](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/control-summary.json). The adjacent files contain the full timeline and action records.
 
 - `metadata.json`: original capability identity and replay mode.
 - `events.jsonl`: replay actions, handoff_requested, automation_paused, control_transferred, human_action, handback_requested, control_returned, resume_observation, resume_checkpoint_verified, resumed, final_result.
@@ -86,7 +86,7 @@ Evidence: `evidence/handoff/b6eab5f962ac4003b58b03dc576d3924/`.
 - `human-action-1.json`, `human-action-2.json`: timestamp, actor/source, semantic action ID, run/session ID, redacted before/after state, verified condition IDs, outcome, and screenshot reference.
 - `control-summary.json`: the stable session identifier, per-owner action counts, and checked zero-automation-action intervals.
 - `result.json`: final SUCCESS with two operator actions and zero model calls.
-- `screenshots/`: existing fully masked captures around handoff, human actions, handback, and final state.
+- `screenshots/`: selected selectively-redacted captures around handoff, human actions, handback, and final state, plus an explicitly documented full-mask fallback.
 
 Live page text is displayed locally in memory; it is not written into evidence. Typed values, member identity, deposit, cookies, raw URLs, credentials, and arbitrary selector text are excluded from action records. No hidden model reasoning exists on this path. Human action intent is persisted before dispatch; a process crash may leave intent without a completion record, which must be treated as uncertain.
 
@@ -116,6 +116,12 @@ Replay imports only its abstract handoff continuation port and domain services. 
 - Evidence is file-backed; new simulator screenshots use selective masking with conservative fallback. A browser failure during an action may leave only its pre-dispatch intent event.
 - The automated acceptance run proves the mechanism; a person can exercise the interactive command above. No physical human participation is claimed.
 
-[Milestone 6](tenants.md) adds locator-only tenant reuse separately. Capability health, automatic healing, LLM repair, and distributed services remain out of scope.
+[Milestone 6](tenants.md) adds locator-only tenant reuse separately. Capability health is implemented separately. Automatic healing, LLM repair, and distributed services remain out of scope.
 
 [Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.
+
+## Discovery integration
+
+Discovery now calls `HandoffManager.resolve_discovery`, which delegates to the same internal pause/transfer/audit/checkpoint loop used by replay. It supplies a trusted discovery resume plan, not model-authored operator actions. The existing supervisor-notice action is reused. A no-action handback and a handback with incorrect member identity are rejected. Once verified, discovery makes a fresh observation/decision rather than retrying the suspended proposal. Non-interactive discovery may still stop cleanly on HUMAN_REQUIRED.
+
+Human assistance is recorded separately and does not automatically enter a compiled capability. Control state remains in memory, and the total discovery deadline includes operator time. See [discovery demo commands](../README.md#discovery-time-intervention).

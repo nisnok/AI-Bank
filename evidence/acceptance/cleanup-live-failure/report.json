@@ -1,0 +1,20 @@
+{
+  "claims": {
+    "discovery": {
+      "status": "FAIL",
+      "reason": "AssertionError"
+    },
+    "compilation": {
+      "status": "SKIPPED_WITH_REASON",
+      "reason": "SUCCESSFUL_REAL_DISCOVERY_REQUIRED"
+    },
+    "zero_model_replay": {
+      "status": "SKIPPED_WITH_REASON",
+      "reason": "SUCCESSFUL_REAL_DISCOVERY_REQUIRED"
+    },
+    "business_outcome": {
+      "status": "SKIPPED_WITH_REASON",
+      "reason": "SUCCESSFUL_REAL_DISCOVERY_REQUIRED"
+    }
+  }
+}

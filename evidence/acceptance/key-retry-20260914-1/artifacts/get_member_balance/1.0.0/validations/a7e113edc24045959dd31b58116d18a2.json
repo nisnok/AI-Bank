@@ -1,0 +1,13 @@
+{
+  "code": "VALIDATED",
+  "different_inputs": true,
+  "draft_digest": "ba24dd5443f98efec129cf30c1fe48bfee6e5123d20a619c2170ff60381251a5",
+  "replay_run_id": "a7e113edc24045959dd31b58116d18a2",
+  "replay_status": "SUCCESS",
+  "model_calls": 0,
+  "evidence_refs": [
+    "evidence/acceptance-local/key-retry-20260914-1/validation/a7e113edc24045959dd31b58116d18a2/metadata.json",
+    "evidence/acceptance-local/key-retry-20260914-1/validation/a7e113edc24045959dd31b58116d18a2/events.jsonl",
+    "evidence/acceptance-local/key-retry-20260914-1/validation/a7e113edc24045959dd31b58116d18a2/result.json"
+  ]
+}

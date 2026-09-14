@@ -1,12 +1,42 @@
+# Python environments, browsers and build output
 .venv/
+.playwright/
 __pycache__/
+*.py[cod]
 .pytest_cache/
 *.egg-info/
-.playwright/
-.env
-evidence/discovery/
+.pyright/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+.coverage
+htmlcov/
 
-# Local generated runs stay local. Existing tracked historical evidence is retained.
+# Credentials and local machine files
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+*.tmp
+*.swp
+*~
+.idea/
+.vscode/*
+!.vscode/settings.json
+
+# Runtime evidence is local; retain only curated proof and canonical provenance.
 /evidence/*
+!/evidence/README.md
 !/evidence/acceptance/
+!/evidence/compilation/
+/evidence/compilation/*
+!/evidence/compilation/e1b022aa799f40b182e033a6753a7e0c/
+!/evidence/validation/
+/evidence/validation/*
+!/evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/
+!/evidence/generated-replay/
+/evidence/generated-replay/*
+!/evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/
 /health/

@@ -1,4 +1,4 @@
-# Milestone 3: real model-driven discovery
+# real model-driven discovery
 
 Discovery asks a model to choose individual UI actions against the live simulator. It does not load a capability artifact, call ReplayEngine, or import the simulator's record data. The optional account-preparation discovery workflow is intentionally deferred; the supported success contract is verified member savings-balance retrieval.
 
@@ -28,7 +28,7 @@ To use a manually started simulator, or watch the browser:
 ```sh
 .venv/bin/python -m bank_simulator.server
 # In another terminal:
-.venv/bin/python examples/run_discovery.py --url http://127.0.0.1:8765/ --headed
+.venv/bin/python examples/run_discovery.py --url http://127.0.0.1:8765/ --non-interactive --headed
 
 # A business-outcome goal:
 .venv/bin/python examples/run_discovery.py \
@@ -39,14 +39,7 @@ Only loopback HTTP URLs are accepted by the demonstration CLI. It accepts a goal
 
 ## Verified live run
 
-A genuine run using `gemini-3.5-flash` returned `SUCCESS / VERIFIED_BALANCE`:
-
-- 4 model calls: FILL, CLICK, EXTRACT, COMPLETE.
-- 2,541 input tokens, 318 output tokens, and 766 thinking tokens reported by the provider (count only; no thinking content persisted).
-- 33,131.828 ms measured discovery latency.
-- Local evidence: `evidence/discovery/01d663a4539c44ab9aa368010f1bdbe3/`.
-
-These are measurements from an actual execution, not fixtures. The directory is ignored and will not exist in a fresh clone; rerun the command to produce a new bundle. Earlier attempts also remain locally: Gemini 2.5 returned HTTP 404, and Gemini 3.8 returned HTTP 503 after its first successful decision. Those runs were recorded as failures, not replaced with mock success. Provider availability and model output can vary; the default is the model that completed the verified run.
+The retained [real Gemini run](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live/discovery/0d722350416e48fd8c73cf92ff66bf55/result.json) completed with four model calls. Its [pipeline report](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live/report.json) also verifies compilation and different-input replay. These are actual runs, not fixtures. Provider availability and model output can vary; historical success does not guarantee a new request will succeed.
 
 ## Dependency direction and interfaces
 
@@ -74,12 +67,12 @@ The orchestrator revalidates adapter results, detects stale observations, resolv
 
 Risk comes from trusted code in `discovery/safety.py`, never the model. The local profile permits member-identifier entry, the Search button, and reading balances. Other writes/clicks are sensitive; confirmation/deletion/transfer-like controls are irreversible. PolicyEngine's shared operation gate requires human review for unreviewed sensitive/irreversible actions even if a caller supplies an ALLOW rule. Default read/reversible-write decisions remain configurable. Target-free WAIT is also policy-gated.
 
-Unexpected dialogs stop discovery before the next decision. Ambiguous resolution stops without selecting the first match. No scripts, shell actions, arbitrary input values, arbitrary navigation, or direct browser calls are available to the model. Visible page content is marked as untrusted data in the prompt; policy remains the enforcement boundary.
+Unexpected dialogs pause interactive discovery before the next decision and enter the shared handoff loop. Non-interactive discovery returns HUMAN_REQUIRED. Ambiguous resolution stops without selecting the first match. No scripts, shell actions, arbitrary input values, arbitrary navigation, or direct browser calls are available to the model. Visible page content is marked as untrusted data in the prompt; policy remains the enforcement boundary.
 
 Default limits:
 
 - 12 decision attempts, with a hard configurable maximum of 30.
-- 120 seconds overall, including observations, provider waits, screenshots, and retries.
+- Orchestrator default: 120 seconds overall; interactive CLI default: 600 seconds, including human intervention, observations, provider waits, screenshots, and retries.
 - 4 seconds per UI action/checkpoint.
 - Stop on the third repeated state/action/target combination.
 - Stop after three consecutive action failures or transient provider failures.
@@ -99,13 +92,13 @@ Trajectory entries contain the decision, semantic target, actual resolution stra
 - `verified`: the observed postcondition passed.
 - `compilation_eligible`: the action was executed and verified; terminal decisions and rejected/uncertain actions are ineligible.
 
-Only successful whole-run trajectories are accepted by the [Milestone 4 compiler](compiler.md). An individual eligible step is not blanket approval for compilation.
+Only supported, successful, unassisted whole-run trajectories are accepted by the [compiler](compiler.md). An individual eligible step is not blanket approval for compilation.
 
 Full typed observations, decisions, semantic targets, trajectory, goal, and outputs remain in the returned in-memory result. Disk records omit runtime values and raw visible text, redact unknown labels, omit free-form model reasoning, and record a short generic operational reason. Historical screenshots are fully masked; new simulator captures use selective redaction with a full-mask fallback (see [acceptance](acceptance.md)). Provider responses and thought parts are never persisted. The logged goal is a fixed redacted workflow description; output records show their type and a redaction marker. Consequently, disk evidence is auditable but is not a lossless compiler input; Milestone 4 consumes the in-memory trajectory and excluded-from-serialization invocation bindings.
 
 Final results include provider, configured model name, total model-call attempts, token usage from successful structured replies, and total latency. HTTP errors do not expose token usage. Deterministic `RunResult` now explicitly has `model_calls=0`; ReplayEngine still imports no model component.
 
-Existing tracked replay evidence is untouched. New generated runs are ignored, alongside `.env`; the curated `evidence/acceptance/` archive is explicitly retained.
+New generated runs are ignored alongside `.env`; [curated evidence](../evidence/README.md) and canonical artifact provenance are retained.
 
 ## Tests and files
 
@@ -121,6 +114,12 @@ Added `src/discovery/{models,model_client,gemini_client,mock_client,safety,evide
 
 Remaining fragile areas: accessible-name normalization is a bounded approximation rather than a full accessibility-tree implementation; frame interactions are unsupported; the read-only safety/success contract is intentionally simulator-specific; semantic text checkpoints are weaker than transaction-bound assertions; projected evidence cannot reconstruct sensitive values; provider output and availability remain nondeterministic. Observation races are checked conservatively but browser operations are not atomic transactions.
 
-The [Milestone 5 handoff layer](handoff.md) adds operator takeover separately. [Milestone 6](tenants.md) adds tenant bindings separately. Health aggregation, drift dashboards, automatic healing, and persistent/distributed infrastructure remain unimplemented.
+The [Milestone 5 handoff layer](handoff.md) adds operator takeover separately. [Milestone 6](tenants.md) adds tenant bindings separately. Health aggregation is implemented in a separate layer. Drift dashboards, automatic healing, and persistent/distributed infrastructure remain unimplemented.
 
 [Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.
+
+## Discovery handoff completion
+
+The interactive discovery CLI now shares HandoffManager, SessionController, and OperatorServer with replay. A dialog or blocked/stuck decision pauses in the same session. Supported manual notice acknowledgement is audited as HUMAN; no model call or automation action proceeds during HUMAN ownership. Handback must verify the loaded member and absent notice. Discovery then discards cached output and observes anew before requesting another decision. Old blocked decisions are never directly re-dispatched.
+
+Interactive mode is the CLI default. `--non-interactive` retains clean CI termination on HUMAN_REQUIRED. The overall bounded deadline includes operator time. Other unsupported interventions can be inspected/cancelled; they do not gain arbitrary browser actions. Human-assisted trajectories require explicit review and are rejected by automatic compilation. See [the README demo](../README.md#discovery-time-intervention) and [REPORT.md](../REPORT.md).

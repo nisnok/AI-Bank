@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "source": "evidence/acceptance-local/962574b62b89447381ff9ba166bdc440/live/report.json",
+      "archived": "report.json",
+      "sha256": "6791587d7bba05c45fbdee74a8740cb1461f9b64651e1d10904c03e833a1305f"
+    },
+    {
+      "source": "evidence/acceptance-local/962574b62b89447381ff9ba166bdc440/live/discovery/36bbc1800fd5444393d0913700d537ff/metadata.json",
+      "archived": "metadata.json",
+      "sha256": "81fc217a561d44430846dc79592d7b338a5906691a1ced151f80ef735124867c"
+    },
+    {
+      "source": "evidence/acceptance-local/962574b62b89447381ff9ba166bdc440/live/discovery/36bbc1800fd5444393d0913700d537ff/events.jsonl",
+      "archived": "events.jsonl",
+      "sha256": "da7202bfbf3382146b3874953105c58c847c9a6c532b96334e2f633a406fbcee"
+    },
+    {
+      "source": "evidence/acceptance-local/962574b62b89447381ff9ba166bdc440/live/discovery/36bbc1800fd5444393d0913700d537ff/result.json",
+      "archived": "result.json",
+      "sha256": "092342213bf752924388b1e210927b075b8ede8881c97d0bc9d77a5848ec4109"
+    }
+  ]
+}

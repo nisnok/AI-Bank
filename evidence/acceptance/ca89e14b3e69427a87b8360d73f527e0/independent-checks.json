@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "handoff_session_count": 1,
+  "handoff_verified_resumptions": 2,
+  "completed_irreversible_step_not_repeated": true,
+  "canonical_shared_across_tenants": true,
+  "ambiguous_search_submissions": 0,
+  "business_outcome_is_not_infrastructure_failure": true,
+  "successful_health_runs": 15,
+  "bank_a": "HEALTHY",
+  "bank_b": "DEGRADED",
+  "source_root": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0"
+}

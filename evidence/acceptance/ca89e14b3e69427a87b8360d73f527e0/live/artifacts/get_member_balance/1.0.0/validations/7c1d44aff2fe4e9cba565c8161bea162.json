@@ -1,0 +1,13 @@
+{
+  "code": "VALIDATED",
+  "different_inputs": true,
+  "draft_digest": "f13178d7269a2d520e52d319884b50af9d281682cfc8ffb572ced9e6a44f028d",
+  "replay_run_id": "7c1d44aff2fe4e9cba565c8161bea162",
+  "replay_status": "SUCCESS",
+  "model_calls": 0,
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/validation/7c1d44aff2fe4e9cba565c8161bea162/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/validation/7c1d44aff2fe4e9cba565c8161bea162/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/validation/7c1d44aff2fe4e9cba565c8161bea162/result.json"
+  ]
+}

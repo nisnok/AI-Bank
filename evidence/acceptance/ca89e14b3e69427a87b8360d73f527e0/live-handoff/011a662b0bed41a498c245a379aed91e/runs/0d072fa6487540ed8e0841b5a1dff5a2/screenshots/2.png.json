@@ -1,0 +1,9 @@
+{
+  "policy": "SELECTIVE_REDACTION",
+  "masked_regions": 1,
+  "categories": [
+    "FULL_PAGE"
+  ],
+  "fallback_full_mask": true,
+  "reason": "REDACTION_FALLBACK_FULL_MASK"
+}

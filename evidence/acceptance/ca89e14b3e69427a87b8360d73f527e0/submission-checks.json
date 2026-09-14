@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "report_headings": [
+    "Architecture",
+    "Artifact schema",
+    "Determinism & error handling",
+    "Heterogeneity & multi-tenant",
+    "Escalation & handoff",
+    "Safety",
+    "Cuts"
+  ],
+  "report_word_count": 1098,
+  "missing_documentation_links": [],
+  "replay_and_model_client_sources_unchanged": true
+}

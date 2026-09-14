@@ -101,6 +101,8 @@ class TrajectoryStep(Model):
 
 
 class DiscoveryResult(Model):
+    handoff_occurred: bool = False
+    human_action_count: int = Field(default=0, ge=0)
     run_id: str
     status: DiscoveryStatus
     code: str

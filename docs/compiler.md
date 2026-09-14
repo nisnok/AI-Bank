@@ -1,4 +1,4 @@
-# Milestone 4: discovery → compilation → deterministic replay
+# discovery → compilation → deterministic replay
 
 ## Run the complete loop
 
@@ -18,7 +18,7 @@ The CLI intentionally displays the fictional validation balance; persisted run e
 
 `CapabilityCompiler.compile(discovery_result, capability_spec) -> CapabilityArtifact` is synchronous and deterministic. It has no provider calls, browser access, or artifact-file reads. The spec declares types, application identity, member-identity semantics, and the known MEMBER_NOT_FOUND application outcome; it contains no workflow steps. Manual examples are not compiler inputs.
 
-Compilation requires successful discovery, ordered trajectory entries, typed input/output provenance, and verified COMPLETE. Only attempted, executed, verified, compilation-eligible UI actions become steps. Resolution must prove a unique observed target and a valid ordered attempt ladder. Proposed but unexecuted actions are omitted. Unsupported verified workflow shapes fail closed.
+Human-assisted discovery is rejected with HUMAN_ASSISTED_TRAJECTORY_REQUIRES_REVIEW; an explicit review/approval workflow is not implemented. Compilation requires successful unassisted discovery, ordered trajectory entries, typed input/output provenance, and verified COMPLETE. Only attempted, executed, verified, compilation-eligible UI actions become steps. Resolution must prove a unique observed target and a valid ordered attempt ladder. Proposed but unexecuted actions are omitted. Unsupported verified workflow shapes fail closed.
 
 The current supported shape is FILL → CLICK → EXTRACT, with optional identity-verifiable waits. Mapping:
 
@@ -70,14 +70,14 @@ Discovery reported 2,557 input tokens, 321 output tokens, 587 thinking tokens (c
 
 Evidence and artifact paths:
 
-- Discovery: `evidence/discovery/6234bdefa80947b8856fbc677939560c/`
+- Discovery source run ID: `6234bdefa80947b8856fbc677939560c` (original local-only run; the separate retained real-provider proof is linked in the [evidence index](../evidence/README.md)).
 - Compilation and isolation report: `evidence/compilation/e1b022aa799f40b182e033a6753a7e0c/`
 - DRAFT: `capabilities/generated/get_member_balance/1.0.0/draft.json`
 - VALIDATED: `capabilities/generated/get_member_balance/1.0.0/validated.json`
 - Validation replay: `evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/`
 - Negative replay: `evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/`
 
-Discovery remains gitignored and exists locally; rerunning produces a new bundle. Compilation/replay evidence and generated artifacts can be retained with the repository. Historical captures use full masking; new captures follow the selective simulator policy documented in [acceptance](acceptance.md). Persisted trajectories are privacy projections, not lossless compiler inputs; compilation uses the actual in-memory result.
+Discovery remains gitignored and exists locally; rerunning produces a new bundle. Compilation/replay evidence and generated artifacts can be retained with the repository. Historical opaque screenshots are omitted from the submission; unchanged text records preserve their original capture references. Representative selective and fail-closed captures are linked in [acceptance](acceptance.md). Persisted trajectories are privacy projections, not lossless compiler inputs; compilation uses the actual in-memory result.
 
 ## Credible zero-model separation
 
@@ -110,6 +110,6 @@ Current limits:
 - Replay import guards and static boundaries are dependency checks, not an operating-system network sandbox.
 - Masked screenshots and redacted disk trajectories limit retrospective debugging. No raw reasoning or credentials are persisted.
 
-[Milestone 5](handoff.md) now implements same-session operator handoff separately. [Milestone 6](tenants.md) adds locator-only tenant bindings. Health aggregation, automatic healing, governance services, and distributed persistence remain out of scope.
+[Milestone 5](handoff.md) now implements same-session operator handoff separately. [Milestone 6](tenants.md) adds locator-only tenant bindings. Health aggregation is implemented separately; automatic healing, governance services, and distributed persistence remain out of scope.
 
 [Capability health](health.md) now derives explainable assessments from replay evidence. [Automated evaluation](evaluation.md) adds controlled failure scenarios separately; automatic repair/healing remains unimplemented.

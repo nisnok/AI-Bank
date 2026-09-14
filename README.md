@@ -1,189 +1,146 @@
-# Deterministic UI capabilities
+# AI-Bank: computer-use automation
 
-A Python 3.12+ foundation for replaying reviewed, versioned UI capabilities without an LLM. A separate discovery package can now use Gemini to explore the local simulator; deterministic replay remains model-free. Milestone 4 compiles verified discovery into reusable capabilities and validates them with different inputs. Milestone 5 adds same-session operator takeover and verified resume. Milestone 6 adds cross-tenant reuse through strict locator bindings and controlled UI-drift telemetry. Capability health now aggregates explainable tenant-level reliability, and automated evaluation exercises controlled failures. Production tenant infrastructure remains out of scope.
+Turn a natural-language member-balance goal into a reusable UI capability: real Gemini discovery observes and acts on a fictional banking application, verifies its trajectory, and passes it to CapabilityCompiler. The compiler produces a typed, versioned artifact; deterministic replay executes it with different inputs and **zero LLM calls**.
 
-Milestone 2 adds a local legacy back-office simulator and real-browser replay workflows. See [the simulator guide](docs/simulator.md) for startup, replay commands, fault modes, identity verification, safety tests, and remaining limits. The original Milestone 1 demo below remains available.
+Replay checks identity and outcomes, uses bounded recovery, and stops safely for ambiguity or human intervention. Interactive discovery and replay share live-session handoff. Locator-only tenant bindings support reuse and drift detection; capability health summarizes the resulting evidence.
 
-Milestone 3 adds [real LLM-driven discovery](docs/discovery.md), normalized observations, policy-gated structured actions, and verified trajectories. To run against a fresh live simulator using the key in your local `.env`:
+**Start here:** [assignment report](REPORT.md) · [claim-to-evidence map](evidence/README.md) · [acceptance methodology](docs/acceptance.md)
 
-```sh
-export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
-.venv/bin/python examples/run_discovery.py --model gemini-3.5-flash \
-  --goal "Find member 48321 and retrieve their savings balance."
+```mermaid
+flowchart LR
+    Goal[Natural-language goal] --> Discovery[Gemini discovery + live UI]
+    Discovery --> Trajectory[Verified trajectory]
+    Trajectory --> Compiler[CapabilityCompiler]
+    Compiler --> Artifact[Typed/versioned capability]
+    Artifact --> Replay[Deterministic replay: zero LLM calls]
+    Bindings[Tenant locator bindings] --> Replay
+    Replay --> Outcomes[Success / business outcome / bounded recovery]
+    Discovery <--> Human[Same-session human handoff]
+    Replay <--> Human
+    Replay --> Evidence[Evidence + drift telemetry]
+    Evidence --> Health[Capability health + evaluation]
 ```
 
-The command starts the simulator automatically, calls Gemini, and writes privacy-projected evidence under `evidence/discovery/`. It does not load a hand-authored capability or call ReplayEngine. No additional Python dependencies are needed.
+## Setup and install
 
-## Discovery → compilation → replay
-
-[Milestone 4 guide](docs/compiler.md) documents the compiler, lifecycle, generated artifacts, and real execution evidence. With `GEMINI_API_KEY` in your ignored `.env`, run:
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/discover_and_compile.py \
-  --goal "Find member 48321 and retrieve their savings balance." \
-  --member-id 48321 --validate-member-id 83921 --version 1.0.1
-```
-
-The command calls real Gemini, compiles its successful in-memory trajectory, saves a DRAFT, validates the generated workflow through ReplayEngine using a different member, and checks MEMBER_NOT_FOUND. Replay runs in fresh processes with model imports blocked and model credentials removed. Use an unused version on each run; existing versions are never overwritten. [Artifact organization](capabilities/README.md) distinguishes manual examples from generated versions.
-
-## Same-session operator handoff
-
-[Milestone 5 guide](docs/handoff.md) covers ownership, action auditing, safe handback, mutation safety, and real-browser acceptance evidence.
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_handoff.py
-```
-
-Open the printed operator-panel URL. Take control to acknowledge the supervisor notice, hand back, then take control again for final account confirmation. The panel acts on one retained application page; replay verifies member identity, posted deposit, and account-opened state before continuing. It never repeats the human's confirmation. The application page is headless and the panel shows live normalized state, so all supported operator actions pass through the ownership/audit controller.
-
-Add `--scripted` for explicitly labeled automated acceptance. No model or API key is used. Existing generated artifacts are unchanged.
-
-## Cross-tenant reuse and controlled UI drift
-
-[Milestone 6 guide](docs/tenants.md) demonstrates the same Bank A-discovered `get_member_balance@1.0.0` on Bank B through a locator-only binding.
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/replay_tenant.py --all
-```
-
-The command runs Bank A/Bank B baselines, label drift, structural drift, ambiguity, a missing member, and an incompatible version. Unique fallback continues with telemetry; ambiguous controls stop before clicking. No Gemini key, rediscovery, copied capability, or health scoring is involved. The command prints a generated reviewer evidence index.
-
-## Automated evaluation and failure analysis
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_evaluation.py
-```
-
-The suite executes the unchanged generated capability across 13 controlled scenarios: happy paths, primary-locator failure with fallback, all locators failing, a missing required input, stale identity, partial loading, tenant label/structural drift, ambiguity, a value that is not retained, an unexpected workspace, and MEMBER_NOT_FOUND.
-
-Reports under `evidence/evals/<id>/` contain JSON metrics, classified failures, page-state facts, source run IDs/digests, and a readable index. Classification uses actual engine evidence and observations. A successful fallback remains success; expected negative scenarios are distinguished from unexpected evaluation regressions.
-
-Metrics include reliable completion, primary locator success, fallback usage/recovery, terminal failures, human intervention, and drift counts. Locator rates exclude polling/business probes. Deterministic evaluation makes locator changes, safety stops, and identity-verification failures repeatable and measurable rather than depending on a model's narrative. See [methodology and scenarios](docs/evaluation.md).
-
-Observed output from the [completed evaluation](evidence/evals/3dbc86c3ef07491c85270bbf96790974/summary.json):
-
-```text
-get_member_balance@1.0.0
-Runs: 13
-Success rate (valid business outcomes included): 46.2%
-Primary locator: 91.3%
-Fallback usage: 8.7%
-Fallback recovery: 40.0%
-Unrecoverable: 46.2%
-Human intervention: 7.7%
-Drift events: 7
-Scenario expectations passed: 100.0%
-Most common failure: PAGE_STATE_INVALID
-Model calls: 0
-```
-
-This intentionally adversarial mix produced five successful balance reads, one valid business outcome, six terminal failures, and one human stop. All 13 matched their expected behavior. The 46.2% completion rate describes this stress suite, not production reliability; fallback recovery is two recovered runs out of five runs that attempted fallback.
-
-## Capability health
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_reliability_eval.py
-.venv/bin/python -m capability_health.cli --evidence evidence/tenants
-```
-
-The genuine reliability demonstration kept Bank A HEALTHY while Bank B became DEGRADED with 100% completion, 16.7% action-target fallback usage, and an increasing-fallback trend. The separate health layer recomputes tenant assessments from evidence; it never rewrites the capability or automatically blocks degraded reads. See [health thresholds, metrics, and evidence](docs/health.md).
-
-## Acceptance and security audit
-
-The [reviewer acceptance report](docs/acceptance.md) records actual results for discovery, compilation, isolated model-free replay, business outcomes, recovery, handoff, tenant reuse, drift, health, and privacy. It includes the retained provider failure and successful fresh attempt, security findings, and selected screenshots.
-
-```sh
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py
-# Use GEMINI_API_KEY for actual Gemini discovery
-PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py --live-discovery
-```
-
-The browser adapter restricts origins and defaults to selective simulator redaction, with full masking when coverage cannot be certified. New bulk evidence is gitignored; [curated acceptance evidence](evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/README.md) preserves representative proofs. No mock test is reported as real Gemini discovery.
-
-## Setup and run
+From the repository root, using Python 3.12 or newer:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[test]'
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"
 .venv/bin/python -m playwright install chromium
-.venv/bin/python -m pytest -q
-.venv/bin/pyright
-RUN_BROWSER_TESTS=1 .venv/bin/python -m pytest -q
+```
+
+Set `PLAYWRIGHT_BROWSERS_PATH` in each new terminal that runs a browser command.
+
+## Deterministic demo — no API key
+
+```sh
 .venv/bin/python examples/run_demo.py
 ```
 
-The default test suite needs no browser. The opt-in browser tests exercise the real adapter against local HTML, including delayed results, duplicate controls, ambiguous containers, and a detached target. If using a workspace browser installation, set `PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright"` for installation, tests, and the demo.
+This runs the original reviewed capability against local HTML and prints a result/evidence path. For the richer banking simulator and business outcomes, see [simulator commands](docs/simulator.md). To exercise live human takeover without Gemini:
 
-## Files and boundaries
-
-```text
-capabilities/get_member_balance.json    Reviewed example artifact
-examples/member_portal.html            Synthetic local legacy UI
-examples/run_demo.py                   Browser demo entry point
-src/deterministic_ui/
-  models.py                           Portable artifact and result types
-  surface.py                          Provider-independent UI contract
-  playwright_surface.py               Async browser implementation
-  resolver.py                         Ordered semantic locator resolution
-  conditions.py                       Semantic checkpoints and outcome detection
-  policy.py                           Configurable safety decisions
-  templates.py                        Typed values and simple input substitution
-  evidence.py                         Allowlisted JSON / JSONL evidence
-  replay.py                           Deterministic orchestration
- tests/                               Fake-based and browser contract tests
+```sh
+.venv/bin/python examples/run_handoff.py
 ```
 
-Dependency direction:
+Open the **Operator panel** URL printed in the terminal. Take control, acknowledge the supervisor notice, and hand back; at the next pause, take control to confirm the fictional account opening and hand back again. The application runs headless; the panel displays its live state and audits supported actions.
 
-```text
-ReplayEngine ──> LocatorResolver ──> Surface ──> domain models
-      ├───────> ConditionEvaluator ──> LocatorResolver
-      ├───────> PolicyEngine ──> domain models
-      ├───────> EvidenceWriter ──> Surface + domain models
-      └───────> templates ──> domain models
+## Real Gemini discovery
 
-PlaywrightSurface implements Surface and imports Playwright.
-Domain models import only Python's standard library and Pydantic.
+Put your key in an ignored root `.env` file:
+
+```dotenv
+GEMINI_API_KEY=<your-key>
+GEMINI_MODEL=gemini-3.5-flash
 ```
 
-`Surface` is the UI port: query semantic strategies, observe, click, fill, extract, wait, and capture privacy-safe screenshots. It returns opaque `TargetRef` handles and typed observations. A desktop implementation can implement the same contract without changing replay. `PlaywrightSurface.open()` owns the browser lifecycle and exposes no browser object. Handles pin the resolved element: removal causes failure, never an automatic retarget.
+```sh
+.venv/bin/python examples/run_discovery.py \
+  --goal 'Find member 48321 and retrieve their savings balance.'
+```
 
-`CapabilityArtifact` describes intent, input/output types, ordered actions, checks, known outcomes, compatibility, and safety. Unknown fields, unsupported versions/actions, malformed templates, duplicate IDs, undeclared outputs, and unbounded/undeclared retries are rejected. Strategies use exact names/text; relative targets mean a named role inside a uniquely resolved semantic container. CSS is allowed only after semantic strategies. A decimal is an exact finite `Decimal`, never a float. Extracted values must be plain decimal strings; currency/locale parsing is intentionally not guessed.
+The command starts its own local simulator and uses real Gemini decisions. It writes redacted evidence under `evidence/discovery/`. Provider errors, including quota exhaustion, are reported as failures; there is no mock fallback. Each run can make several model calls.
 
-`LocatorResolver` tries strategies in order. Zero matches permit fallback. Multiple visible matches or an ambiguous relative container immediately return `AMBIGUOUS_TARGET`; no later fallback can override that ambiguity. Quality tiers (`semantic`, `structural`, `css_fallback`) describe resolution methods, not probabilities. Every attempt and successful strategy index are recorded, so future monitoring can measure fallback use without blocking a safe resolution.
+To demonstrate the complete unassisted discovery → compilation → different-input replay pipeline:
 
-`PolicyEngine` checks manual artifact approval or generated validation provenance, the artifact risk ceiling, and configurable risk decisions. Defaults allow reads and reversible writes, require human review for sensitive actions, and block irreversible actions. Missing configuration blocks. DRAFT artifacts require an explicit, scoped validation policy; ordinary replay rejects them. VALIDATED generated artifacts permit reads/reversible writes under the existing risk gate. Risk labels, lifecycle provenance, and the approval flag are assertions of a trusted, reviewed artifact; this prototype does not authenticate an approver or prove that a UI button is actually read-only.
+```sh
+.venv/bin/python examples/discover_and_compile.py \
+  --goal 'Find member 48321 and retrieve their savings balance.' \
+  --member-id 48321 --validate-member-id 83921 --version 1.0.1
+```
 
-`ReplayEngine.execute(artifact, inputs)` validates inputs once before any action, then processes precondition, resolution, policy, action, postcondition, output validation, and evidence. Success also requires the final checkpoint. The engine serializes its own runs; do not share a Surface between independent engines. Each attempt has a wall-clock timeout. Only recoverable failures are retried, within the artifact's bounds and only with an explicit `safe_to_repeat` declaration. A timeout can occur after an action took effect; the example never retries the Search click. Uncertain irreversible operations are verified before continuation and never blindly retried, even if marked repeatable.
+Use an unused version each time. Validation runs in a fresh process with model credentials removed and model imports blocked, then checks the missing-member business outcome. [Compiler details](docs/compiler.md).
 
-`ConditionEvaluator` polls semantic conditions and known business outcomes under the same deadline. Outcomes take precedence over generic success markers. Ambiguous conditions require a human. A wait step uses this evaluator so it can recognize business outcomes while waiting; Surface also offers a direct wait operation for provider clients.
+## Discovery-time intervention
 
-Condition expectations also accept `{{ inputs.member_id }}` references. `bind_conditions` substitutes validated inputs into a run-local copy; the stored artifact and evidence never receive the bound values. This allows the simulator capabilities to verify record identity, not just the presence of a result panel.
+Open two terminals in the repository. In the first:
 
-`EvidenceWriter` creates `evidence/<run_id>/{metadata.json,events.jsonl,result.json,screenshots/}`. Events include run/step IDs, mode, actor, strategy attempts, match counts, quality, policy decisions, timings, retries, and status. It writes no runtime input/output values, UI text, exception messages, selectors, or templates. Typed outputs are returned in memory; persisted `result.json` deliberately has an empty outputs map. Simulator screenshots selectively mask sensitive fields before capture; unknown pages fall back to full masking. Per-image JSON manifests record coverage and fallback reasons. Screenshot failure records `CAPTURE_UNAVAILABLE` without invalidating an otherwise successful operation. Failure to write required evidence stops execution; if storage itself is unavailable, a structured `EVIDENCE_UNAVAILABLE` result is returned and complete evidence cannot be guaranteed.
+```sh
+.venv/bin/python -m bank_simulator.server --port 8765
+```
 
-## Result semantics
+In the second:
 
-| Status | Example | What follows |
-|---|---|---|
-| `SUCCESS` | Balance extracted and final checkpoint passed | Return typed outputs |
-| `BUSINESS_OUTCOME` | `MEMBER_NOT_FOUND` | Return business code, no exception |
-| `RECOVERABLE_ERROR` | UI/checkpoint timeout | Inspect state; retry only when safe |
-| `HUMAN_REQUIRED` | Ambiguous target or approval required | Stop for operator review |
-| `HARD_FAILURE` | No target, invalid input/output, blocked policy | Correct the problem before a new run |
+```sh
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_discovery.py \
+  --interactive --url 'http://127.0.0.1:8765/?fault=UNEXPECTED_MODAL' \
+  --goal 'Find member 48321 and retrieve their savings balance.'
+```
 
-Failures contain run/step IDs, a code, expected condition ID, a redacted observed-state classification, retryability, safe next action, and evidence references. Normal runtime outcomes are structured results. Invalid artifact loading raises Pydantic validation errors before a run; do not log those raw validation errors because Pydantic may include supplied values.
+Open the **Operator panel URL printed by discovery**, rather than the simulator URL. When paused, click **Take control → Acknowledge supervisor notice → Hand back to automation**. The same browser session stays alive, automation cannot act during HUMAN ownership, and fresh observation/member-identity checks gate resume. Discovery continues with a new model decision. The total deadline is 600 seconds by default.
 
-## Boundary verification
+The configured discovery action is notice acknowledgement; unsupported interventions remain paused for inspection/cancellation. `--non-interactive` returns HUMAN_REQUIRED and closes cleanly. `--headed` requires that mode. Successful human-assisted discovery retains evidence but is **not automatically compiled**: explicit review/approval would be required, and that approval workflow is not implemented. [Handoff details](docs/handoff.md).
 
-`tests/test_boundaries.py` recursively follows local imports from replay and checks an explicit standard-library/Pydantic allowlist. It also verifies that artifact models depend only on the standard library and Pydantic, and that only `playwright_surface.py` imports Playwright. The `deterministic_ui` package has no model SDKs or LLM calls. Gemini calls live exclusively in the separate discovery provider implementation; discovery tests also enforce this separation.
+## Acceptance and tests
 
-## Deterministic replay limits and next-milestone review
+```sh
+# All normal tests, browser tests, type checks and controlled acceptance scenarios:
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py
 
-- This is an in-process executor for trusted artifacts and an already authorized UI session. Artifact signing, production approval/authentication workflows, and real legacy application qualification are not implemented. The browser adapter now enforces an exact-origin allowlist for the local demo. Application/version metadata is descriptive; Surface contract version and required features are enforced.
-- The adapter covers the current page and uniquely scoped descendants. Multi-window workflows, special iframe bindings, and desktop support are not implemented. Exact matching and plain decimal extraction are conservative.
-- Selective redaction is limited to the trusted simulator privacy profile. Other applications need their own reviewed coverage contract and otherwise use full masking. Artifact identifiers and condition IDs must themselves contain no secrets. Runtime values are excluded regardless of `sensitive` metadata.
-- JSONL writes are synchronous, append-only within a run, and permission-restricted; no crash recovery or durable transaction is promised. Process termination/cancellation can leave incomplete evidence. Failed operations may already have affected the UI.
-- Repeated condition checks can create many locator events/handles until the step ends. For long-running sessions, review handle lifecycle and polling volume. Full run output payloads are intentionally not persisted.
-- Artifacts must describe the expected initial UI state and use preconditions where required. Stale business markers or a stale details panel can misclassify a run unless the workflow clears them or checks member identity. The local demo clears results on input. Review record-identity checkpoints carefully before using a real financial application.
-- The compiler supports a narrow verified member-balance workflow. Broader compilation still requires review of risk assignment, retry idempotency, identity checks, UI mutation races, cancellation, privacy, and Surface ownership. See the compiler guide for current limits. Future health signals should not turn successful fallbacks into automatic failures.
+# Also attempt real Gemini discovery/compilation/isolated replay:
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_acceptance.py --live-discovery
+
+# Individual checks:
+.venv/bin/python -m pytest -q
+RUN_BROWSER_TESTS=1 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python -m pytest -q
+.venv/bin/pyright
+.venv/bin/python -m acceptance.privacy --repository --evidence evidence/acceptance
+```
+
+Acceptance writes new output under ignored `evidence/acceptance-local/`. Default acceptance labels live-provider claims as skipped; scripted model/operator tests are explicitly identified. Retained successful real Gemini runs are linked in the [evidence index](evidence/README.md); they do not guarantee future provider availability.
+
+Latest live verification: [real Gemini retry evidence](evidence/acceptance/key-retry-20260914-1/README.md) passed discovery, compilation, different-input zero-model replay, and the missing-member business outcome. The earlier provider failure remains documented separately.
+
+## Optional evaluation, reuse and health
+
+```sh
+.venv/bin/python examples/replay_tenant.py --all
+.venv/bin/python examples/run_evaluation.py
+.venv/bin/python examples/run_reliability_eval.py
+```
+
+These extensions use the same canonical capability without rediscovery. The evaluator tests 13 controlled scenarios: normal operation, locator/fallback failures, missing elements, stale state, partial loading, tenant drift, ambiguity, failed value retention, unexpected workspace, and missing-member business outcomes.
+
+Retained evaluation results: **13/13 expected outcomes**, 46.2% completion including valid business outcomes, 91.3% primary locator success, 8.7% fallback usage, 40% fallback recovery, 46.2% unrecoverable failures, 7.7% human intervention, and 7 drift events. The most common failure is PAGE_STATE_INVALID. This deliberately adverse mix measures expected behavior under injected faults, not production reliability. Deterministic evaluation makes changes and safety stops repeatable without depending on a model's explanation. [Metrics and methodology](docs/evaluation.md).
+
+## Scope and repository guide
+
+Implemented: real browser discovery, narrow verified balance compilation, model-free replay, policy/checkpoints, audited same-session handoff, privacy-safe evidence, two tenant bindings, drift telemetry, local health and evaluation.
+
+Deliberate limits: fictional local simulator; bounded mediated controls with no arbitrary native-browser takeover; no human-assisted compilation approval workflow; in-memory resume; desktop adapter is an abstraction only. Selective redaction requires a trusted simulator privacy contract and otherwise fails closed. There is no universal prompt-injection immunity, production reliability claim, durable orchestration, or automatic self-healing.
+
+| Location | Purpose |
+|---|---|
+| [REPORT.md](REPORT.md) | Concise assignment design and cuts |
+| [src/](src/) | Discovery, compiler, replay, simulator and supporting layers |
+| [tests/](tests/) | Unit, boundary and opt-in browser verification |
+| [examples/](examples/) | Runnable demos and acceptance commands |
+| [capabilities/](capabilities/README.md) | Reviewed examples and immutable generated version |
+| [tenant_bindings/](tenant_bindings/README.md) | Locator-only tenant configuration |
+| [evidence/](evidence/README.md) | Curated claim-to-proof entry point |
+| [docs/replay.md](docs/replay.md) | Replay internals, safety and result semantics |
+| [docs/discovery.md](docs/discovery.md) | Model boundary and verified trajectories |
+| [docs/health.md](docs/health.md) | Explainable reliability metrics and limits |

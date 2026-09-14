@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "provider": "mock",
+  "model": "scripted-decisions",
+  "model_calls": 4,
+  "scripted_operator": true,
+  "run_id": "823887aebba94a52931c514ea83e562b",
+  "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/discovery-handoff/407c1afb6b6740e3a300d1aac3e67073/runs/823887aebba94a52931c514ea83e562b",
+  "same_session": true,
+  "automation_actions_during_human_control": 0,
+  "model_calls_during_human_control": 0,
+  "rejected_unsafe_handback": true,
+  "human_action_count": 1,
+  "search_submissions": 1,
+  "fresh_observation_and_checkpoint": true,
+  "result": "SUCCESS",
+  "balance_verified": true
+}

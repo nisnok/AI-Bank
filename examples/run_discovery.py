@@ -7,6 +7,10 @@ import re
 from urllib.parse import urlsplit
 
 from bank_simulator.server import running_server
+from deterministic_ui.control import SessionController
+from deterministic_ui.handoff import HandoffManager
+from operator_ui.scenario import discovery_plans
+from operator_ui.server import OperatorServer
 from deterministic_ui.playwright_surface import PlaywrightSurface
 from discovery.gemini_client import GeminiModelClient
 from discovery.model_client import ModelError
@@ -35,8 +39,18 @@ async def run(args) -> int:
             url = args.url
         assert isinstance(url, str)
         async with PlaywrightSurface.open(url, headless=not args.headed) as surface:
-            result = await DiscoveryOrchestrator(surface, model, limits=DiscoveryLimits(max_decisions=args.max_decisions),
-                                                 evidence_root=Path('evidence/discovery')).execute(request)
+            limits = DiscoveryLimits(max_decisions=args.max_decisions, max_seconds=args.max_seconds)
+            if args.interactive:
+                controller = SessionController(surface)
+                manager = HandoffManager(controller, discovery_plans())
+                async with OperatorServer(manager) as panel:
+                    print(f'Operator panel: {panel.url}', flush=True)
+                    print('Discovery keeps this session alive for bounded operator takeover.', flush=True)
+                    result = await DiscoveryOrchestrator(controller.automation, model, limits=limits,
+                        handoff=manager, evidence_root=Path('evidence/discovery')).execute(request)
+            else:
+                result = await DiscoveryOrchestrator(surface, model, limits=limits,
+                    evidence_root=Path('evidence/discovery')).execute(request)
     print(f'{result.status} / {result.code}\nProvider: {result.provider}; model: {result.model}; calls: {result.model_calls}')
     print(f'Tokens: input={result.usage.input_tokens}, output={result.usage.output_tokens}; latency_ms={result.latency_ms}')
     print(f'Evidence: {result.evidence_directory}/result.json')
@@ -50,8 +64,15 @@ def main() -> None:
     parser.add_argument('--url', help='Existing local simulator URL; otherwise start an ephemeral live simulator')
     parser.add_argument('--model', default=None)
     parser.add_argument('--max-decisions', type=int, default=12)
+    parser.add_argument('--max-seconds', type=float, default=600, help='Total deadline including operator time (maximum 600)')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--interactive', dest='interactive', action='store_true', default=True)
+    mode.add_argument('--non-interactive', dest='interactive', action='store_false', help='CI: return HUMAN_REQUIRED and close cleanly')
     parser.add_argument('--headed', action='store_true')
-    raise SystemExit(asyncio.run(run(parser.parse_args())))
+    args = parser.parse_args()
+    if args.interactive and args.headed:
+        parser.error('Interactive control uses the audited operator panel; --headed requires --non-interactive')
+    raise SystemExit(asyncio.run(run(args)))
 
 
 if __name__ == '__main__':

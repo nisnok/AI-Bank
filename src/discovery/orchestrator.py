@@ -7,6 +7,8 @@ from uuid import uuid4
 
 from pydantic import ValidationError
 
+from deterministic_ui.handoff import HandoffManager
+from deterministic_ui.handoff_port import ResumeDisposition
 from deterministic_ui.evidence import EvidenceContext, EvidenceWriter
 from deterministic_ui.models import Decision, FieldSpec, Observation, Risk
 from deterministic_ui.policy import PolicyEngine
@@ -27,7 +29,10 @@ class ActionProgress:
 
 class DiscoveryOrchestrator:
     def __init__(self, surface: Surface, model: ModelClient, *, policy: PolicyEngine | None = None,
-                 limits: DiscoveryLimits | None = None, evidence_root: Path = Path('evidence/discovery')):
+                 limits: DiscoveryLimits | None = None, handoff: HandoffManager | None = None, evidence_root: Path = Path('evidence/discovery')):
+        if handoff is not None and surface is not handoff.controller.automation:
+            raise ValueError("DISCOVERY_REQUIRES_AUTOMATION_LEASE")
+        self.handoff = handoff
         self.surface, self.model = surface, model
         self.policy = policy or PolicyEngine()
         self.limits = limits or DiscoveryLimits()
@@ -68,6 +73,10 @@ class DiscoveryOrchestrator:
                         break
                     if observation.dialogs:
                         status, code = S.HUMAN_REQUIRED, 'DIALOG_PRESENT'
+                        if await self._intervene(code, request, writer):
+                            outputs.clear()
+                            history = [h.model_copy(update={'output_captured':None}) for h in history]
+                            continue
                         break
                     calls += 1
                     writer.emit('model_call', model_calls=calls, status='STARTED')
@@ -142,10 +151,19 @@ class DiscoveryOrchestrator:
                                                output_captured=decision.output if step.verified else None))
                     if terminal:
                         status, code = terminal
+                        if status in {S.HUMAN_REQUIRED, S.STUCK} and await self._intervene(code, request, writer):
+                            outputs.clear()
+                            history = [h.model_copy(update={'output_captured':None}) for h in history]
+                            continue
                         break
                     failures = 0 if step.verified else failures + 1
                     if failures >= self.limits.failure_limit:
                         status, code = S.STUCK, 'REPEATED_FAILURES'
+                        if await self._intervene(code, request, writer):
+                            outputs.clear()
+                            history = [h.model_copy(update={'output_captured':None}) for h in history]
+                            failures = 0
+                            continue
                         break
                 else:
                     status, code = S.MAX_STEPS_EXCEEDED, 'DECISION_LIMIT'
@@ -164,7 +182,9 @@ class DiscoveryOrchestrator:
                 await self.surface.release_targets()
             except Exception:
                 pass
-        result = DiscoveryResult(run_id=run_id, status=status, code=code, goal=request.goal,
+        result = DiscoveryResult(handoff_occurred=self.handoff.handoff_occurred if self.handoff else False,
+                                 human_action_count=self.handoff.human_action_count if self.handoff else 0,
+                                 run_id=run_id, status=status, code=code, goal=request.goal,
                                  provider=self.model.provider, model=self.model.model, model_calls=calls,
                                  usage=usage, latency_ms=round((monotonic() - started)*1000, 3),
                                  outputs=outputs if status == S.SUCCESS else {}, trajectory=trajectory,
@@ -174,9 +194,23 @@ class DiscoveryOrchestrator:
             try:
                 writer.emit('run_finished', status=status, model_calls=calls, duration_ms=result.latency_ms)
                 evidence.finish(result)
+                if self.handoff:
+                    self.handoff.finish_run(result.status, result.model_calls)
             except OSError:
                 result = result.model_copy(update={'status':S.HARD_FAILURE, 'code':'EVIDENCE_UNAVAILABLE', 'outputs':{}})
         return result
+
+    async def _intervene(self, reason: str, request: DiscoveryRequest, writer: EvidenceWriter) -> bool:
+        if self.handoff is None:
+            return False
+        disposition = await self.handoff.resolve_discovery(reason, {"member_id":request.member_id}, writer)
+        if disposition == ResumeDisposition.STOP:
+            return False
+        # Manager has verified trusted checkpoints. Do not re-dispatch the blocked
+        # decision: release old handles and obtain a fresh observation next iteration.
+        await self.surface.release_targets()
+        writer.emit('discovery_resumed', status='FRESH_DECISION_REQUIRED')
+        return True
 
     async def _act(self, request: DiscoveryRequest, progress: ActionProgress, writer: EvidenceWriter):
         step = progress.step
