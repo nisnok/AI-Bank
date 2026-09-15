@@ -1,4 +1,10 @@
 """Replay one Bank A-discovered canonical capability across tenants and controlled drift."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("multitenant")
+
+from acceptance.bundle import output_root
+
 import importlib.abc
 import os
 import sys
@@ -101,7 +107,7 @@ async def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--evidence-root", type=Path, default=Path("evidence"))
+    parser.add_argument("--evidence-root", type=Path, default=output_root("multitenant", "reuse"))
     parser.add_argument("--tenant", choices=["bank_a","bank_b"], default="bank_a")
     parser.add_argument("--drift", choices=["none","label","structural","ambiguous"], default="none")
     parser.add_argument("--member-id", default="83921")

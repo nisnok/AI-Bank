@@ -1,0 +1,30 @@
+{
+  "run_id": "93a3d4d8ad1f453d946166a0babe73c7",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "RECOVERABLE_ERROR",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "93a3d4d8ad1f453d946166a0babe73c7",
+    "step_id": "discovered_1",
+    "code": "STEP_TIMEOUT",
+    "expected_condition": "input_visible",
+    "observed_condition": "not_verified",
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Inspect current UI and evidence before retrying; the action may have completed",
+    "evidence_refs": [
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/metadata.json",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/events.jsonl",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/result.json"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "relationship": "generated_by_source_discovery",
+  "authoritative_path": null,
+  "source_artifact": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/artifacts/get_member_balance/1.0.0/draft.json",
+  "snapshot": "discovery/raw/live/artifacts/get_member_balance/1.0.0/validated.json",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "original_provenance": {
+    "generated_from": "discovery",
+    "discovery_run_id": "0d722350416e48fd8c73cf92ff66bf55",
+    "discovery_timestamp": "2026-09-14T00:10:38.913222+00:00",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash",
+    "compiler_version": "1.0.0",
+    "source_application": "legacy-bank-simulator",
+    "source_sequences": [
+      1,
+      2,
+      3
+    ],
+    "validation_run_id": "7c1d44aff2fe4e9cba565c8161bea162"
+  }
+}

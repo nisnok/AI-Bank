@@ -1,4 +1,10 @@
 """Real model-driven balance discovery; no capability files or ReplayEngine."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("discovery")
+
+from acceptance.bundle import output_root
+
 import argparse
 import asyncio
 from contextlib import nullcontext
@@ -47,10 +53,10 @@ async def run(args) -> int:
                     print(f'Operator panel: {panel.url}', flush=True)
                     print('Discovery keeps this session alive for bounded operator takeover.', flush=True)
                     result = await DiscoveryOrchestrator(controller.automation, model, limits=limits,
-                        handoff=manager, evidence_root=Path('evidence/discovery')).execute(request)
+                        handoff=manager, evidence_root=output_root('discovery')).execute(request)
             else:
                 result = await DiscoveryOrchestrator(surface, model, limits=limits,
-                    evidence_root=Path('evidence/discovery')).execute(request)
+                    evidence_root=output_root('discovery')).execute(request)
     print(f'{result.status} / {result.code}\nProvider: {result.provider}; model: {result.model}; calls: {result.model_calls}')
     print(f'Tokens: input={result.usage.input_tokens}, output={result.usage.output_tokens}; latency_ms={result.latency_ms}')
     print(f'Evidence: {result.evidence_directory}/result.json')

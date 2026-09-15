@@ -1,0 +1,20 @@
+{
+  "tenant_id": "bank_b",
+  "drift": "none",
+  "application_version": "1",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "canonical_digest": "81f153b28c9fd39b96c0d5a514d0dd234f79f397939710de29af0f45950b4f9d",
+  "binding": "tenant_bindings/bank_b/1.0.0.json",
+  "status": "SUCCESS",
+  "business_code": null,
+  "failure_code": null,
+  "run_id": "a0196e4dcd6a4f738574217a73162759",
+  "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/a0196e4dcd6a4f738574217a73162759",
+  "model_calls": 0,
+  "model_import_guard": "enabled",
+  "loaded_model_modules": [],
+  "model_credentials_removed": true,
+  "search_submissions": 1,
+  "drift_signal_count": 0
+}

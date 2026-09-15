@@ -1,5 +1,7 @@
 # discovery → compilation → deterministic replay
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 ## Run the complete loop
 
 Install dependencies and Chromium using the root README. Put `GEMINI_API_KEY=<your-key>` in the ignored root `.env`; `GEMINI_MODEL` is optional. Never commit the key.
@@ -70,12 +72,12 @@ Discovery reported 2,557 input tokens, 321 output tokens, 587 thinking tokens (c
 
 Evidence and artifact paths:
 
-- Discovery source run ID: `6234bdefa80947b8856fbc677939560c` (original local-only run; the separate retained real-provider proof is linked in the [evidence index](../evidence/README.md)).
-- Compilation and isolation report: `evidence/compilation/e1b022aa799f40b182e033a6753a7e0c/`
+- Discovery source run ID: `6234bdefa80947b8856fbc677939560c` (retained original source in the [canonical provenance run](../evidence/runs/6234bdefa80947b8856fbc677939560c/discovery/README.md)).
+- Compilation and isolation report: `evidence/runs/6234bdefa80947b8856fbc677939560c/replay/raw/compilation/e1b022aa799f40b182e033a6753a7e0c/`
 - DRAFT: `capabilities/generated/get_member_balance/1.0.0/draft.json`
 - VALIDATED: `capabilities/generated/get_member_balance/1.0.0/validated.json`
 - Validation replay: `evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/`
-- Negative replay: `evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/`
+- Negative replay: `evidence/runs/6234bdefa80947b8856fbc677939560c/handoff/raw/business/770279a2f2fa4acdb4b33e8f7bc6751f/`
 
 Discovery remains gitignored and exists locally; rerunning produces a new bundle. Compilation/replay evidence and generated artifacts can be retained with the repository. Historical opaque screenshots are omitted from the submission; unchanged text records preserve their original capture references. Representative selective and fail-closed captures are linked in [acceptance](acceptance.md). Persisted trajectories are privacy projections, not lossless compiler inputs; compilation uses the actual in-memory result.
 

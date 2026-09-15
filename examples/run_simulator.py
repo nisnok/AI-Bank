@@ -1,4 +1,10 @@
 """Replay reviewed capabilities against the local simulator using only the Surface port."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("replay")
+
+from acceptance.bundle import output_root
+
 import argparse
 import asyncio
 from pathlib import Path
@@ -41,7 +47,7 @@ def main() -> None:
     parser.add_argument('--url', default='http://127.0.0.1:8765')
     parser.add_argument('--fault', choices=list(Fault), default=Fault.NONE)
     parser.add_argument('--variant', choices=['standard', 'fallback'], default='standard')
-    parser.add_argument('--evidence', default='evidence')
+    parser.add_argument('--evidence', default=str(output_root('replay')))
     parser.add_argument('--headed', action='store_true')
     asyncio.run(run(parser.parse_args()))
 

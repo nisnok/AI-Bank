@@ -1,0 +1,38 @@
+{
+  "run_id": "fb256d7da123469ba1985dc640cd38a7",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": {
+    "blocked_step_id": "discovered_2",
+    "reason_code": "AMBIGUOUS_TARGET",
+    "expected_state": "Operator must satisfy the declared resume checks",
+    "checkpoint_ids": [
+      "search_visible"
+    ],
+    "evidence_ref": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/events.jsonl"
+  },
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "fb256d7da123469ba1985dc640cd38a7",
+    "step_id": "discovered_2",
+    "code": "AMBIGUOUS_TARGET",
+    "expected_condition": "search_visible",
+    "observed_condition": "ambiguous",
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Request operator review; do not continue automatically",
+    "evidence_refs": [
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/metadata.json",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/events.jsonl",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/result.json"
+  ]
+}

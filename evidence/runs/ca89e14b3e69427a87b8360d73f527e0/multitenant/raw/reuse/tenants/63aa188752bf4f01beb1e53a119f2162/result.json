@@ -1,0 +1,30 @@
+{
+  "run_id": "63aa188752bf4f01beb1e53a119f2162",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "HARD_FAILURE",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "63aa188752bf4f01beb1e53a119f2162",
+    "step_id": null,
+    "code": "INCOMPATIBLE_APPLICATION_VERSION",
+    "expected_condition": null,
+    "observed_condition": null,
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Review tenant binding and application compatibility before execution",
+    "evidence_refs": [
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/metadata.json",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/events.jsonl",
+      "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/result.json"
+    ]
+  },
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse/tenants/63aa188752bf4f01beb1e53a119f2162/result.json"
+  ]
+}

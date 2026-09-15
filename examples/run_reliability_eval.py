@@ -1,4 +1,10 @@
 """Genuine bounded browser runs demonstrating success with declining locator reliability."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("multitenant")
+
+from acceptance.bundle import output_root
+
 # Install the existing replay import guard before importing any application modules.
 from replay_tenant import BLOCKED
 import argparse
@@ -100,6 +106,6 @@ async def run(args):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/reliability"))
+    parser.add_argument("--evidence-root", type=Path, default=output_root("multitenant", "health"))
     parser.add_argument("--include-failures",action="store_true",help="Add six genuine ambiguity/incompatibility runs")
     raise SystemExit(asyncio.run(run(parser.parse_args())))

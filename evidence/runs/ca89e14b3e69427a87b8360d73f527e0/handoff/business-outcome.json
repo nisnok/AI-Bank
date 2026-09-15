@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/business/1997d773741e47c387de77f39e14ad94",
+  "business_code": "MEMBER_NOT_FOUND",
+  "infrastructure_failure": false,
+  "model_calls": 0
+}

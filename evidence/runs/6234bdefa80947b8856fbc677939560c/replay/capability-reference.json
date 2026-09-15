@@ -1,0 +1,23 @@
+{
+  "relationship": "referenced_existing",
+  "authoritative_path": "capabilities/generated/get_member_balance/1.0.0/validated.json",
+  "snapshot": "canonical-capability.json",
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "original_provenance": {
+    "generated_from": "discovery",
+    "discovery_run_id": "6234bdefa80947b8856fbc677939560c",
+    "discovery_timestamp": "2026-09-12T19:01:00.859913+00:00",
+    "provider": "gemini",
+    "model": "gemini-3.5-flash",
+    "compiler_version": "1.0.0",
+    "source_application": "legacy-bank-simulator",
+    "source_sequences": [
+      1,
+      2,
+      3
+    ],
+    "validation_run_id": "c0a8057c3d2b40bb95d380807c51c33a"
+  },
+  "sha256": "c948c98860a8d44323d7846407807b0080088398a2da9417675da4e1f0afb5a5"
+}

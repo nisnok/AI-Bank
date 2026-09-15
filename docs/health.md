@@ -1,5 +1,7 @@
 # Capability health and reliability monitoring
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 Health consumes structured evidence; it does not execute workflows, rewrite artifacts, or call a model.
 
 ## Commands and genuine demonstration
@@ -13,12 +15,12 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_reliab
 
 # Recompute from an evidence population you explicitly choose:
 .venv/bin/python -m capability_health.cli --capability get_member_balance --version 1.0.0 \
-  --evidence evidence/tenants
+  --evidence evidence/current/multitenant/raw/reuse/tenants
 ```
 
 The harness prints its evaluation directory. To recompute its final population, pass that directory's `runs` subdirectory to `--evidence`. Optional `--thresholds path.json` loads a strict Thresholds model; `--store path` selects the derived-data root.
 
-The retained 15-run demonstration is indexed in the [health evidence](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/health/7cdb05d231234f6ea4403167cb1de13c/README.md). The optional six-failure extension can be reproduced with `--include-failures`.
+The retained 15-run demonstration is indexed in the [health evidence](../evidence/current/multitenant/README.md). The optional six-failure extension can be reproduced with `--include-failures`.
 
 | Phase | Bank A | Bank B | Overall |
 |---|---|---|---|

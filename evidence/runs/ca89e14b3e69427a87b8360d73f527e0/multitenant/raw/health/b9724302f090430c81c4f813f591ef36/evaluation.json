@@ -1,0 +1,143 @@
+{
+  "canonical_digest": "81f153b28c9fd39b96c0d5a514d0dd234f79f397939710de29af0f45950b4f9d",
+  "canonical_unchanged": true,
+  "model_import_guard": "enabled",
+  "loaded_model_modules": [],
+  "model_calls": 0,
+  "runs": [
+    {
+      "run_id": "6ef3836f37134eb0acf200d170782e01",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "0ada746c032d46c9a7567bad847492ad",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "6e6237446f8a4eeba1193ec73d9148e5",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "687a30820c254d34a0dab3a30c857725",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "6cfdc5b330c74c7c80d9e7e3ccfdff84",
+      "tenant_id": "bank_a",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "5ebbbb314a98455c9b323edd10778380",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "ac2c42f0448c42b49b3408dc3ffb0fef",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "f3b6a4277f274f56b4b4503192221a55",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "188da92c0689482dbee816134c69d707",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "84fce91522ae47d6a4b522007cb6525c",
+      "tenant_id": "bank_b",
+      "drift": "none",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "b5378bc2ee714babbbaea512b75e557e",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "13ea948e0e3e415981614d5cb55a1a9d",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "94378819c6754e22acdcc54f7b32433d",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "712687bf32714dd595f67cf4b3d3d43e",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    },
+    {
+      "run_id": "a26f630b626d44e49212d22ebc3d0463",
+      "tenant_id": "bank_b",
+      "drift": "label",
+      "application_version": "1",
+      "status": "SUCCESS",
+      "model_calls": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "stage": "bank_a_baseline",
+      "summary": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/derived/bank_a_baseline/get_member_balance/1.0.0/4b72b30a65154bacb0cfb0e02b305047/summary.json"
+    },
+    {
+      "stage": "both_baseline",
+      "summary": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/derived/both_baseline/get_member_balance/1.0.0/e98261ca088d4eb586eda3fd643ee046/summary.json"
+    },
+    {
+      "stage": "successful_drift",
+      "summary": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/derived/successful_drift/get_member_balance/1.0.0/db35521fb1c74620bbd63851b1fcfed6/summary.json"
+    }
+  ]
+}

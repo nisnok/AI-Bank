@@ -1,0 +1,39 @@
+{
+  "path": "/",
+  "title": "[redacted]",
+  "visible_text": "[redacted]",
+  "elements": [
+    {
+      "id": "e0",
+      "role": "textbox",
+      "name": "Member ID",
+      "kind": "input",
+      "enabled": true,
+      "visible": true,
+      "text": "[redacted]",
+      "value": "[redacted]"
+    },
+    {
+      "id": "e1",
+      "role": "button",
+      "name": "Search",
+      "kind": "button",
+      "enabled": true,
+      "visible": true,
+      "text": "[redacted]",
+      "value": null
+    },
+    {
+      "id": "e2",
+      "role": "link",
+      "name": "[redacted]",
+      "kind": "a",
+      "enabled": true,
+      "visible": true,
+      "text": "[redacted]",
+      "value": null
+    }
+  ],
+  "dialog_count": 0,
+  "frame_count": 1
+}

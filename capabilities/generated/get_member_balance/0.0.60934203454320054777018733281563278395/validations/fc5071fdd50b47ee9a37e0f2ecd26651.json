@@ -1,0 +1,13 @@
+{
+  "code": "VALIDATED",
+  "different_inputs": true,
+  "draft_digest": "8ff6cf53361c92c631a279f0d4017d4a3fca5bb47878ce18906cac49f308b072",
+  "replay_run_id": "fc5071fdd50b47ee9a37e0f2ecd26651",
+  "replay_status": "SUCCESS",
+  "model_calls": 0,
+  "evidence_refs": [
+    "evidence/runs/b51716def96247208ae0015488bd82ac/discovery/raw/live/validation/fc5071fdd50b47ee9a37e0f2ecd26651/metadata.json",
+    "evidence/runs/b51716def96247208ae0015488bd82ac/discovery/raw/live/validation/fc5071fdd50b47ee9a37e0f2ecd26651/events.jsonl",
+    "evidence/runs/b51716def96247208ae0015488bd82ac/discovery/raw/live/validation/fc5071fdd50b47ee9a37e0f2ecd26651/result.json"
+  ]
+}

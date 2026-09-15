@@ -1,8 +1,16 @@
 """Opt-in real Gemini -> compilation -> credential-free worker validation proof."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("discovery")
+
+from acceptance.bundle import output_root
+
 import argparse
 import asyncio
 from decimal import Decimal
 import json
+import shutil
+from uuid import uuid4
 from pathlib import Path
 
 from bank_simulator.server import running_server
@@ -21,6 +29,9 @@ from discover_and_compile import replay_worker
 async def run(root: Path):
     root.mkdir(parents=True, exist_ok=False)
     report = {'claims':{}}
+    version='0.0.'+str(uuid4().int)
+    store=ArtifactStore(Path('capabilities/generated'))
+    artifact_directory=store.root/'get_member_balance'/version
     claims = report['claims']
     for key in ('discovery','compilation','zero_model_replay','business_outcome'):
         claims[key] = {'status':'SKIPPED_WITH_REASON','reason':'SUCCESSFUL_REAL_DISCOVERY_REQUIRED'}
@@ -46,7 +57,7 @@ async def run(root: Path):
             assert list(directory.glob('trajectory-*.json'))
             claims['discovery']={'status':'PASS','evidence':str(directory),'model_calls':discovered.model_calls,
                                  'provider':discovered.provider,'model':discovered.model}
-            artifact=CapabilityCompiler().compile(discovered,member_balance_spec('1.0.0'))
+            artifact=CapabilityCompiler().compile(discovered,member_balance_spec(version))
             assert artifact.lifecycle==CapabilityLifecycle.DRAFT and not artifact.safety.approved_for_replay
             reusable=artifact.model_dump_json(exclude={'provenance'})
             assert '48321' not in reusable and '1420.75' not in reusable
@@ -60,7 +71,6 @@ async def run(root: Path):
                 assert source.target and source.resolution
                 assert all(strategy in source.target.strategies for strategy in step.target.strategies)
                 assert source.target.strategies[source.resolution.attempts[-1].index] in step.target.strategies
-            store=ArtifactStore(root/'artifacts')
             draft=store.save_draft(artifact)
             original=draft.read_bytes()
             try:
@@ -97,13 +107,15 @@ async def run(root: Path):
         # Exception text can contain Pydantic values or provider responses; omit it.
         claims[next_claim]={'status':'FAIL','reason':type(exc).__name__}
     finally:
+        if artifact_directory.exists():
+            shutil.copytree(artifact_directory, root/'artifacts/get_member_balance'/version)
         (root/'report.json').write_text(json.dumps(report,indent=2)+'\n')
     return report
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--evidence-root',type=Path,required=True)
+    parser.add_argument('--evidence-root',type=Path,default=output_root('discovery', 'live'))
     args=parser.parse_args()
     result=asyncio.run(run(args.evidence_root))
     print(json.dumps(result,indent=2))

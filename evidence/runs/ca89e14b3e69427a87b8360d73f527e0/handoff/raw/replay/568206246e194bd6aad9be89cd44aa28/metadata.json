@@ -1,0 +1,11 @@
+{
+  "run_id": "568206246e194bd6aad9be89cd44aa28",
+  "capability_id": "prepare_new_savings_subaccount",
+  "capability_version": "2.0.0",
+  "schema_version": "1.0",
+  "execution_mode": "deterministic_replay",
+  "actor": "replay_engine",
+  "model_calls_at_start": 0,
+  "started_at": "2026-09-14T00:10:22.926957+00:00",
+  "redaction": "runtime values omitted; screenshot policy recorded in per-image manifests"
+}

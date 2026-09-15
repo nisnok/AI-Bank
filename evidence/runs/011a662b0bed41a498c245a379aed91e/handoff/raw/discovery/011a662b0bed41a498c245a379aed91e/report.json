@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "model_calls": 4,
+  "scripted_operator": true,
+  "run_id": "0d072fa6487540ed8e0841b5a1dff5a2",
+  "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e/runs/0d072fa6487540ed8e0841b5a1dff5a2",
+  "same_session": true,
+  "automation_actions_during_human_control": 0,
+  "model_calls_during_human_control": 0,
+  "rejected_unsafe_handback": true,
+  "human_action_count": 1,
+  "search_submissions": 1,
+  "fresh_observation_and_checkpoint": true,
+  "result": "SUCCESS",
+  "balance_verified": true
+}

@@ -1,0 +1,828 @@
+{
+  "capability_id": "get_member_balance",
+  "capability_version": "1.0.0",
+  "canonical_digest": "81f153b28c9fd39b96c0d5a514d0dd234f79f397939710de29af0f45950b4f9d",
+  "total_runs": 13,
+  "successful_runs": 5,
+  "business_outcomes": 1,
+  "success_rate": "0.4615",
+  "primary_locator_success_rate": "0.9130",
+  "fallback_usage_rate": "0.0870",
+  "fallback_recovery_rate": "0.4000",
+  "fallback_attempted_runs": 5,
+  "fallback_recovered_runs": 2,
+  "unrecoverable_failure_rate": "0.4615",
+  "human_intervention_rate": "0.0769",
+  "drift_event_count": 7,
+  "expectation_pass_rate": "1.0000",
+  "failure_counts": {
+    "PAGE_STATE_INVALID": 3,
+    "AMBIGUOUS_TARGET": 1,
+    "FALLBACK_EXHAUSTED": 1,
+    "POSTCONDITION_FAILED": 1,
+    "REQUIRED_ELEMENT_MISSING": 1
+  },
+  "most_common_failure": "PAGE_STATE_INVALID",
+  "model_calls": 0,
+  "runs": [
+    {
+      "scenario": {
+        "id": "happy_path",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "NONE",
+        "expected_status": "SUCCESS",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "0377a2c301224d1c94254a4c27f31cda",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:31.970621Z",
+        "completed_at": "2026-09-14T00:09:32.347685Z",
+        "status": "SUCCESS",
+        "duration_ms": "377.558",
+        "step_count": 3,
+        "primary_locator_attempts": 3,
+        "primary_locator_successes": 3,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/0377a2c301224d1c94254a4c27f31cda",
+        "evidence_digest": "ff10f95311cacbea8c1ef0674afa901640ea16a6bd2508b1f45edff130b7796e"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": true
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/0377a2c301224d1c94254a4c27f31cda/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/0377a2c301224d1c94254a4c27f31cda/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/0377a2c301224d1c94254a4c27f31cda/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": true
+    },
+    {
+      "scenario": {
+        "id": "primary_failure_fallback_success",
+        "tenant_id": "bank_a",
+        "drift": "label",
+        "fault": "NONE",
+        "expected_status": "SUCCESS",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "500c4d5c94ba45f7aa1935f65aa6e05c",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:32.948994Z",
+        "completed_at": "2026-09-14T00:09:33.314798Z",
+        "status": "SUCCESS",
+        "duration_ms": "366.263",
+        "step_count": 3,
+        "primary_locator_attempts": 3,
+        "primary_locator_successes": 2,
+        "fallback_locator_successes": 1,
+        "maximum_fallback_depth": 2,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 3,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/500c4d5c94ba45f7aa1935f65aa6e05c",
+        "evidence_digest": "b7313d2f0f1c949eceddfb25855818351464842dee73a1816dd958957a3329d5"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": true
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/500c4d5c94ba45f7aa1935f65aa6e05c/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/500c4d5c94ba45f7aa1935f65aa6e05c/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/500c4d5c94ba45f7aa1935f65aa6e05c/result.json"
+        ]
+      },
+      "fallback_attempted": true,
+      "fallback_recovered": true,
+      "expectation_met": true,
+      "output_verified": true
+    },
+    {
+      "scenario": {
+        "id": "all_locators_failed",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "ALL_LOCATORS_FAILED",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "FALLBACK_EXHAUSTED"
+      },
+      "metrics": {
+        "run_id": "c0b5d5a565074d2984f0369be7c80547",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:33.913991Z",
+        "completed_at": "2026-09-14T00:09:37.030238Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3116.684",
+        "step_count": 1,
+        "primary_locator_attempts": 0,
+        "primary_locator_successes": 0,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/c0b5d5a565074d2984f0369be7c80547",
+        "evidence_digest": "297952520a981931831be4ef46603146f0f5710ede3b38c2d1760ae9a6aee5d5"
+      },
+      "page_facts": {
+        "expected_input_role_present": true,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "FALLBACK_EXHAUSTED",
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED",
+          "PRECONDITION_FAILED"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_1",
+        "condition_id": "input_visible",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/c0b5d5a565074d2984f0369be7c80547/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/c0b5d5a565074d2984f0369be7c80547/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/c0b5d5a565074d2984f0369be7c80547/result.json"
+        ]
+      },
+      "fallback_attempted": true,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "required_element_missing",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "REQUIRED_ELEMENT_MISSING",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "REQUIRED_ELEMENT_MISSING"
+      },
+      "metrics": {
+        "run_id": "93a3d4d8ad1f453d946166a0babe73c7",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:37.615497Z",
+        "completed_at": "2026-09-14T00:09:40.730134Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3115.037",
+        "step_count": 1,
+        "primary_locator_attempts": 0,
+        "primary_locator_successes": 0,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7",
+        "evidence_digest": "8b692a3a3669734d7e89c18c34eafd28dc42ebfd3a31cff103cab27d2752dd2c"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "REQUIRED_ELEMENT_MISSING",
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED",
+          "PRECONDITION_FAILED"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_1",
+        "condition_id": "input_visible",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/93a3d4d8ad1f453d946166a0babe73c7/result.json"
+        ]
+      },
+      "fallback_attempted": true,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "stale_member",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "STALE_MEMBER",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "PAGE_STATE_INVALID"
+      },
+      "metrics": {
+        "run_id": "337aa2eef29b4732aa483f889e6ddeb9",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:41.337675Z",
+        "completed_at": "2026-09-14T00:09:44.547548Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3210.297",
+        "step_count": 2,
+        "primary_locator_attempts": 2,
+        "primary_locator_successes": 2,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/337aa2eef29b4732aa483f889e6ddeb9",
+        "evidence_digest": "e413705be345ae774661da9b056d450c453767a8cf62447e302d0ccbab5ac3e4"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": false
+      },
+      "analysis": {
+        "code": "PAGE_STATE_INVALID",
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED",
+          "POSTCONDITION_FAILED"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_2",
+        "condition_id": "correct_member_loaded",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/337aa2eef29b4732aa483f889e6ddeb9/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/337aa2eef29b4732aa483f889e6ddeb9/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/337aa2eef29b4732aa483f889e6ddeb9/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "partial_page_load",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "PARTIAL_PAGE",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "PAGE_STATE_INVALID"
+      },
+      "metrics": {
+        "run_id": "d3e84e10d7d34e5d9cd7365a9b7e0df1",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:45.156461Z",
+        "completed_at": "2026-09-14T00:09:48.345591Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3189.536",
+        "step_count": 2,
+        "primary_locator_attempts": 2,
+        "primary_locator_successes": 2,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d3e84e10d7d34e5d9cd7365a9b7e0df1",
+        "evidence_digest": "ac4c8517406e3c2216d264dfcf751ccabdaf7ae94c61dd42c3ec3d254d7a06d5"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": true,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "PAGE_STATE_INVALID",
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED",
+          "POSTCONDITION_FAILED",
+          "PARTIAL_PAGE_LOAD"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_2",
+        "condition_id": "correct_member_loaded",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d3e84e10d7d34e5d9cd7365a9b7e0df1/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d3e84e10d7d34e5d9cd7365a9b7e0df1/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d3e84e10d7d34e5d9cd7365a9b7e0df1/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "tenant_baseline",
+        "tenant_id": "bank_b",
+        "drift": "none",
+        "fault": "NONE",
+        "expected_status": "SUCCESS",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "f8ea998345454b0b88ca500fd1a5f363",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_b",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:48.951619Z",
+        "completed_at": "2026-09-14T00:09:49.314793Z",
+        "status": "SUCCESS",
+        "duration_ms": "363.595",
+        "step_count": 3,
+        "primary_locator_attempts": 3,
+        "primary_locator_successes": 3,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/f8ea998345454b0b88ca500fd1a5f363",
+        "evidence_digest": "e2b2d39cbd005d67ebbfaa61da6e8d80834cc7c39e530f2db56a16aba4719ea4"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": true
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/f8ea998345454b0b88ca500fd1a5f363/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/f8ea998345454b0b88ca500fd1a5f363/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/f8ea998345454b0b88ca500fd1a5f363/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": true
+    },
+    {
+      "scenario": {
+        "id": "tenant_label_drift",
+        "tenant_id": "bank_b",
+        "drift": "label",
+        "fault": "NONE",
+        "expected_status": "SUCCESS",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "5631f3884e5e431fb3a4060028e9651c",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_b",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:49.898939Z",
+        "completed_at": "2026-09-14T00:09:50.264990Z",
+        "status": "SUCCESS",
+        "duration_ms": "366.485",
+        "step_count": 3,
+        "primary_locator_attempts": 3,
+        "primary_locator_successes": 2,
+        "fallback_locator_successes": 1,
+        "maximum_fallback_depth": 2,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 3,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/5631f3884e5e431fb3a4060028e9651c",
+        "evidence_digest": "2176934192eccb5466b862547c897faecc5b1c2543172dfd87d7e4fa36cac8a0"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": true
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/5631f3884e5e431fb3a4060028e9651c/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/5631f3884e5e431fb3a4060028e9651c/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/5631f3884e5e431fb3a4060028e9651c/result.json"
+        ]
+      },
+      "fallback_attempted": true,
+      "fallback_recovered": true,
+      "expectation_met": true,
+      "output_verified": true
+    },
+    {
+      "scenario": {
+        "id": "tenant_structural_drift",
+        "tenant_id": "bank_b",
+        "drift": "structural",
+        "fault": "NONE",
+        "expected_status": "SUCCESS",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "aecc0989a2a7441a902533dfa2265102",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_b",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:50.884566Z",
+        "completed_at": "2026-09-14T00:09:51.246769Z",
+        "status": "SUCCESS",
+        "duration_ms": "362.623",
+        "step_count": 3,
+        "primary_locator_attempts": 3,
+        "primary_locator_successes": 3,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/aecc0989a2a7441a902533dfa2265102",
+        "evidence_digest": "a0673b60910870691546da9e85978b165724fe7b530f7a4f2ab713667d284694"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": true
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/aecc0989a2a7441a902533dfa2265102/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/aecc0989a2a7441a902533dfa2265102/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/aecc0989a2a7441a902533dfa2265102/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": true
+    },
+    {
+      "scenario": {
+        "id": "ambiguous_control",
+        "tenant_id": "bank_b",
+        "drift": "ambiguous",
+        "fault": "NONE",
+        "expected_status": "HUMAN_REQUIRED",
+        "expected_failure": "AMBIGUOUS_TARGET"
+      },
+      "metrics": {
+        "run_id": "fb256d7da123469ba1985dc640cd38a7",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_b",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:51.833776Z",
+        "completed_at": "2026-09-14T00:09:52.031784Z",
+        "status": "HUMAN_REQUIRED",
+        "duration_ms": "198.459",
+        "step_count": 2,
+        "primary_locator_attempts": 1,
+        "primary_locator_successes": 1,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 1,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 1,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7",
+        "evidence_digest": "512a94519f8e660693ceb256f043438b08f0212aeea70d8091552085f65afb00"
+      },
+      "page_facts": {
+        "expected_input_role_present": true,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "AMBIGUOUS_TARGET",
+        "findings": [
+          "PRECONDITION_FAILED"
+        ],
+        "engine_code": "AMBIGUOUS_TARGET",
+        "step_id": "discovered_2",
+        "condition_id": "search_visible",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb256d7da123469ba1985dc640cd38a7/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "value_not_retained",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "VALUE_NOT_RETAINED",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "POSTCONDITION_FAILED"
+      },
+      "metrics": {
+        "run_id": "fb324117d91a445a9b111bb591fbd74c",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:52.663738Z",
+        "completed_at": "2026-09-14T00:09:55.764146Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3100.83",
+        "step_count": 1,
+        "primary_locator_attempts": 1,
+        "primary_locator_successes": 1,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb324117d91a445a9b111bb591fbd74c",
+        "evidence_digest": "c6018e0d76929368b4a7bc0f7a5980c73daee7428bdfc41c4de736fd66328dd9"
+      },
+      "page_facts": {
+        "expected_input_role_present": true,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "POSTCONDITION_FAILED",
+        "findings": [
+          "POSTCONDITION_FAILED"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_1",
+        "condition_id": "input_value_verified",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb324117d91a445a9b111bb591fbd74c/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb324117d91a445a9b111bb591fbd74c/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/fb324117d91a445a9b111bb591fbd74c/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "unexpected_workspace",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "UNEXPECTED_PAGE",
+        "expected_status": "RECOVERABLE_ERROR",
+        "expected_failure": "PAGE_STATE_INVALID"
+      },
+      "metrics": {
+        "run_id": "9b108b0c01e949e3883bc371d2315846",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:09:56.351015Z",
+        "completed_at": "2026-09-14T00:09:59.462182Z",
+        "status": "RECOVERABLE_ERROR",
+        "duration_ms": "3111.589",
+        "step_count": 1,
+        "primary_locator_attempts": 0,
+        "primary_locator_successes": 0,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 1,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/9b108b0c01e949e3883bc371d2315846",
+        "evidence_digest": "57b34ba233254e19f89d1b963a178b6d149442e64f1fa3c803854c890a8900f0"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": true,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": "PAGE_STATE_INVALID",
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED",
+          "PRECONDITION_FAILED"
+        ],
+        "engine_code": "STEP_TIMEOUT",
+        "step_id": "discovered_1",
+        "condition_id": "input_visible",
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/9b108b0c01e949e3883bc371d2315846/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/9b108b0c01e949e3883bc371d2315846/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/9b108b0c01e949e3883bc371d2315846/result.json"
+        ]
+      },
+      "fallback_attempted": true,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    },
+    {
+      "scenario": {
+        "id": "member_not_found",
+        "tenant_id": "bank_a",
+        "drift": "none",
+        "fault": "NONE",
+        "expected_status": "BUSINESS_OUTCOME",
+        "expected_failure": null
+      },
+      "metrics": {
+        "run_id": "d326b048a6aa48968d8d0da1c3ff4005",
+        "capability_id": "get_member_balance",
+        "capability_version": "1.0.0",
+        "tenant_id": "bank_a",
+        "binding_version": "1.0.0",
+        "started_at": "2026-09-14T00:10:00.068534Z",
+        "completed_at": "2026-09-14T00:10:00.344345Z",
+        "status": "BUSINESS_OUTCOME",
+        "duration_ms": "276.215",
+        "step_count": 2,
+        "primary_locator_attempts": 2,
+        "primary_locator_successes": 2,
+        "fallback_locator_successes": 0,
+        "maximum_fallback_depth": 0,
+        "ambiguity_count": 0,
+        "recoverable_error_count": 0,
+        "recovery_attempts": 0,
+        "successful_recovery_count": 0,
+        "human_handoff_count": 0,
+        "human_action_count": 0,
+        "drift_signal_count": 0,
+        "validation_outcome": null,
+        "model_calls": 0,
+        "evidence_directory": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005",
+        "evidence_digest": "e761cb1c458c9a9601f952da5130d5f37dc4e37418af7719d71f2362a8dbd18f"
+      },
+      "page_facts": {
+        "expected_input_role_present": false,
+        "loading": false,
+        "unexpected_workspace": false,
+        "identity_matches": null
+      },
+      "analysis": {
+        "code": null,
+        "findings": [
+          "PRIMARY_LOCATOR_FAILED"
+        ],
+        "engine_code": null,
+        "step_id": null,
+        "condition_id": null,
+        "evidence_refs": [
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/metadata.json",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/events.jsonl",
+          "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/result.json"
+        ]
+      },
+      "fallback_attempted": false,
+      "fallback_recovered": false,
+      "expectation_met": true,
+      "output_verified": null
+    }
+  ]
+}

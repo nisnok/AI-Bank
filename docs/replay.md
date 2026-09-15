@@ -1,5 +1,7 @@
 # Deterministic replay internals
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 ## Files and boundaries
 
 ```text
@@ -46,7 +48,7 @@ Domain models import only Python's standard library and Pydantic.
 
 Condition expectations also accept `{{ inputs.member_id }}` references. `bind_conditions` substitutes validated inputs into a run-local copy; the stored artifact and evidence never receive the bound values. This allows the simulator capabilities to verify record identity, not just the presence of a result panel.
 
-`EvidenceWriter` creates `evidence/<run_id>/{metadata.json,events.jsonl,result.json,screenshots/}`. Events include run/step IDs, mode, actor, strategy attempts, match counts, quality, policy decisions, timings, retries, and status. It writes no runtime input/output values, UI text, exception messages, selectors, or templates. Typed outputs are returned in memory; persisted `result.json` deliberately has an empty outputs map. Simulator screenshots selectively mask sensitive fields before capture; unknown pages fall back to full masking. Per-image JSON manifests record coverage and fallback reasons. Screenshot failure records `CAPTURE_UNAVAILABLE` without invalidating an otherwise successful operation. Failure to write required evidence stops execution; if storage itself is unavailable, a structured `EVIDENCE_UNAVAILABLE` result is returned and complete evidence cannot be guaranteed.
+`EvidenceWriter` creates `evidence/runs/<bundle-id>/replay/raw/<run_id>/{metadata.json,events.jsonl,result.json,screenshots/}`. Events include run/step IDs, mode, actor, strategy attempts, match counts, quality, policy decisions, timings, retries, and status. It writes no runtime input/output values, UI text, exception messages, selectors, or templates. Typed outputs are returned in memory; persisted `result.json` deliberately has an empty outputs map. Simulator screenshots selectively mask sensitive fields before capture; unknown pages fall back to full masking. Per-image JSON manifests record coverage and fallback reasons. Screenshot failure records `CAPTURE_UNAVAILABLE` without invalidating an otherwise successful operation. Failure to write required evidence stops execution; if storage itself is unavailable, a structured `EVIDENCE_UNAVAILABLE` result is returned and complete evidence cannot be guaranteed.
 
 ## Result semantics
 

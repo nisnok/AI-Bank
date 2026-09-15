@@ -1,4 +1,10 @@
 """Real discovery -> deterministic compilation -> isolated different-input replay."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("replay")
+
+from acceptance.bundle import output_root
+
 import argparse
 import asyncio
 from decimal import Decimal
@@ -46,7 +52,7 @@ async def run(args) -> int:
     model = GeminiModelClient(model=args.model, env_file=Path('.env'))
     with running_server() as server:
         async with PlaywrightSurface.open(server.url) as surface:
-            discovered = await DiscoveryOrchestrator(surface, model).execute(DiscoveryRequest(goal=args.goal, member_id=args.member_id))
+            discovered = await DiscoveryOrchestrator(surface, model, evidence_root=output_root("discovery")).execute(DiscoveryRequest(goal=args.goal, member_id=args.member_id))
         print(f'DISCOVERY: {discovered.status}; provider={discovered.provider}; model={discovered.model}; model_calls={discovered.model_calls}', flush=True)
         print(f'Discovery evidence: {discovered.evidence_directory}', flush=True)
         if discovered.status != DiscoveryStatus.SUCCESS:
@@ -54,7 +60,7 @@ async def run(args) -> int:
             return 1
         artifact = CapabilityCompiler().compile(discovered, spec)
         draft_path = store.save_draft(artifact)
-        writer = EvidenceWriter(Path('evidence/compilation'), uuid4().hex, artifact,
+        writer = EvidenceWriter(output_root('replay', 'compilation'), uuid4().hex, artifact,
                                 context=EvidenceContext(execution_mode='compilation', actor='COMPILER'))
         writer.emit('compiled', status='DRAFT', model_calls=0)
         writer.write_json('compilation.json', {'discovery_run_id':discovered.run_id, 'discovery_evidence':discovered.evidence_directory,
@@ -65,7 +71,7 @@ async def run(args) -> int:
         print(f'COMPILATION: {artifact.capability_id}@{artifact.capability_version}; DRAFT; {draft_path}', flush=True)
         validation = await replay_worker({'mode':'validate', 'url':server.url, 'artifact':str(draft_path),
             'source_inputs':discovered.invocation_inputs, 'inputs':{'member_id':args.validate_member_id},
-            'evidence_root':'evidence/validation', 'store_root':str(store.root)})
+            'evidence_root':str(output_root('replay', 'validation')), 'store_root':str(store.root)})
         writer.write_json('validation.json', {key:value for key,value in validation.items() if key != 'replay'} |
             {'run_id':validation['replay']['run_id'] if validation['replay'] else None,
              'status':validation['replay']['status'] if validation['replay'] else 'REJECTED', 'different_inputs':True})
@@ -79,7 +85,7 @@ async def run(args) -> int:
         print(f'VALIDATION REPLAY: SUCCESS; member_id=[redacted]; savings_balance={balance}; type={validation["output_types"]["savings_balance"]}; model_calls={replay["model_calls"]}', flush=True)
         print('Replay isolation: model imports blocked; loaded model modules=[]; model credentials absent', flush=True)
         business = await replay_worker({'mode':'replay', 'url':server.url, 'artifact':validation['artifact'],
-            'inputs':{'member_id':'99999'}, 'evidence_root':'evidence/generated-replay'})
+            'inputs':{'member_id':'99999'}, 'evidence_root':str(output_root('handoff', 'business'))})
         missing = business['replay']
         writer.emit('validation', status='VALIDATED', model_calls=0)
         writer.write_json('result.json', {'status':'VALIDATED', 'artifact':validation['artifact'],

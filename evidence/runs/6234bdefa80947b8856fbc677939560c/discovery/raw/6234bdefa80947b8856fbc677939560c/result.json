@@ -1,0 +1,28 @@
+{
+  "run_id": "6234bdefa80947b8856fbc677939560c",
+  "status": "SUCCESS",
+  "code": "VERIFIED_BALANCE",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "model_calls": 4,
+  "usage": {
+    "input_tokens": 2557,
+    "output_tokens": 321,
+    "thinking_tokens": 587
+  },
+  "latency_ms": 7601.486,
+  "evidence_directory": "evidence/discovery/6234bdefa80947b8856fbc677939560c",
+  "goal": "Find member [MEMBER_ID] and retrieve their savings balance.",
+  "outputs": {
+    "savings_balance": {
+      "type": "Decimal",
+      "value": "[redacted]"
+    }
+  },
+  "trajectory": [
+    "trajectory-001.json",
+    "trajectory-002.json",
+    "trajectory-003.json",
+    "trajectory-004.json"
+  ]
+}

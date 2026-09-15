@@ -1,0 +1,170 @@
+{
+  "checks": {
+    "unit_suite": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": [
+        "215 passed",
+        "37 skipped"
+      ]
+    },
+    "browser_suite": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": [
+        "37 passed"
+      ]
+    },
+    "type_checks": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": [
+        "0 errors"
+      ]
+    },
+    "evaluation": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "tenants": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "health": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "handoff": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "discovery_handoff": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "recovery": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    },
+    "live_discovery": {
+      "status": "PASS",
+      "exit_code": 0,
+      "counts": []
+    }
+  },
+  "claims": [
+    {
+      "claim": "Automated evaluation",
+      "expected": "All 13 scenario expectations match; classified failures",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals",
+      "status": "PASS"
+    },
+    {
+      "claim": "H. Multi-tenant reuse",
+      "expected": "Bank A and B succeed with unchanged canonical artifact and zero models",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse",
+      "status": "PASS"
+    },
+    {
+      "claim": "I. Safe and ambiguous drift",
+      "expected": "Unique fallback succeeds; ambiguity stops before search",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse",
+      "status": "PASS"
+    },
+    {
+      "claim": "F. Ambiguity",
+      "expected": "HUMAN_REQUIRED; ambiguous search submissions = 0",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/reuse",
+      "status": "PASS"
+    },
+    {
+      "claim": "J. Capability health",
+      "expected": "Bank A HEALTHY; successful Bank B DEGRADED from telemetry",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health",
+      "status": "PASS"
+    },
+    {
+      "claim": "G. Same-session handoff",
+      "expected": "Two mediated actions; no automation during HUMAN; one account created",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/handoff",
+      "status": "PASS"
+    },
+    {
+      "claim": "Discovery-time same-session handoff",
+      "expected": "Retained page; HUMAN ownership; audited action; verified fresh decision; SUCCESS",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/discovery-handoff",
+      "status": "PASS"
+    },
+    {
+      "claim": "E. Bounded recovery",
+      "expected": "One safe wait retry; one search submission; RECOVERABLE_ERROR",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/recovery",
+      "status": "PASS"
+    },
+    {
+      "claim": "A. Real Gemini discovery",
+      "expected": "Real provider calls; successful verified trajectory",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/discovery/0d722350416e48fd8c73cf92ff66bf55",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "claim": "B. Compilation",
+      "expected": "Actual trajectory; parameterized immutable DRAFT",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/artifacts/get_member_balance/1.0.0/draft.json",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "claim": "C. Different-member zero-LLM replay",
+      "expected": "Correct identity/balance in isolated worker; zero models",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/validation/7c1d44aff2fe4e9cba565c8161bea162",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "claim": "D. Business outcome from newly compiled artifact",
+      "expected": "BUSINESS_OUTCOME / MEMBER_NOT_FOUND",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/business/1997d773741e47c387de77f39e14ad94",
+      "status": "PASS",
+      "reason": null
+    },
+    {
+      "claim": "Security browser checks / selective redaction",
+      "expected": "Pixel masks; visible headings; full-mask fallback; blocked origins; bounded injection",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/checks.json",
+      "status": "PASS"
+    },
+    {
+      "claim": "Independent saved-evidence verification",
+      "expected": "Ownership, fresh checkpoints, shared canonical artifact, health and business semantics",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/independent-checks.json",
+      "status": "PASS"
+    },
+    {
+      "claim": "Evidence secret/PII canary scan",
+      "expected": "No credential values or fictional PII in persisted text",
+      "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/privacy-scan.json",
+      "status": "PASS"
+    }
+  ],
+  "independent": {
+    "status": "PASS",
+    "handoff_session_count": 1,
+    "handoff_verified_resumptions": 2,
+    "completed_irreversible_step_not_repeated": true,
+    "canonical_shared_across_tenants": true,
+    "ambiguous_search_submissions": 0,
+    "business_outcome_is_not_infrastructure_failure": true,
+    "successful_health_runs": 15,
+    "bank_a": "HEALTHY",
+    "bank_b": "DEGRADED",
+    "source_root": "evidence/runs/ca89e14b3e69427a87b8360d73f527e0"
+  }
+}

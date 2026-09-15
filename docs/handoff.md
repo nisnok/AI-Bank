@@ -1,5 +1,7 @@
 # same-session operator takeover and safe resume
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 ## Interactive demo
 
 Install dependencies and Chromium as described in the root README, then run:
@@ -78,7 +80,7 @@ One simulator session; search=1; confirm=1; accounts_opened=1
 Automation actions during each HUMAN lease: 0
 ```
 
-Evidence: [retained replay handoff](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/handoff/cf9eee0ef2d84e818f359364ba36ac54/control-summary.json). The adjacent files contain the full timeline and action records.
+Evidence: [retained replay handoff](../evidence/current/handoff/replay-handoff.json). The adjacent files contain the full timeline and action records.
 
 - `metadata.json`: original capability identity and replay mode.
 - `events.jsonl`: replay actions, handoff_requested, automation_paused, control_transferred, human_action, handback_requested, control_returned, resume_observation, resume_checkpoint_verified, resumed, final_result.

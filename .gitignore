@@ -26,18 +26,18 @@ htmlcov/
 .vscode/*
 !.vscode/settings.json
 
-# Runtime evidence is local; retain only curated proof and canonical provenance.
+# Only intentionally retained evidence is eligible for Git.
 /evidence/*
 !/evidence/README.md
-!/evidence/reviewer/
-!/evidence/acceptance/
-!/evidence/compilation/
-/evidence/compilation/*
-!/evidence/compilation/e1b022aa799f40b182e033a6753a7e0c/
+!/evidence/current
+!/evidence/runs/
+/evidence/runs/*
+!/evidence/runs/README.md
+!/evidence/runs/ca89e14b3e69427a87b8360d73f527e0/
+!/evidence/runs/6234bdefa80947b8856fbc677939560c/
+!/evidence/runs/011a662b0bed41a498c245a379aed91e/
+# Immutable authoritative validation references require this compatibility link.
 !/evidence/validation/
 /evidence/validation/*
-!/evidence/validation/c0a8057c3d2b40bb95d380807c51c33a/
-!/evidence/generated-replay/
-/evidence/generated-replay/*
-!/evidence/generated-replay/770279a2f2fa4acdb4b33e8f7bc6751f/
+!/evidence/validation/c0a8057c3d2b40bb95d380807c51c33a
 /health/

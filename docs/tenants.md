@@ -1,5 +1,7 @@
 # canonical capability reuse and controlled UI drift
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 ## Reviewer commands
 
 Use the existing dependencies and Chromium installation. No Gemini key is required.
@@ -108,7 +110,7 @@ A signal indicates a changed resolution path or ambiguity; it does not by itself
 
 ## Actual acceptance evidence
 
-The [retained seven-scenario browser report](../evidence/acceptance/8488062ae9bc4e31b821e6a9ae4d8793/reuse/tenant-demos/6085ec575672402c8e3fd16e7ed011c2/scenarios.json) covers Bank A/B baselines, label and structural drift, ambiguity, a missing member, and an incompatible version. All use one canonical artifact digest and zero model calls. Unique fallback succeeds; ambiguity records zero search submissions. Selected raw telemetry and result bundles are retained next to the report; bulk traces are local-only.
+The [retained seven-scenario browser report](../evidence/current/multitenant/raw/reuse/tenant-demos/e491b7c3e1ca44bfae77e7a492340e4d/scenarios.json) covers Bank A/B baselines, label and structural drift, ambiguity, a missing member, and an incompatible version. All use one canonical artifact digest and zero model calls. Unique fallback succeeds; ambiguity records zero search submissions. Selected raw telemetry and result bundles are retained next to the report; bulk traces are local-only.
 
 Browser tests independently verify the expected Decimal balance for the different member on both tenants. Runtime values are deliberately omitted from persisted results. The [evidence index](../evidence/README.md) links the shared artifact and identity/isolation checks.
 

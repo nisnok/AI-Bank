@@ -1,5 +1,7 @@
 # real model-driven discovery
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 Discovery asks a model to choose individual UI actions against the live simulator. It does not load a capability artifact, call ReplayEngine, or import the simulator's record data. The optional account-preparation discovery workflow is intentionally deferred; the supported success contract is verified member savings-balance retrieval.
 
 ## Run a real discovery
@@ -39,7 +41,7 @@ Only loopback HTTP URLs are accepted by the demonstration CLI. It accepts a goal
 
 ## Verified live run
 
-The retained [real Gemini run](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live/discovery/0d722350416e48fd8c73cf92ff66bf55/result.json) completed with four model calls. Its [pipeline report](../evidence/acceptance/ca89e14b3e69427a87b8360d73f527e0/live/report.json) also verifies compilation and different-input replay. These are actual runs, not fixtures. Provider availability and model output can vary; historical success does not guarantee a new request will succeed.
+The retained [real Gemini run](../evidence/current/discovery/raw/live/discovery/0d722350416e48fd8c73cf92ff66bf55/result.json) completed with four model calls. Its [pipeline report](../evidence/current/discovery/raw/live/report.json) also verifies compilation and different-input replay. These are actual runs, not fixtures. Provider availability and model output can vary; historical success does not guarantee a new request will succeed.
 
 ## Dependency direction and interfaces
 

@@ -1,4 +1,10 @@
 """Live operator takeover of one retained simulator session; no model calls."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("handoff")
+
+from acceptance.bundle import output_root
+
 import argparse
 import asyncio
 from pathlib import Path
@@ -75,6 +81,6 @@ async def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/handoff"))
+    parser.add_argument("--evidence-root", type=Path, default=output_root("handoff", "replay"))
     parser.add_argument("--scripted", action="store_true", help="Explicitly labeled automated operator acceptance driver")
     raise SystemExit(asyncio.run(run(parser.parse_args())))

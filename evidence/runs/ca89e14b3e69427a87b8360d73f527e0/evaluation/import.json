@@ -1,0 +1,6 @@
+{
+  "source_report": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/report.json",
+  "relationship": "historical_import",
+  "original_completed_at": "2026-09-14T00:11:08.498589+00:00",
+  "omitted_source_aggregates": "Original reports/commands remain in place; copied stage records are byte-identical."
+}

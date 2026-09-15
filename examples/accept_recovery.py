@@ -1,4 +1,10 @@
 """Verify real bounded recovery against the simulator's delayed response."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("handoff")
+
+from acceptance.bundle import output_root
+
 from replay_tenant import BLOCKED
 import argparse
 import asyncio
@@ -34,5 +40,5 @@ async def run(root):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--evidence-root',type=Path,required=True)
+    parser.add_argument('--evidence-root',type=Path,default=output_root('handoff', 'recovery'))
     asyncio.run(run(parser.parse_args().evidence_root))

@@ -1,0 +1,46 @@
+{
+  "run_id": "ca89e14b3e69427a87b8360d73f527e0",
+  "source_run_id": "ca89e14b3e69427a87b8360d73f527e0",
+  "kind": "acceptance",
+  "started_at": "2026-09-14T00:09:31.970621+00:00",
+  "completed_at": "2026-09-14T00:11:08.498589+00:00",
+  "imported_from": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0",
+  "overall_status": "PASS",
+  "discovery": {
+    "status": "PASS",
+    "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/discovery/0d722350416e48fd8c73cf92ff66bf55",
+    "model_calls": 4,
+    "provider": "gemini",
+    "model": "gemini-3.5-flash"
+  },
+  "compilation": {
+    "status": "PASS",
+    "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/artifacts/get_member_balance/1.0.0/draft.json",
+    "discovery_run_id": "0d722350416e48fd8c73cf92ff66bf55",
+    "parameterized": true,
+    "observed_strategies_verified": true,
+    "immutable": true
+  },
+  "replay": {
+    "status": "PASS",
+    "evidence": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live/validation/7c1d44aff2fe4e9cba565c8161bea162",
+    "different_member": true,
+    "identity_verified": true,
+    "balance_verified": true,
+    "model_calls": 0,
+    "model_credentials_present": false,
+    "loaded_model_modules": [],
+    "model_import_guard": "enabled"
+  },
+  "evaluation": {
+    "scenarios_total": 13,
+    "scenarios_passed": 13,
+    "scenarios_failed": 0
+  },
+  "privacy": {
+    "status": "PASS",
+    "files_scanned": 401,
+    "findings": []
+  },
+  "eligible_for_current": true
+}

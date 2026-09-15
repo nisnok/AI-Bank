@@ -1,8 +1,0 @@
-{"timestamp":"2026-09-14T06:03:29.943096Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"run_started","status":"RUNNING"}
-{"timestamp":"2026-09-14T06:03:29.954627Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_call","status":"STARTED","model_calls":1}
-{"timestamp":"2026-09-14T06:03:48.867149Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_error","status":"PROVIDER_HTTP_503","attempt":1,"model_calls":1}
-{"timestamp":"2026-09-14T06:03:50.873554Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_call","status":"STARTED","model_calls":2}
-{"timestamp":"2026-09-14T06:03:50.970088Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_error","status":"PROVIDER_HTTP_429","attempt":2,"model_calls":2}
-{"timestamp":"2026-09-14T06:03:52.981137Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_call","status":"STARTED","model_calls":3}
-{"timestamp":"2026-09-14T06:04:23.007975Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"model_error","status":"PROVIDER_CONNECTION_ERROR","attempt":3,"model_calls":3}
-{"timestamp":"2026-09-14T06:04:23.008343Z","run_id":"36bbc1800fd5444393d0913700d537ff","execution_mode":"llm_discovery","actor":"MODEL","kind":"run_finished","duration_ms":53066.245,"status":"HARD_FAILURE","model_calls":3}

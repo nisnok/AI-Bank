@@ -6,7 +6,7 @@ Turn a natural-language member-balance goal into a reusable UI capability: real 
 
 Replay checks identity and outcomes, uses bounded recovery, and stops safely for ambiguity or human intervention. Interactive discovery and replay share live-session handoff. Locator-only tenant bindings support reuse and drift detection; capability health summarizes the resulting evidence.
 
-**Start here:** [assignment report](REPORT.md) · [5-minute evidence walkthrough](evidence/README.md) · [acceptance methodology](docs/acceptance.md)
+**Start here:** [assignment report](REPORT.md) · [evidence at a glance](evidence/README.md) · [acceptance methodology](docs/acceptance.md)
 
 ```mermaid
 flowchart LR
@@ -22,6 +22,10 @@ flowchart LR
     Replay --> Evidence[Evidence + drift telemetry]
     Evidence --> Health[Capability health + evaluation]
 ```
+
+## Proof at a glance
+
+[Discovery](evidence/current/discovery/README.md) · [Compilation + zero-LLM replay](evidence/current/replay/README.md) · [Failure + handoff](evidence/current/handoff/README.md) · [Multi-tenant + health](evidence/current/multitenant/README.md) · [Evaluation](evidence/current/evaluation/README.md)
 
 ## Setup and install
 
@@ -64,7 +68,7 @@ GEMINI_MODEL=gemini-3.5-flash
   --goal 'Find member 48321 and retrieve their savings balance.'
 ```
 
-The command starts its own local simulator and uses real Gemini decisions. It writes redacted evidence under `evidence/discovery/`. Provider errors, including quota exhaustion, are reported as failures; there is no mock fallback. Each run can make several model calls.
+The command starts its own local simulator and uses real Gemini decisions. It automatically writes a standard bundle under `evidence/runs/<run-id>/`, with redacted discovery records in its discovery category. Provider errors, including quota exhaustion, are reported as failures; there is no mock fallback. Each run can make several model calls.
 
 To demonstrate the complete unassisted discovery → compilation → different-input replay pipeline:
 
@@ -109,12 +113,10 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python examples/run_accept
 .venv/bin/python -m pytest -q
 RUN_BROWSER_TESTS=1 PLAYWRIGHT_BROWSERS_PATH="$PWD/.playwright" .venv/bin/python -m pytest -q
 .venv/bin/pyright
-.venv/bin/python -m acceptance.privacy --repository --evidence evidence/acceptance
+.venv/bin/python -m acceptance.privacy --repository --evidence evidence/current
 ```
 
-Acceptance writes new output under ignored `evidence/acceptance-local/`. Default acceptance labels live-provider claims as skipped; scripted model/operator tests are explicitly identified. Retained successful real Gemini runs are linked in the [evidence index](evidence/README.md); they do not guarantee future provider availability.
-
-Latest live verification: [real Gemini retry evidence](evidence/acceptance/key-retry-20260914-1/README.md) passed discovery, compilation, different-input zero-model replay, and the missing-member business outcome. The earlier provider failure remains documented separately.
+Every acceptance/demo command automatically writes an immutable bundle under `evidence/runs/<run-id>/`. Only fully successful acceptance updates `evidence/current/`; skipped/failed runs remain in history. See [evidence generation](docs/evidence.md). Default acceptance labels live-provider claims as skipped; scripted model/operator tests are explicitly identified. Retained successful real Gemini runs are linked in the [evidence index](evidence/README.md); they do not guarantee future provider availability.
 
 ## Optional evaluation, reuse and health
 

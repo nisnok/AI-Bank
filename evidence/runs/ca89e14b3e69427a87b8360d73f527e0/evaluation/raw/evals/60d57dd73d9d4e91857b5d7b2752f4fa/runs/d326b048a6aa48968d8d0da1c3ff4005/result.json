@@ -1,0 +1,16 @@
+{
+  "run_id": "d326b048a6aa48968d8d0da1c3ff4005",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "BUSINESS_OUTCOME",
+  "outputs": {},
+  "business_code": "MEMBER_NOT_FOUND",
+  "failure": null,
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/evals/60d57dd73d9d4e91857b5d7b2752f4fa/runs/d326b048a6aa48968d8d0da1c3ff4005/result.json"
+  ]
+}

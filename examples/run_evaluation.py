@@ -1,4 +1,10 @@
 """Execute controlled browser faults and classify their genuine evidence."""
+if __name__ == "__main__":
+    from acceptance.command import managed_main
+    managed_main("evaluation")
+
+from acceptance.bundle import output_root
+
 from replay_tenant import BLOCKED
 import argparse
 import asyncio
@@ -44,7 +50,7 @@ async def run(args):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--evidence-root", type=Path, default=Path("evidence/evals"))
+    parser.add_argument("--evidence-root", type=Path, default=output_root("evaluation", "evals"))
     parser.add_argument("--repeats",type=int,default=1)
     parser.add_argument("--scenario",choices=[s.id for s in SCENARIOS])
     raise SystemExit(asyncio.run(run(parser.parse_args())))

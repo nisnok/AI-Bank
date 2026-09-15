@@ -1,0 +1,16 @@
+{
+  "run_id": "6e6237446f8a4eeba1193ec73d9148e5",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": null,
+  "status": "SUCCESS",
+  "outputs": {},
+  "business_code": null,
+  "failure": null,
+  "evidence_refs": [
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/runs/6e6237446f8a4eeba1193ec73d9148e5/metadata.json",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/runs/6e6237446f8a4eeba1193ec73d9148e5/events.jsonl",
+    "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/health/b9724302f090430c81c4f813f591ef36/runs/6e6237446f8a4eeba1193ec73d9148e5/result.json"
+  ]
+}

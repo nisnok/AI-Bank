@@ -1,0 +1,50 @@
+{
+  "run_id": "011a662b0bed41a498c245a379aed91e",
+  "source_run_id": "011a662b0bed41a498c245a379aed91e",
+  "kind": "historical_handoff",
+  "started_at": "2026-09-14T00:12:25.522661+00:00",
+  "completed_at": "2026-09-15T02:41:03.001355+00:00",
+  "imported_from": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/live-handoff/011a662b0bed41a498c245a379aed91e",
+  "overall_status": "PARTIAL",
+  "discovery": {
+    "status": "SKIPPED",
+    "provider": null,
+    "model_calls": null
+  },
+  "compilation": {
+    "status": "SKIPPED"
+  },
+  "replay": {
+    "status": "SKIPPED",
+    "model_calls": null
+  },
+  "handoff": {
+    "handoff": {
+      "status": "SKIPPED"
+    },
+    "discovery_handoff": {
+      "status": "PASS",
+      "evidence": "handoff/discovery-handoff.json"
+    },
+    "recovery": {
+      "status": "SKIPPED"
+    }
+  },
+  "multitenant": {
+    "tenants": {
+      "status": "SKIPPED"
+    },
+    "health": {
+      "status": "SKIPPED"
+    }
+  },
+  "evaluation": {
+    "status": "SKIPPED"
+  },
+  "privacy": {
+    "status": "PASS",
+    "files_scanned": 35,
+    "findings": []
+  },
+  "eligible_for_current": false
+}

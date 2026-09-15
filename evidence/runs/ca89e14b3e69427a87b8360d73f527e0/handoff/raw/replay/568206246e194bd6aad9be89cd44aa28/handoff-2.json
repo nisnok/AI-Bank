@@ -1,0 +1,32 @@
+{
+  "run_id": "568206246e194bd6aad9be89cd44aa28",
+  "model_calls": 0,
+  "handoff_occurred": false,
+  "human_action_count": 0,
+  "resume": {
+    "blocked_step_id": "confirm_open_account",
+    "reason_code": "RISK_REQUIRE_HUMAN",
+    "expected_state": "Operator must satisfy the declared resume checks",
+    "checkpoint_ids": [
+      "handoff_account_opened",
+      "handoff_member_verified",
+      "handoff_posted_deposit"
+    ],
+    "evidence_ref": "evidence/acceptance-local/ca89e14b3e69427a87b8360d73f527e0/handoff/568206246e194bd6aad9be89cd44aa28/events.jsonl"
+  },
+  "status": "HUMAN_REQUIRED",
+  "outputs": {},
+  "business_code": null,
+  "failure": {
+    "run_id": "568206246e194bd6aad9be89cd44aa28",
+    "step_id": "confirm_open_account",
+    "code": "RISK_REQUIRE_HUMAN",
+    "expected_condition": "account_opened",
+    "observed_condition": "not_verified",
+    "retryable": false,
+    "action_attempted": false,
+    "safe_next_action": "Request operator review; do not continue automatically",
+    "evidence_refs": []
+  },
+  "evidence_refs": []
+}

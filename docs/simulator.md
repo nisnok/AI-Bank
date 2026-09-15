@@ -1,5 +1,7 @@
 # legacy banking back-office simulator
 
+Public demo commands now write organized bundles under `evidence/runs/<run-id>/`; see [evidence generation](evidence.md). Proof links below point to retained runs; original provenance is unchanged.
+
 The simulator is a separate, local Python package. It exercises the existing deterministic replay architecture; it is not discovery and never reads the Gemini API key. No additional dependencies, databases, frontend frameworks, or model integrations were added.
 
 ## Install and start
@@ -108,7 +110,7 @@ Browser tests start their own local HTTP servers; a manually started server is n
 
 The ambiguity test asserts the server's search submission count is **zero**. The human-required test asserts stage REVIEW, the expected deposit, and **zero** confirmation submissions / opened accounts. The stale-member test asserts no extract action occurred. Server counters are inspected directly in the in-process test fixture; there is no exposed debug/control endpoint used by replay.
 
-Actual runs write existing evidence bundles under `evidence/<run_id>/`: metadata, JSONL events, final result, and masked screenshots. Locator attempts, successful strategy indices, quality, conditions, retries, and policy decisions remain inspectable. Runtime values, bound expectations, and exception messages remain excluded. The simulator privacy profile selectively masks sensitive values while preserving workflow layout. Unknown/incomplete profiles fall back to full masking; per-image manifests record the policy. No evidence is fabricated. The curated acceptance archive selects representative actual captures.
+Actual runs write existing evidence bundles under `evidence/runs/<bundle-id>/replay/raw/<run_id>/`: metadata, JSONL events, final result, and masked screenshots. Locator attempts, successful strategy indices, quality, conditions, retries, and policy decisions remain inspectable. Runtime values, bound expectations, and exception messages remain excluded. The simulator privacy profile selectively masks sensitive values while preserving workflow layout. Unknown/incomplete profiles fall back to full masking; per-image manifests record the policy. No evidence is fabricated. The retained current acceptance includes representative actual captures.
 
 ## Files and interface changes
 
